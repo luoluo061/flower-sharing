@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.system.platform.mapper.MerchantReportMapper">
+<sql id="base_sql">
+    select sum(internal_merchant) as "internal_merchant",
+    SUM(external_merchant) as "external_merchant",
+    sum(expiry_merchant) as "expiry_merchant" from
+    (SELECT if(mmi.merchant_type = 0,1,0) as "internal_merchant",
+    if(mmi.merchant_type = 1,1,0) as "external_merchant",
+    if(mh.end_time <![CDATA[ < ]]> SYSDATE(),1,0) as "expiry_merchant"
+    FROM merchant_manage_information mmi,merchant_holder mh
+</sql>
+    <select id="selectReport" resultType="org.dromara.system.platform.domain.vo.MerchantReportVo"
+            parameterType="org.dromara.system.platform.domain.bo.MerchantReportBo">
+        <include refid="base_sql"></include>
+        <where>
+            mmi.holder_user = mh.id
+            <if test="bo.getStartTime != null">
+                and mh.start_time <![CDATA[ > ]]> #{bo.startTime}
+            </if>
+            <if test="bo.getEndTime != null">
+                and mh.end_time <![CDATA[ < ]]> #{bo.endTime}
+            </if>
+        </where>
+        ) a
+    </select>
+
+</mapper>
