@@ -94,7 +94,7 @@ public class AppletUserInformation extends TenantEntity {
      */
     //private Long groupId;
     /**
-     * 用户等级id
+     * 会员等级id
      */
-    //private Long rankId;
+    private Long memberLevelId;
 }

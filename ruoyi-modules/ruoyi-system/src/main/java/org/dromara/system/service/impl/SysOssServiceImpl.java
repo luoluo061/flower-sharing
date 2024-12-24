@@ -36,10 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 文件上传 服务层实现
@@ -250,6 +248,29 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
             storage.delete(sysOss.getUrl());
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    /**
+     * 根据 Ids 获取 Url
+     * @param ossIds 数据Id
+     * @return 查询结果
+     */
+    @Override
+    public Map<String, String> listUrlByIds(Collection<Long> ossIds) {
+        if (ossIds.isEmpty()) {
+            return Collections.emptyMap(); // 如果 ossIds 为空，直接返回空 Map
+        }
+
+        // 查询 SysOss 列表
+        List<SysOss> list = baseMapper.selectByIds(ossIds);
+
+        // 使用 Stream API 和 Collectors.toMap 直接构建 Map
+        return list.stream()
+            .collect(Collectors.toMap(
+                sysOss -> sysOss.getOssId().toString(), // 键：OssId 转换为字符串
+                SysOss::getUrl,                          // 值：URL
+                (existing, replacement) -> existing      // 处理键冲突：保留现有值
+            ));
     }
 
     /**

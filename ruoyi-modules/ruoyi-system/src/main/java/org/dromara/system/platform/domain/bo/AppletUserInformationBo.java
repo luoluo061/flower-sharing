@@ -83,6 +83,4 @@ public class AppletUserInformationBo extends BaseEntity {
 
     private String wechatNumber;
 
-
-
 }
