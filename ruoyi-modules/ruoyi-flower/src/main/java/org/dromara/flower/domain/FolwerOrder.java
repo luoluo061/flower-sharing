@@ -1,0 +1,119 @@
+package org.dromara.flower.domain;
+
+import org.dromara.common.tenant.core.TenantEntity;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.io.Serial;
+
+/**
+ * 订单对象 folwer_order
+ *
+ * @author Lion Li
+ * @date 2024-12-25
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("folwer_order")
+public class FolwerOrder extends TenantEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 订单ID
+     */
+    @TableId(value = "order_id")
+    private Long orderId;
+
+    /**
+     * 会员ID
+     */
+    private Long userId;
+
+    /**
+     * 会员名称
+     */
+    private String userName;
+
+    /**
+     * 会员类型
+     */
+    private Long memberLevelId;
+
+    /**
+     * 订单流水号
+     */
+    private String orderNumber;
+
+    /**
+     * 商品总价
+     */
+    private Long total;
+
+    /**
+     * 实际金额
+     */
+    private Long actualTotal;
+
+    /**
+     * 支付方式 0 手动代付 1 微信支付 2 支付宝
+     */
+    private Long payType;
+
+    /**
+     * 付款时间
+     */
+    private Date payTime;
+
+    /**
+     * 订单备注
+     */
+    private String remarks;
+
+    /**
+     * 订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败
+     */
+    private Long status;
+
+    /**
+     * 退款类型:1,拒绝退款,2同意退款
+     */
+    private Long applyType;
+
+    /**
+     * 退款ID
+     */
+    private Long refundId;
+
+    /**
+     * 退款金额
+     */
+    private Long refundAmount;
+
+    /**
+     * 退款时间
+     */
+    private Date refundTime;
+
+    /**
+     * 退款原因
+     */
+    private String buyerMsg;
+
+    /**
+     * 售后备注
+     */
+    private String refundRemark;
+
+    /**
+     * 删除标志 0 否 2 是
+     */
+    @TableLogic
+    private Long delFlag;
+
+
+}

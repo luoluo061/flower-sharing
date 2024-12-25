@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import jakarta.validation.constraints.NotNull;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
@@ -103,6 +104,11 @@ public class FolwerProduct extends TenantEntity {
      * 默认是1，表示正常状态, -1表示删除, 0下架
      */
     private Long status;
+
+    /**
+     * 是否使用花券 默认是1，表示使用, 0，不使用
+     */
+    private Long isCoupon;
 
     /**
      * 是否支持退款1 是 2  否

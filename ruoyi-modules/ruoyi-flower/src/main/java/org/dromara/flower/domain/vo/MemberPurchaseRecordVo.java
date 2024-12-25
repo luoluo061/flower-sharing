@@ -88,5 +88,11 @@ public class MemberPurchaseRecordVo implements Serializable {
     @ExcelProperty(value = "价格")
     private Long price;
 
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
+
 
 }

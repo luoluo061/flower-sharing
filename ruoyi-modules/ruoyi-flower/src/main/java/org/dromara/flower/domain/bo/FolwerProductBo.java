@@ -23,7 +23,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { EditGroup.class })
+//    @NotNull(message = "主键不能为空", groups = { EditGroup.class })
     private Long id;
 
     /**
@@ -53,25 +53,25 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 原价
      */
-    @NotNull(message = "原价不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "原价不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long oriPrice;
 
     /**
      * 划线价
      */
-    @NotNull(message = "划线价不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "划线价不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格
      */
-    @NotNull(message = "规格类型 默认是0，表示单规格，1表示多规格", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "规格类型 默认是0，表示单规格，1表示多规格", groups = { AddGroup.class, EditGroup.class })
     private Long normsType;
 
     /**
      * 单品SKUID
      */
-    @NotNull(message = "单品SKUID", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "单品SKUID", groups = { AddGroup.class, EditGroup.class })
     private Long skuId;
 
 
@@ -86,13 +86,13 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 销量
      */
-    @NotNull(message = "销量不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "销量不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long soldNum;
 
     /**
      * 总库存
      */
-    @NotNull(message = "总库存不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "总库存不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long totalStocks;
 
     /**
@@ -104,38 +104,45 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
-    @NotNull(message = "重量不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "重量不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deliveryMode;
 
     /**
      * 快递费
      */
-    @NotNull(message = "快递费", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "快递费", groups = { AddGroup.class, EditGroup.class })
     private Long deliveryPrice;
 
 
     /**
-     * 默认是1，表示正常状态, -1表示删除, 0下架
+     * 状态 默认是1，表示正常状态, -1表示删除, 0下架
      */
-    @NotNull(message = "默认是1，表示正常状态, -1表示删除, 0下架不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "状态 默认是1，表示正常状态, -1表示删除, 0下架不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
+
+    /**
+     * 是否使用花券 默认是1，表示使用, 0，不使用
+     */
+//    @NotNull(message = "是否使用花券 默认是1，表示使用, 0，不使用", groups = { AddGroup.class, EditGroup.class })
+    private Long isCoupon;
+
 
     /**
      * 是否支持退款1 是 2  否
      */
-    @NotNull(message = "是否支持退款1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "是否支持退款1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long ifRefund;
 
     /**
      * 是否免费配送 1 是 2  否
      */
-    @NotNull(message = "是否免费配送 1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "是否免费配送 1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long ifFreeShipping;
 
     /**
      * 是否预警 1 是 2  否
      */
-    @NotNull(message = "是否预警 1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "是否预警 1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long ifEarlyWarning;
 
     /**
@@ -147,7 +154,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 库存预警比例
      */
-    @NotNull(message = "库存预警比例不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "库存预警比例不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long inventoryEarlyWarningProportion;
 
     /**

@@ -76,7 +76,7 @@ public class FolwerProductVo implements Serializable {
     /**
      * 划线价
      */
-    @ExcelProperty(value = "原价")
+    @ExcelProperty(value = "划线价")
     private Long derlinePrice;
 
     /**
@@ -132,6 +132,12 @@ public class FolwerProductVo implements Serializable {
      */
     @ExcelProperty(value = "默认是1，表示正常状态, -1表示删除, 0下架")
     private Long status;
+
+    /**
+     * 是否使用花券 默认是1，表示使用, 0，不使用
+     */
+    @ExcelProperty(value = "是否使用花券 默认是1，表示使用, 0，不使用")
+    private Long isCoupon;
 
     /**
      * 是否支持退款1 是 2  否
