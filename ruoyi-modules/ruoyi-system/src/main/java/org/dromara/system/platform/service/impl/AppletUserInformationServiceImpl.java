@@ -1,34 +1,31 @@
 package org.dromara.system.platform.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-
+import org.dromara.common.mybatis.core.page.PageQuery;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.RequiredArgsConstructor;
 import org.dromara.system.platform.domain.AppletUserInformation;
 import org.dromara.system.platform.domain.bo.AppletUserInformationBo;
-
-import org.dromara.system.platform.domain.query.AppletUserInformationQuery;
 import org.dromara.system.platform.domain.vo.AppletUserInformationVo;
-import org.dromara.system.platform.domain.vo.AppletUserOrderNumVo;
-import org.dromara.system.platform.domain.vo.AppletUserOrderVo;
 import org.dromara.system.platform.mapper.AppletUserInformationMapper;
 import org.dromara.system.platform.service.IAppletUserInformationService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+
 import java.util.List;
+import java.util.Map;
+import java.util.Collection;
 
 /**
  * 小程序用户信息Service业务层处理
  *
- * @author LionLi
- * @date 2024-11-19
+ * @author mlhxj
+ * @date 2024-12-25
  */
 @RequiredArgsConstructor
 @Service
@@ -39,69 +36,65 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     /**
      * 查询小程序用户信息
      *
-     * @param id 主键
+     * @param userId 主键
      * @return 小程序用户信息
      */
     @Override
-    public AppletUserInformationVo queryById(Long id){
-        /*AppletUserInformationVo appletUserInformationvo = baseMapper.selectVoById(id);
-        AppletUserInfoVo appletUserInfoVo = new AppletUserInfoVo();
-        BeanUtil.copyProperties(appletUserInformationvo,appletUserInfoVo);
-
-        AppletUserRank appletUserRank = rankMapper.selectById(appletUserInformationvo.getId());
-        AppletUserGroup appletUserGroup = groupMapper.selectById(appletUserInformationvo.getGroupId());
-        if(ObjectUtil.isNotNull(appletUserRank)){
-            appletUserInfoVo.setRankName(appletUserRank.getRankName());
-        }
-        if(ObjectUtil.isNotNull(appletUserGroup)){
-            appletUserInfoVo.setGroupName(appletUserGroup.getGroupName());
-        }
-
-        appletUserInfoVo.setLabelName(appletUserLabelService.listByUserId(appletUserInfoVo.getId()));*/
-
-        return baseMapper.selectVoById(id);
+    public AppletUserInformationVo queryById(Long userId){
+        return baseMapper.selectVoById(userId);
     }
 
     /**
      * 分页查询小程序用户信息列表
      *
-     * @param query        查询条件
+     * @param bo        查询条件
      * @param pageQuery 分页参数
      * @return 小程序用户信息分页列表
      */
     @Override
-    public TableDataInfo<AppletUserInformationVo> queryPageList(AppletUserInformationQuery query, PageQuery pageQuery) {
-        LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(query);
+    public TableDataInfo<AppletUserInformationVo> queryPageList(AppletUserInformationBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(bo);
         Page<AppletUserInformationVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-
         return TableDataInfo.build(result);
-
-        /*Page<AppletUserInformationVo> page = new Page<>(pageQuery.getPageNum(), pageQuery.getPageSize());
-
-        IPage<AppletUserInformationVo> appletUserInformationVoIPage = baseMapper.selectUsersByPage(page, query);
-        return TableDataInfo.build(appletUserInformationVoIPage);*/
-
     }
 
     /**
      * 查询符合条件的小程序用户信息列表
      *
-     * @param query 查询条件
+     * @param bo 查询条件
      * @return 小程序用户信息列表
      */
     @Override
-    public List<AppletUserInformationVo> queryList(AppletUserInformationQuery query) {
-        LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(query);
+    public List<AppletUserInformationVo> queryList(AppletUserInformationBo bo) {
+        LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
-        //return baseMapper.queryList(query);
     }
 
-    private LambdaQueryWrapper<AppletUserInformation> buildQueryWrapper(AppletUserInformationQuery query) {
+    private LambdaQueryWrapper<AppletUserInformation> buildQueryWrapper(AppletUserInformationBo bo) {
+        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<AppletUserInformation> lqw = Wrappers.lambdaQuery();
-        lqw.eq(query.getUserType() != null, AppletUserInformation::getUserType, query.getUserType());
-        lqw.like(StringUtils.isNotBlank(query.getName()), AppletUserInformation::getName, query.getName());
-
-        lqw.eq(StringUtils.isNotBlank(query.getPhone()), AppletUserInformation::getPhone, query.getPhone());
+        lqw.eq(bo.getDeptId() != null, AppletUserInformation::getDeptId, bo.getDeptId());
+        lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), AppletUserInformation::getMemberId, bo.getMemberId());
+        lqw.like(StringUtils.isNotBlank(bo.getName()), AppletUserInformation::getName, bo.getName());
+        lqw.like(StringUtils.isNotBlank(bo.getNickName()), AppletUserInformation::getNickName, bo.getNickName());
+        lqw.eq(bo.getAvatarUrl() != null, AppletUserInformation::getAvatarUrl, bo.getAvatarUrl());
+        lqw.eq(StringUtils.isNotBlank(bo.getUserType()), AppletUserInformation::getUserType, bo.getUserType());
+        lqw.eq(StringUtils.isNotBlank(bo.getPhone()), AppletUserInformation::getPhone, bo.getPhone());
+        lqw.eq(StringUtils.isNotBlank(bo.getIdNumber()), AppletUserInformation::getIdNumber, bo.getIdNumber());
+        lqw.eq(StringUtils.isNotBlank(bo.getOpenid()), AppletUserInformation::getOpenid, bo.getOpenid());
+        lqw.eq(bo.getStatus() != null, AppletUserInformation::getStatus, bo.getStatus());
+        lqw.eq(StringUtils.isNotBlank(bo.getWechatNumber()), AppletUserInformation::getWechatNumber, bo.getWechatNumber());
+        lqw.eq(bo.getGroupId() != null, AppletUserInformation::getGroupId, bo.getGroupId());
+        lqw.eq(bo.getMemberLevelId() != null, AppletUserInformation::getMemberLevelId, bo.getMemberLevelId());
+        lqw.eq(bo.getGender() != null, AppletUserInformation::getGender, bo.getGender());
+        lqw.eq(bo.getPoints() != null, AppletUserInformation::getPoints, bo.getPoints());
+        lqw.eq(bo.getAmount() != null, AppletUserInformation::getAmount, bo.getAmount());
+        lqw.eq(bo.getTotal() != null, AppletUserInformation::getTotal, bo.getTotal());
+        lqw.eq(bo.getPromotion() != null, AppletUserInformation::getPromotion, bo.getPromotion());
+        lqw.eq(bo.getGold() != null, AppletUserInformation::getGold, bo.getGold());
+        lqw.eq(bo.getParentId() != null, AppletUserInformation::getParentId, bo.getParentId());
+        lqw.eq(StringUtils.isNotBlank(bo.getDistrict()), AppletUserInformation::getDistrict, bo.getDistrict());
+        lqw.eq(StringUtils.isNotBlank(bo.getAddDetail()), AppletUserInformation::getAddDetail, bo.getAddDetail());
         return lqw;
     }
 
@@ -135,7 +128,6 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         return baseMapper.updateById(update) > 0;
     }
 
-
     /**
      * 保存前的数据校验
      */
@@ -158,6 +150,14 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    @Override
+    public AppletUserInformationVo getByPhone(String phone) {
+        LambdaQueryWrapper<AppletUserInformation> lqw = Wrappers.lambdaQuery();
+        lqw.eq(AppletUserInformation::getPhone, phone);
+        AppletUserInformationVo appletUserInformationVo = baseMapper.selectVoOne(lqw);
+        return appletUserInformationVo;
+    }
+
     /**
      * 通过openid获取user
      * @param openId
@@ -171,14 +171,6 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         return appletUserInformationVo;
     }
 
-    @Override
-    public AppletUserInformationVo getByPhone(String phone) {
-        LambdaQueryWrapper<AppletUserInformation> lqw = Wrappers.lambdaQuery();
-        lqw.eq(AppletUserInformation::getPhone, phone);
-        AppletUserInformationVo appletUserInformationVo = baseMapper.selectVoOne(lqw);
-        return appletUserInformationVo;
-    }
-
     /**
      * 更新用户状态
      * @param id
@@ -188,28 +180,9 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     @Override
     public boolean updateStatus(Long id, String status) {
         if(Status.DISABLE.equals(status) || Status.ENABLE.equals(status)){
-            return baseMapper.updateStatus(id,status);
+            return false;
         }
         return false;
     }
 
-    /**
-     * 获取小程序用户订单
-     * @param id
-     * @return
-     */
-    @Override
-    public List<AppletUserOrderVo> getAppletUserOrderById(Long id) {
-        return baseMapper.selectOrder(id);
-    }
-
-    /**
-     * 获取小程序用户订单数
-     * @param id
-     * @return
-     */
-    @Override
-    public AppletUserOrderNumVo getAppletUserOrderNumById(Long id) {
-        return baseMapper.selectOrderNum(id);
-    }
 }

@@ -262,6 +262,11 @@ justauth:
       client-secret: 1f7d08**********5b7**********29e
       redirect-uri: ${justauth.address}/social-callback?source=gitlab
 
+# 微信 appid 和 secret
 wechat:
   appid: wxa1e0edcbbe684f4f
   secret: a6314e58d68e90064169c521908c0b0b
+
+# 初始会员等级id
+member:
+  initial_id: 1871455149741629442
