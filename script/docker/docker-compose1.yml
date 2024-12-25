@@ -8,7 +8,7 @@ services:
       # 时区上海
       TZ: Asia/Shanghai
       # root 密码
-      MYSQL_ROOT_PASSWORD: mlhxjflower9527.
+      MYSQL_ROOT_PASSWORD: mlhxjflower8866.
       # 初始化数据库(后续的初始化sql会在这个库执行)
       MYSQL_DATABASE: flower_sharing
     ports:
@@ -78,9 +78,9 @@ services:
       # 时区上海
       TZ: Asia/Shanghai
       # 管理后台用户名
-      MINIO_ROOT_USER: mlhxj
+      MINIO_ROOT_USER: ruoyi
       # 管理后台密码，最小8个字符
-      MINIO_ROOT_PASSWORD: mlhxjadmin
+      MINIO_ROOT_PASSWORD: ruoyi123
       # https需要指定域名
       #MINIO_SERVER_URL: "https://xxx.com:9000"
       #MINIO_BROWSER_REDIRECT_URL: "https://xxx.com:9001"
@@ -99,5 +99,58 @@ services:
     privileged: true
     network_mode: "host"
 
+  ruoyi-server1:
+    image: ruoyi/ruoyi-server:5.2.3
+    container_name: ruoyi-server1
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      SERVER_PORT: 8080
+    volumes:
+      # 配置文件
+      - /docker/server1/logs/:/ruoyi/server/logs/
+      # skywalking 探针
+#      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
+    privileged: true
+    network_mode: "host"
 
+  ruoyi-server2:
+    image: ruoyi/ruoyi-server:5.2.3
+    container_name: ruoyi-server2
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      SERVER_PORT: 8081
+    volumes:
+      # 配置文件
+      - /docker/server2/logs/:/ruoyi/server/logs/
+      # skywalking 探针
+#      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
+    privileged: true
+    network_mode: "host"
 
+  ruoyi-monitor-admin:
+    image: ruoyi/ruoyi-monitor-admin:5.2.3
+    container_name: ruoyi-monitor-admin
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    volumes:
+      # 配置文件
+      - /docker/monitor/logs/:/ruoyi/monitor/logs
+    privileged: true
+    network_mode: "host"
+
+  ruoyi-snailjob-server:
+    image: ruoyi/ruoyi-snailjob-server:5.2.3
+    container_name: ruoyi-snailjob-server
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    ports:
+      - "8800:8800"
+      - "17888:17888"
+    volumes:
+      - /docker/snailjob/logs/:/ruoyi/snailjob/logs
+    privileged: true
+    network_mode: "host"

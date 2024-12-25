@@ -3,6 +3,9 @@ package org.dromara.web.service.impl;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.model.XcxLoginBody;
@@ -12,6 +15,9 @@ import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MemberLevel;
+import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.system.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.platform.domain.bo.AppletUserInformationBo;
@@ -22,6 +28,7 @@ import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +44,8 @@ public class XcxAuthStrategy implements IAuthStrategy {
     private final SysLoginService loginService;
 
     private final IAppletUserInformationService appletUserInformationService;
+
+    private final MemberLevelMapper memberLevelMapper;
 
     @Override
     public LoginVo login(String body, SysClientVo client) {
@@ -135,6 +144,13 @@ public class XcxAuthStrategy implements IAuthStrategy {
         XcxLoginUser loginUser = new XcxLoginUser();
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在...准备插入用户信息", phone);
+            QueryWrapper<MemberLevel> lqw = new QueryWrapper<>();
+            lqw.eq("initial", 1);
+            lqw.eq("id", 1871455149741629442L);
+            MemberLevelVo mvo = memberLevelMapper.selectVoOne(lqw);
+            if (ObjectUtil.isNull(mvo)){
+                throw new RuntimeException("初始会员等级有问题");
+            }
             AppletUserInformationBo bo = new AppletUserInformationBo();
             bo.setPhone(phone);
             bo.setUserType("xcx");
