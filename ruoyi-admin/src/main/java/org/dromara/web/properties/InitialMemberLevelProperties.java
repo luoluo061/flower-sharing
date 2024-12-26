@@ -4,25 +4,20 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-
 /**
- * 微信小程序配置
+ * 初始会员ID
+ *
+ * @author: chazonglin
+ * @date: 2024/12/25 15:20
  */
 @Component
-@ConfigurationProperties(prefix = "wechat")
+@ConfigurationProperties(prefix = "member")
 @Data
-public class WechatProperties {
-
-
-    /**
-     * 小程序的appid
-     */
-    private String appid;
+public class InitialMemberLevelProperties {
 
     /**
-     * 小程序的秘钥
+     * 初始会员id
      */
-    private String secret;
-
+    private String initialId;
 
 }

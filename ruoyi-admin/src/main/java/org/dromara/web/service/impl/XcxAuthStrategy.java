@@ -24,12 +24,14 @@ import org.dromara.system.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.system.platform.service.IAppletUserInformationService;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.XcxPhoneInfoVo;
+import org.dromara.web.properties.InitialMemberLevelProperties;
 import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 小程序认证策略
@@ -46,6 +48,9 @@ public class XcxAuthStrategy implements IAuthStrategy {
     private final IAppletUserInformationService appletUserInformationService;
 
     private final MemberLevelMapper memberLevelMapper;
+
+    private final InitialMemberLevelProperties initialMemberLevelProperties;
+
 
     @Override
     public LoginVo login(String body, SysClientVo client) {
@@ -144,16 +149,10 @@ public class XcxAuthStrategy implements IAuthStrategy {
         XcxLoginUser loginUser = new XcxLoginUser();
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在...准备插入用户信息", phone);
-            QueryWrapper<MemberLevel> lqw = new QueryWrapper<>();
-            lqw.eq("initial", 1);
-            lqw.eq("id", 1871455149741629442L);
-            MemberLevelVo mvo = memberLevelMapper.selectVoOne(lqw);
-            if (ObjectUtil.isNull(mvo)){
-                throw new RuntimeException("初始会员等级有问题");
-            }
             AppletUserInformationBo bo = new AppletUserInformationBo();
             bo.setPhone(phone);
             bo.setUserType("xcx");
+            bo.setMemberId(creaetMemberId());
             if (appletUserInformationService.insertByBo(bo)) {
                 loginUser.setUserId(bo.getUserId());
                 loginUser.setUserType(bo.getUserType());
@@ -172,6 +171,18 @@ public class XcxAuthStrategy implements IAuthStrategy {
             loginUser.setPhone(phone);
         }
         return loginUser;
+    }
+
+    /**
+     * 创建会员编号
+     */
+    private String creaetMemberId() {
+        // TODO 后期改为分布式锁生成
+        Random random = new Random();
+        int min = 1000000; // 最小7位数
+        int max = 9999999; // 最大7位数
+        int randomNumber = random.nextInt(max - min + 1) + min;
+        return String.valueOf(randomNumber);
     }
 
 

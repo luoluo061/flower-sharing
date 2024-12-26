@@ -1,19 +1,19 @@
 package org.dromara.system.platform.domain;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import org.dromara.common.tenant.core.TenantEntity;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.tenant.core.TenantEntity;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 
 import java.io.Serial;
 
 /**
  * 小程序用户信息对象 applet_user_information
  *
- * @author LionLi
- * @date 2024-11-19
+ * @author mlhxj
+ * @date 2024-12-25
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,15 +30,20 @@ public class AppletUserInformation extends TenantEntity {
     private Long userId;
 
     /**
-     * 头像
+     * 部门id
      */
-    private String avatarUrl;
+    private Long deptId;
 
     /**
-     * 用户类型
+     * 删除标志 0 否 2 是
      */
-    private String userType;
+    @TableLogic
+    private Long delFlag;
 
+    /**
+     * 会员ID 最大11位
+     */
+    private String memberId;
 
     /**
      * 姓名
@@ -51,38 +56,34 @@ public class AppletUserInformation extends TenantEntity {
     private String nickName;
 
     /**
+     * 头像
+     */
+    private Long avatarUrl;
+
+    /**
+     * 用户类型 xcx 表示小程序
+     */
+    private String userType;
+
+    /**
      * 手机号
      */
     private String phone;
+
     /**
      * 身份证号
      */
     private String idNumber;
+
     /**
      * 小程序openid
      */
     private String openid;
 
     /**
-     * 积分
+     * 状态 0 否 1 是
      */
-    private Long points;
-
-    /**
-     * 状态 Y 启用 N 禁用
-     */
-    private String status;
-
-    /**
-     * 部门id
-     */
-    private Long deptId;
-
-    /**
-     * 删除标志 0 否 2 是
-     */
-    @TableLogic
-    private Long delFlag;
+    private Long status;
 
     /**
      * 微信号
@@ -92,9 +93,57 @@ public class AppletUserInformation extends TenantEntity {
     /**
      * 用户分组id
      */
-    //private Long groupId;
+    private Long groupId;
+
     /**
      * 会员等级id
      */
     private Long memberLevelId;
+
+    /**
+     * 性别 0 女 1 男 2 未知 (默认 0 )
+     */
+    private Long gender;
+
+    /**
+     * 积分
+     */
+    private Long points;
+
+    /**
+     * 累计消费金额
+     */
+    private Long amount;
+
+    /**
+     * 累计消费次数
+     */
+    private Long total;
+
+    /**
+     * 推广次数
+     */
+    private Long promotion;
+
+    /**
+     * 累计金币
+     */
+    private Long gold;
+
+    /**
+     * 介绍人ID 0 表示没有介绍人
+     */
+    private Long parentId;
+
+    /**
+     * 行政区域(如云南省昆明市盘龙区拓东街道)
+     */
+    private String district;
+
+    /**
+     * 地址详细位置
+     */
+    private String addDetail;
+
+
 }

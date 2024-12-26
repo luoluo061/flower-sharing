@@ -77,4 +77,5 @@ public class MemberLevel extends TenantEntity {
      */
     private String memberTag;
 
+
 }

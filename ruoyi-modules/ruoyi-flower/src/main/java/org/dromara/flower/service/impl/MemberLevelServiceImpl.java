@@ -25,6 +25,7 @@ import org.dromara.flower.service.IMemberLevelService;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -66,9 +67,19 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         if (!result.getRecords().isEmpty()){
             // 获取图片Url
             Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                result.getRecords().stream().
-                    map(MemberLevelVo::getGradeIcon).
-                    map(Long::parseLong).toList());
+                result.getRecords().stream()
+                    .map(MemberLevelVo::getGradeIcon) // 获取 gradeIcon
+                    .filter(Objects::nonNull) // 过滤掉 null 值
+                    .filter(gradeIcon -> {
+                        try {
+                            Long.parseLong(gradeIcon); // 尝试转换为 Long
+                            return true; // 转换成功，保留
+                        } catch (NumberFormatException e) {
+                            return false; // 转换失败，过滤掉
+                        }
+                    })
+                    .map(Long::parseLong) // 转换为 Long
+                    .toList());
             if (!longStringMap.isEmpty()){
                 // 设置图片Url
                 result.getRecords().forEach(record ->

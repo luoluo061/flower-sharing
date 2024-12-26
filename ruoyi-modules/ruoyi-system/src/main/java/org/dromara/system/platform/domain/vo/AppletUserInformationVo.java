@@ -1,21 +1,27 @@
 package org.dromara.system.platform.domain.vo;
 
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.dromara.system.platform.domain.AppletUserInformation;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 
 
 /**
  * 小程序用户信息视图对象 applet_user_information
  *
- * @author LionLi
- * @date 2024-11-19
+ * @author mlhxj
+ * @date 2024-12-25
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -32,17 +38,16 @@ public class AppletUserInformationVo implements Serializable {
     private Long userId;
 
     /**
-     * 头像
+     * 部门id
      */
-    @ExcelProperty(value = "头像")
-    private String avatarUrl;
+    @ExcelProperty(value = "部门id")
+    private Long deptId;
 
     /**
-     * 用户类型
+     * 会员ID 最大11位
      */
-    @ExcelProperty(value = "用户类型")
-    private String userType;
-
+    @ExcelProperty(value = "会员ID 最大11位")
+    private String memberId;
 
     /**
      * 姓名
@@ -57,30 +62,46 @@ public class AppletUserInformationVo implements Serializable {
     private String nickName;
 
     /**
+     * 头像
+     */
+    @ExcelProperty(value = "头像")
+    private Long avatarUrl;
+
+    /**
+     * 头像Url
+     */
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "avatarUrl")
+    private String avatarUrlUrl;
+    /**
+     * 用户类型 xcx 表示小程序
+     */
+    @ExcelProperty(value = "用户类型 xcx 表示小程序")
+    private String userType;
+
+    /**
      * 手机号
      */
     @ExcelProperty(value = "手机号")
     private String phone;
 
     /**
-     * 微信唯一标识
+     * 身份证号
+     */
+    @ExcelProperty(value = "身份证号")
+    private String idNumber;
+
+    /**
+     * 小程序openid
      */
     @ExcelProperty(value = "小程序openid")
     private String openid;
 
     /**
-     * 积分
+     * 状态 0 否 1 是
      */
-    @ExcelProperty(value = "积分")
-    private Long points;
-
-
-
-    /**
-     * 状态
-     */
-    @ExcelProperty(value = "状态")
-    private String status;
+    @ExcelProperty(value = "状态 0 否 1 是", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "radio_status")
+    private Long status;
 
     /**
      * 微信号
@@ -89,25 +110,70 @@ public class AppletUserInformationVo implements Serializable {
     private String wechatNumber;
 
     /**
-     * 身份证号
+     * 用户分组id
      */
-    @ExcelProperty(value = "身份证号")
-    private String idNumber;
+    @ExcelProperty(value = "用户分组id")
+    private Long groupId;
+
     /**
-     * 等级id
+     * 会员等级id
      */
-    //private Long rankId;
+    @ExcelProperty(value = "会员等级id")
+    private Long memberLevelId;
+
     /**
-     * 等级名
+     * 性别 0 女 1 男 2 未知 (默认 0 )
      */
-    //private String rankName;
+    @ExcelProperty(value = "性别 0 女 1 男 2 未知 (默认 0 )")
+    private Long gender;
+
     /**
-     * 分组id
+     * 积分
      */
-    //private Long groupId;
+    @ExcelProperty(value = "积分")
+    private Long points;
+
     /**
-     * 分组名
+     * 累计消费金额
      */
-    //private String groupName;
+    @ExcelProperty(value = "累计消费金额")
+    private Long amount;
+
+    /**
+     * 累计消费次数
+     */
+    @ExcelProperty(value = "累计消费次数")
+    private Long total;
+
+    /**
+     * 推广次数
+     */
+    @ExcelProperty(value = "推广次数")
+    private Long promotion;
+
+    /**
+     * 累计金币
+     */
+    @ExcelProperty(value = "累计金币")
+    private Long gold;
+
+    /**
+     * 介绍人ID 0 表示没有介绍人
+     */
+    @ExcelProperty(value = "介绍人ID 0 表示没有介绍人")
+    private Long parentId;
+
+    /**
+     * 行政区域(如云南省昆明市盘龙区拓东街道)
+     */
+    @ExcelProperty(value = "行政区域(如云南省昆明市盘龙区拓东街道)")
+    private String district;
+
+    /**
+     * 地址详细位置
+     */
+    @ExcelProperty(value = "地址详细位置")
+    private String addDetail;
+
 
 }

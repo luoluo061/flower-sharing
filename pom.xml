@@ -327,12 +327,12 @@
                 <artifactId>ruoyi-system</artifactId>
                 <version>${revision}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-job</artifactId>
-                <version>${revision}</version>
-            </dependency>
+            <!--  定时任务  -->
+<!--            <dependency>-->
+<!--                <groupId>org.dromara</groupId>-->
+<!--                <artifactId>ruoyi-job</artifactId>-->
+<!--                <version>${revision}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.dromara</groupId>
@@ -347,11 +347,11 @@
             </dependency>
 
             <!--  工作流模块  -->
-            <dependency>
-                <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-workflow</artifactId>
-                <version>${revision}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.dromara</groupId>-->
+<!--                <artifactId>ruoyi-workflow</artifactId>-->
+<!--                <version>${revision}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.dromara</groupId>
