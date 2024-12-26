@@ -31,98 +31,104 @@ public class FolwerOrderBo extends BaseEntity {
     /**
      * 会员ID
      */
-    @NotNull(message = "会员ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
 
     /**
      * 会员名称
      */
-    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String userName;
 
     /**
      * 会员类型
      */
-    @NotNull(message = "会员类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long memberLevelId;
 
     /**
      * 订单流水号
      */
-    @NotBlank(message = "订单流水号不能为空", groups = { AddGroup.class, EditGroup.class })
     private String orderNumber;
 
     /**
      * 商品总价
      */
-    @NotNull(message = "商品总价不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long total;
 
     /**
      * 实际金额
      */
-    @NotNull(message = "实际金额不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long actualTotal;
 
     /**
      * 支付方式 0 手动代付 1 微信支付 2 支付宝
      */
-    @NotNull(message = "支付方式 0 手动代付 1 微信支付 2 支付宝不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long payType;
 
     /**
      * 付款时间
      */
-    @NotNull(message = "付款时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date payTime;
 
     /**
      * 订单备注
      */
-    @NotBlank(message = "订单备注不能为空", groups = { AddGroup.class, EditGroup.class })
     private String remarks;
 
     /**
      * 订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败
      */
-    @NotNull(message = "订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
     /**
-     * 退款类型:1,拒绝退款,2同意退款
+     * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
-    @NotNull(message = "退款类型:1,拒绝退款,2同意退款不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long applyType;
+    private Long deliveryMode;
 
     /**
-     * 退款ID
+     * 物流公司ID
      */
-    @NotNull(message = "退款ID不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long refundId;
+    private Long dvyId;
 
     /**
-     * 退款金额
+     * 物流公司
      */
-    @NotNull(message = "退款金额不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long refundAmount;
+    @NotBlank(message = "物流公司不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String dvyName;
 
     /**
-     * 退款时间
+     * 物流单号
      */
-    @NotNull(message = "退款时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Date refundTime;
+    private String dvyFlowId;
 
     /**
-     * 退款原因
+     * 订单运费
      */
-    @NotBlank(message = "退款原因不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String buyerMsg;
+    private Long freightAmount;
 
     /**
-     * 售后备注
+     * 用户订单地址Id
      */
-    @NotBlank(message = "售后备注不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String refundRemark;
+    private Long addrOrderId;
+
+    /**
+     * 发货时间
+     */
+    private Date dvyTime;
+
+    /**
+     * 完成时间
+     */
+    private Date finallyTime;
+
+    /**
+     * 取消时间
+     */
+    private Date cancelTime;
+
+    /**
+     * 取消原因
+     */
+    @NotBlank(message = "取消原因不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String cancelMsg;
 
 
 }

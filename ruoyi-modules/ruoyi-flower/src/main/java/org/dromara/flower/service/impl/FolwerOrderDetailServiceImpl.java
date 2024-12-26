@@ -76,14 +76,7 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
         lqw.eq(StringUtils.isNotBlank(bo.getProductListPictureUrl()), FolwerOrderDetail::getProductListPictureUrl, bo.getProductListPictureUrl());
         lqw.eq(bo.getOrderPrice() != null, FolwerOrderDetail::getOrderPrice, bo.getOrderPrice());
         lqw.eq(bo.getNumber() != null, FolwerOrderDetail::getNumber, bo.getNumber());
-        lqw.eq(bo.getDeliveryMode() != null, FolwerOrderDetail::getDeliveryMode, bo.getDeliveryMode());
-        lqw.eq(bo.getDvyId() != null, FolwerOrderDetail::getDvyId, bo.getDvyId());
-        lqw.eq(StringUtils.isNotBlank(bo.getDvyFlowId()), FolwerOrderDetail::getDvyFlowId, bo.getDvyFlowId());
-        lqw.eq(bo.getFreightAmount() != null, FolwerOrderDetail::getFreightAmount, bo.getFreightAmount());
-        lqw.eq(bo.getAddrOrderId() != null, FolwerOrderDetail::getAddrOrderId, bo.getAddrOrderId());
-        lqw.eq(bo.getDvyTime() != null, FolwerOrderDetail::getDvyTime, bo.getDvyTime());
-        lqw.eq(bo.getFinallyTime() != null, FolwerOrderDetail::getFinallyTime, bo.getFinallyTime());
-        lqw.eq(bo.getCancelTime() != null, FolwerOrderDetail::getCancelTime, bo.getCancelTime());
+        lqw.eq(bo.getSubtotal() != null, FolwerOrderDetail::getSubtotal, bo.getSubtotal());
         return lqw;
     }
 

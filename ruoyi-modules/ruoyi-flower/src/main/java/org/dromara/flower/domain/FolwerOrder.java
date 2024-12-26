@@ -80,34 +80,54 @@ public class FolwerOrder extends TenantEntity {
     private Long status;
 
     /**
-     * 退款类型:1,拒绝退款,2同意退款
+     * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
-    private Long applyType;
+    private Long deliveryMode;
 
     /**
-     * 退款ID
+     * 物流公司ID
      */
-    private Long refundId;
+    private Long dvyId;
 
     /**
-     * 退款金额
+     * 物流公司
      */
-    private Long refundAmount;
+    private String dvyName;
 
     /**
-     * 退款时间
+     * 物流单号
      */
-    private Date refundTime;
+    private String dvyFlowId;
 
     /**
-     * 退款原因
+     * 订单运费
      */
-    private String buyerMsg;
+    private Long freightAmount;
 
     /**
-     * 售后备注
+     * 用户订单地址Id
      */
-    private String refundRemark;
+    private Long addrOrderId;
+
+    /**
+     * 发货时间
+     */
+    private Date dvyTime;
+
+    /**
+     * 完成时间
+     */
+    private Date finallyTime;
+
+    /**
+     * 取消时间
+     */
+    private Date cancelTime;
+
+    /**
+     * 取消原因
+     */
+    private String cancelMsg;
 
     /**
      * 删除标志 0 否 2 是

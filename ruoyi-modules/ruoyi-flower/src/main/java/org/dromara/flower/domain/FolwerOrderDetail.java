@@ -4,8 +4,6 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
 
@@ -55,44 +53,9 @@ public class FolwerOrderDetail extends TenantEntity {
     private Long number;
 
     /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
+     * 小计
      */
-    private Long deliveryMode;
-
-    /**
-     * 配送方式ID
-     */
-    private Long dvyId;
-
-    /**
-     * 物流单号
-     */
-    private String dvyFlowId;
-
-    /**
-     * 订单运费
-     */
-    private Long freightAmount;
-
-    /**
-     * 用户订单地址Id
-     */
-    private Long addrOrderId;
-
-    /**
-     * 发货时间
-     */
-    private Date dvyTime;
-
-    /**
-     * 完成时间
-     */
-    private Date finallyTime;
-
-    /**
-     * 取消时间
-     */
-    private Date cancelTime;
+    private Long subtotal;
 
     /**
      * 删除标志 0 否 2 是

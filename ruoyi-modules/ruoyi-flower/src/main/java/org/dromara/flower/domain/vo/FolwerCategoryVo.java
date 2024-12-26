@@ -53,6 +53,12 @@ public class FolwerCategoryVo implements Serializable {
     private String icon;
 
     /**
+     * 类目图标
+     */
+    @ExcelProperty(value = "类目图标URL")
+    private String iconUrl;
+
+    /**
      * 排序
      */
     @ExcelProperty(value = "排序")

@@ -10,6 +10,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.vo.FolwerProductVo;
+import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerCategoryBo;
 import org.dromara.flower.domain.vo.FolwerCategoryVo;
@@ -21,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * 产品类目Service业务层处理
@@ -33,6 +37,8 @@ import java.util.Collection;
 public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
 
     private final FolwerCategoryMapper baseMapper;
+
+    private final ISysOssService sysOssService;
 
     /**
      * 查询产品类目
@@ -56,6 +62,22 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     public TableDataInfo<FolwerCategoryVo> queryPageList(FolwerCategoryBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerCategory> lqw = buildQueryWrapper(bo);
         Page<FolwerCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
+        if (!result.getRecords().isEmpty()){
+
+                Map<String, String> longStringMap = sysOssService.listUrlByIds(
+                    result.getRecords().stream().
+                    map(FolwerCategoryVo::getIcon).
+                    map(Long::parseLong).toList());
+                if (!longStringMap.isEmpty()){
+                    // 设置图片Url
+                    result.getRecords().forEach(record ->
+                        record.setIconUrl(longStringMap.get(record.getIcon()))
+                    );
+                }
+
+        }
+
         return TableDataInfo.build(result);
     }
 
@@ -68,7 +90,25 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     @Override
     public List<FolwerCategoryVo> queryList(FolwerCategoryBo bo) {
         LambdaQueryWrapper<FolwerCategory> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerCategoryVo> folwerCategoryVos = baseMapper.selectVoList(lqw);
+        if (!folwerCategoryVos.isEmpty()){
+//            for (FolwerCategoryVo vo : result.getRecords()){
+            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+                folwerCategoryVos.stream().
+                    map(FolwerCategoryVo::getIcon).
+                    map(String::toString).
+                    map(Long::parseLong).toList());
+            if (!longStringMap.isEmpty()){
+                // 设置图片Url
+                folwerCategoryVos.forEach(record ->
+                    record.setIconUrl(longStringMap.get(record.getIcon()))
+                );
+            }
+
+//            }
+        }
+        return folwerCategoryVos;
+
     }
 
     private LambdaQueryWrapper<FolwerCategory> buildQueryWrapper(FolwerCategoryBo bo) {

@@ -9,7 +9,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.vo.FolwerCategoryVo;
+import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.service.IFolwerCategoryService;
+import org.dromara.system.domain.SysOss;
+import org.dromara.system.mapper.SysOssMapper;
+import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
@@ -17,9 +21,7 @@ import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerProductService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 商品管理Service业务层处理
@@ -35,6 +37,10 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 
     private final IFolwerCategoryService folwerCategoryService;
 
+    private final ISysOssService sysOssService;
+
+    private final SysOssMapper sysOssMapper;
+
     /**
      * 查询商品管理
      *
@@ -49,6 +55,19 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
             if (folwerCategoryVo != null){
                 folwerProductVo.setCategoryName(folwerCategoryVo.getCategoryName());
             }
+
+            if (folwerProductVo.getProductListPictureUrl() != null && !folwerProductVo.getProductListPictureUrl().isEmpty())
+            {
+                Collection<Long> ossIds = new ArrayList<>();
+
+                ossIds.add(Long.valueOf(folwerProductVo.getProductListPictureUrl()));
+                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+                if (!stringStringMap.isEmpty()){
+                    // 设置图片Url
+                    folwerProductVo.setProductListPicture(stringStringMap.get(folwerProductVo.getProductListPictureUrl()));
+                }
+            }
+
         }
         return folwerProductVo;
     }
@@ -64,20 +83,46 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     public TableDataInfo<FolwerProductVo> queryPageList(FolwerProductBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerProduct> lqw = buildQueryWrapper(bo);
         Page<FolwerProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        for (FolwerProductVo vo : result.getRecords()){
-            if (vo.getId() != null){
-                FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
-                 if (folwerCategoryVo != null){
-                     vo.setCategoryName(folwerCategoryVo.getCategoryName());
-                 }else {
-                     vo.setCategoryName("");
-                 }
+        if (!result.getRecords().isEmpty()){
+            for (FolwerProductVo vo : result.getRecords()){
+                if (vo.getId() != null){
+                    FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
+                     if (folwerCategoryVo != null){
+                         vo.setCategoryName(folwerCategoryVo.getCategoryName());
+                     }else {
+                         vo.setCategoryName("");
+                     }
+                }
+            }
+
+//            List<Long> longList = result.getRecords().stream().
+//                map(FolwerProductVo::getProductListPictureUrl).
+//                map(String::toString).
+//                map(Long::parseLong).
+//                toList();
+
+            List<Long> longList = new ArrayList<>();
+                result.getRecords().forEach(record ->{
+                        if (record.getProductListPictureUrl() != null && !record.getProductListPictureUrl().isEmpty()){
+                            longList.add(Long.valueOf(record.getProductListPictureUrl()));
+                        }
+                }
+            );
+            if (!longList.isEmpty()){
+                Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
+                if (!longStringMap.isEmpty()){
+                    // 设置图片Url
+                    result.getRecords().forEach(record ->
+                        record.setProductListPicture(longStringMap.get(record.getProductListPictureUrl()))
+                    );
+                }
             }
         }
         return TableDataInfo.build(result);
     }
 
     /**
+     *
      * 查询符合条件的商品管理列表
      *
      * @param bo 查询条件

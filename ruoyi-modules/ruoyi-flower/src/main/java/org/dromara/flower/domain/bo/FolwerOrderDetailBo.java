@@ -8,8 +8,6 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 订单详细业务对象 folwer_order_detail
@@ -59,52 +57,10 @@ public class FolwerOrderDetailBo extends BaseEntity {
     private Long number;
 
     /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
+     * 小计
      */
-    @NotNull(message = "配送方式 默认是1，表示物流配送, 0，商家配送不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long deliveryMode;
-
-    /**
-     * 配送方式ID
-     */
-    @NotNull(message = "配送方式ID不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long dvyId;
-
-    /**
-     * 物流单号
-     */
-    @NotBlank(message = "物流单号不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String dvyFlowId;
-
-    /**
-     * 订单运费
-     */
-    @NotNull(message = "订单运费不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long freightAmount;
-
-    /**
-     * 用户订单地址Id
-     */
-    @NotNull(message = "用户订单地址Id不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long addrOrderId;
-
-    /**
-     * 发货时间
-     */
-    @NotNull(message = "发货时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Date dvyTime;
-
-    /**
-     * 完成时间
-     */
-    @NotNull(message = "完成时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Date finallyTime;
-
-    /**
-     * 取消时间
-     */
-    @NotNull(message = "取消时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Date cancelTime;
+    @NotNull(message = "小计不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long subtotal;
 
 
 }

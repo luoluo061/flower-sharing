@@ -77,9 +77,4 @@ public class MemberLevel extends TenantEntity {
      */
     private String memberTag;
 
-    /**
-     * 初始会员等级 0 否 1 是
-     */
-    private int initial;
-
 }

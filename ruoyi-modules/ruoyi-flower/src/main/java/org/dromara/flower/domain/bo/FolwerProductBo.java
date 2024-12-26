@@ -29,7 +29,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 商品名称
      */
-    @NotBlank(message = "商品名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "商品名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String productName;
 
     /**
@@ -47,7 +47,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 商品分类
      */
-    @NotNull(message = "商品分类不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "商品分类不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long categoryId;
 
     /**
@@ -117,7 +117,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 状态 默认是1，表示正常状态, -1表示删除, 0下架
      */
-    @NotNull(message = "状态 默认是1，表示正常状态, -1表示删除, 0下架不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "状态 默认是1，表示正常状态, -1表示删除, 0下架不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
     /**
@@ -148,7 +148,7 @@ public class FolwerProductBo extends BaseEntity {
     /**
      * 库存预警值
      */
-    @NotNull(message = "库存预警值不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "库存预警值不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long inventoryEarlyWarningNum;
 
     /**

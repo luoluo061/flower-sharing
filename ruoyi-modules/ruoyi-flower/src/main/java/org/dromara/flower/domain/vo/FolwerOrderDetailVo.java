@@ -1,7 +1,5 @@
 package org.dromara.flower.domain.vo;
 
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.flower.domain.FolwerOrderDetail;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -67,52 +65,10 @@ public class FolwerOrderDetailVo implements Serializable {
     private Long number;
 
     /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
+     * 小计
      */
-    @ExcelProperty(value = "配送方式 默认是1，表示物流配送, 0，商家配送")
-    private Long deliveryMode;
-
-    /**
-     * 配送方式ID
-     */
-    @ExcelProperty(value = "配送方式ID")
-    private Long dvyId;
-
-    /**
-     * 物流单号
-     */
-    @ExcelProperty(value = "物流单号")
-    private String dvyFlowId;
-
-    /**
-     * 订单运费
-     */
-    @ExcelProperty(value = "订单运费")
-    private Long freightAmount;
-
-    /**
-     * 用户订单地址Id
-     */
-    @ExcelProperty(value = "用户订单地址Id")
-    private Long addrOrderId;
-
-    /**
-     * 发货时间
-     */
-    @ExcelProperty(value = "发货时间")
-    private Date dvyTime;
-
-    /**
-     * 完成时间
-     */
-    @ExcelProperty(value = "完成时间")
-    private Date finallyTime;
-
-    /**
-     * 取消时间
-     */
-    @ExcelProperty(value = "取消时间")
-    private Date cancelTime;
+    @ExcelProperty(value = "小计")
+    private Long subtotal;
 
 
 }

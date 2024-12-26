@@ -75,7 +75,8 @@ public class FolwerOrderVo implements Serializable {
     /**
      * 支付方式 0 手动代付 1 微信支付 2 支付宝
      */
-    @ExcelProperty(value = "支付方式 0 手动代付 1 微信支付 2 支付宝")
+    @ExcelProperty(value = "支付方式 0 手动代付 1 微信支付 2 支付宝", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "payment_method")
     private Long payType;
 
     /**
@@ -93,44 +94,69 @@ public class FolwerOrderVo implements Serializable {
     /**
      * 订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败
      */
-    @ExcelProperty(value = "订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败")
+    @ExcelProperty(value = "订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "order_status")
     private Long status;
 
     /**
-     * 退款类型:1,拒绝退款,2同意退款
+     * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
-    @ExcelProperty(value = "退款类型:1,拒绝退款,2同意退款")
-    private Long applyType;
+    @ExcelProperty(value = "配送方式 默认是1，表示物流配送, 0，商家配送")
+    private Long deliveryMode;
 
     /**
-     * 退款ID
+     * 物流公司ID
      */
-    @ExcelProperty(value = "退款ID")
-    private Long refundId;
+    @ExcelProperty(value = "物流公司ID")
+    private Long dvyId;
 
     /**
-     * 退款金额
+     * 物流公司
      */
-    @ExcelProperty(value = "退款金额")
-    private Long refundAmount;
+    @ExcelProperty(value = "物流公司")
+    private String dvyName;
 
     /**
-     * 退款时间
+     * 物流单号
      */
-    @ExcelProperty(value = "退款时间")
-    private Date refundTime;
+    @ExcelProperty(value = "物流单号")
+    private String dvyFlowId;
 
     /**
-     * 退款原因
+     * 订单运费
      */
-    @ExcelProperty(value = "退款原因")
-    private String buyerMsg;
+    @ExcelProperty(value = "订单运费")
+    private Long freightAmount;
 
     /**
-     * 售后备注
+     * 用户订单地址Id
      */
-    @ExcelProperty(value = "售后备注")
-    private String refundRemark;
+    @ExcelProperty(value = "用户订单地址Id")
+    private Long addrOrderId;
+
+    /**
+     * 发货时间
+     */
+    @ExcelProperty(value = "发货时间")
+    private Date dvyTime;
+
+    /**
+     * 完成时间
+     */
+    @ExcelProperty(value = "完成时间")
+    private Date finallyTime;
+
+    /**
+     * 取消时间
+     */
+    @ExcelProperty(value = "取消时间")
+    private Date cancelTime;
+
+    /**
+     * 取消原因
+     */
+    @ExcelProperty(value = "取消原因")
+    private String cancelMsg;
 
 
 }

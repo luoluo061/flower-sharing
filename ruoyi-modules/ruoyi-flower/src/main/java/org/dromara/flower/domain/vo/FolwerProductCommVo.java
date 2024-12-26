@@ -93,13 +93,15 @@ public class FolwerProductCommVo implements Serializable {
     /**
      * 是否匿名(1:是  0:否)
      */
-    @ExcelProperty(value = "是否匿名(1:是  0:否)")
+    @ExcelProperty(value = "是否匿名(1:是  0:否)", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "radio_status")
     private Long isAnonymous;
 
     /**
      * 是否显示，1:为显示，0:待审核， -1：不通过审核，不显示。 如果需要审核评论，则是0,，否则1
      */
-    @ExcelProperty(value = "是否显示，1:为显示，0:待审核， -1：不通过审核，不显示。 如果需要审核评论，则是0,，否则1")
+    @ExcelProperty(value = "是否显示，1:为显示，0:待审核， -1：不通过审核，不显示。 如果需要审核评论，则是0,，否则1", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "radio_status")
     private Long status;
 
 

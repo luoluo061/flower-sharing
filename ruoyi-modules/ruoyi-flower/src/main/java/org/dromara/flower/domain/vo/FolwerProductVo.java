@@ -52,6 +52,12 @@ public class FolwerProductVo implements Serializable {
     /**
      * 商品列表图
      */
+    @ExcelProperty(value = "商品列表图URL")
+    private String productListPicture;
+
+    /**
+     * 商品列表图
+     */
     @ExcelProperty(value = "商品轮播图")
     private String productCarouselPictureUrl;
 
