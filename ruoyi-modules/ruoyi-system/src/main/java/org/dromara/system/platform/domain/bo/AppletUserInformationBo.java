@@ -138,5 +138,20 @@ public class AppletUserInformationBo extends BaseEntity {
      */
     private String addDetail;
 
+    /**
+     * 生日 例子:1999-10-10
+     */
+    private String birthday;
+
+
+    /**
+     * 修改会员积分,金币,等级,兑换金币,金币兑现增减标识 add 加 sub 减
+     */
+    private String modified;
+
+    /**
+     * 修改会员积分,金币 值
+     */
+    private Long modifiedValue;
 
 }

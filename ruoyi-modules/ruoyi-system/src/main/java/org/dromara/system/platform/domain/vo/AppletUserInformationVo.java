@@ -1,5 +1,7 @@
 package org.dromara.system.platform.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 
@@ -36,6 +38,11 @@ public class AppletUserInformationVo implements Serializable {
      */
     @ExcelProperty(value = "主键id")
     private Long userId;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 
     /**
      * 部门id
@@ -122,6 +129,12 @@ public class AppletUserInformationVo implements Serializable {
     private Long memberLevelId;
 
     /**
+     * 会员等级名称
+     */
+    @ExcelProperty(value = "会员等级名称")
+    private String memberLevelName;
+
+    /**
      * 性别 0 女 1 男 2 未知 (默认 0 )
      */
     @ExcelProperty(value = "性别 0 女 1 男 2 未知 (默认 0 )")
@@ -175,5 +188,9 @@ public class AppletUserInformationVo implements Serializable {
     @ExcelProperty(value = "地址详细位置")
     private String addDetail;
 
-
+    /**
+     * 生日例子:1999-10-10
+     */
+    @ExcelProperty(value = "生日例子:1999-10-10")
+    private String birthday;
 }

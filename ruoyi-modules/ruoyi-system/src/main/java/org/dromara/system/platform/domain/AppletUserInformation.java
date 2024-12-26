@@ -1,5 +1,6 @@
 package org.dromara.system.platform.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -145,5 +146,9 @@ public class AppletUserInformation extends TenantEntity {
      */
     private String addDetail;
 
+    /**
+     * 生日例子:1999-10-10
+     */
+    private String birthday;
 
 }

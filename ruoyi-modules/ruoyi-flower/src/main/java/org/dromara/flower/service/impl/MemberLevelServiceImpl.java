@@ -11,9 +11,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.domain.SysOss;
-import org.dromara.system.domain.vo.SysOssVo;
-import org.dromara.system.mapper.SysOssMapper;
+import org.dromara.flower.domain.MemberLevelPrivilege;
+import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
+import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MemberLevelBo;
@@ -21,12 +21,9 @@ import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.domain.MemberLevel;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.service.IMemberLevelService;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * 会员等级Service业务层处理
@@ -41,6 +38,7 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
 
     private final MemberLevelMapper baseMapper;
     private final ISysOssService sysOssService;
+    private final MemberLevelPrivilegeMapper memberLevelPrivilegeMapper;
 
     /**
      * 查询会员等级
@@ -50,7 +48,14 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
      */
     @Override
     public MemberLevelVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        MemberLevelVo vo = baseMapper.selectVoById(id);
+        if (vo != null){
+            LambdaQueryWrapper<MemberLevelPrivilege> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(MemberLevelPrivilege::getMemberLevelId,id);
+            List<MemberLevelPrivilegeVo> privilege = memberLevelPrivilegeMapper.selectVoList(lqw);
+            vo.setPrivilegeVos(privilege);
+        }
+        return vo;
     }
 
     /**
@@ -113,7 +118,6 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         lqw.eq(bo.getPrice() != null, MemberLevel::getPrice, bo.getPrice());
         lqw.eq(bo.getCoupon() != null, MemberLevel::getCoupon, bo.getCoupon());
         lqw.eq(bo.getDisplay() != null, MemberLevel::getDisplay, bo.getDisplay());
-        lqw.eq(StringUtils.isNotBlank(bo.getMemberTag()), MemberLevel::getMemberTag, bo.getMemberTag());
         return lqw;
     }
 
@@ -124,6 +128,7 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
      * @return 是否新增成功
      */
     @Override
+    @Transactional
     public Boolean insertByBo(MemberLevelBo bo) {
         MemberLevel add = MapstructUtils.convert(bo, MemberLevel.class);
         LoginUser loginUser = getLoginUser();
@@ -133,7 +138,18 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
+            List<MemberLevelPrivilege> privileges = bo.getPrivilegeBos().stream()
+                .map(vo -> {
+                    vo.setMemberLevelId(add.getId());
+                    return MapstructUtils.convert(vo, MemberLevelPrivilege.class);
+                })
+                .toList();
+            // 保存 会员权益
+            if (!privileges.isEmpty()){
+                memberLevelPrivilegeMapper.insertBatch(privileges);
+            }
         }
+
         return flag;
     }
 
@@ -144,9 +160,20 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
      * @return 是否修改成功
      */
     @Override
+    @Transactional
     public Boolean updateByBo(MemberLevelBo bo) {
         MemberLevel update = MapstructUtils.convert(bo, MemberLevel.class);
         validEntityBeforeSave(update);
+        // 修改会员权益
+        if (!bo.getPrivilegeBos().isEmpty()){
+            List<MemberLevelPrivilege> privileges = bo.getPrivilegeBos().stream()
+                .map(vo -> {
+                    vo.setMemberLevelId(bo.getId());
+                    return MapstructUtils.convert(vo, MemberLevelPrivilege.class);
+                })
+                .toList();
+            memberLevelPrivilegeMapper.insertOrUpdate(privileges);
+        }
         return baseMapper.updateById(update) > 0;
     }
 

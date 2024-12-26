@@ -1,5 +1,6 @@
 package org.dromara.system.platform.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -9,6 +10,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mybatis.handler.MapResultHandler;
+import org.dromara.system.platform.constant.AddAndSubtract;
 import org.dromara.system.platform.domain.AppletUserInformation;
 import org.dromara.system.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.system.platform.domain.vo.AppletUserInformationVo;
@@ -17,9 +20,8 @@ import org.dromara.system.platform.service.IAppletUserInformationService;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 小程序用户信息Service业务层处理
@@ -33,6 +35,8 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
 
     private final AppletUserInformationMapper baseMapper;
 
+    private static Long ZERO = 0L;
+
     /**
      * 查询小程序用户信息
      *
@@ -40,8 +44,15 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      * @return 小程序用户信息
      */
     @Override
-    public AppletUserInformationVo queryById(Long userId){
-        return baseMapper.selectVoById(userId);
+    public AppletUserInformationVo queryById(Long userId) {
+        AppletUserInformationVo vo = baseMapper.selectVoById(userId);
+        if (vo.getMemberLevelId() != null) {
+            String grade = baseMapper.selectMemberLevelByid(vo.getMemberLevelId());
+            if (ObjectUtil.isNotEmpty(grade)) {
+                vo.setMemberLevelName(grade);
+            }
+        }
+        return vo;
     }
 
     /**
@@ -55,6 +66,25 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     public TableDataInfo<AppletUserInformationVo> queryPageList(AppletUserInformationBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(bo);
         Page<AppletUserInformationVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if (!result.getRecords().isEmpty()) {
+            List<Long> levelIds = result.getRecords().stream()
+                .filter(Objects::nonNull)
+                .map(AppletUserInformationVo::getMemberLevelId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+            if (!levelIds.isEmpty()) {
+                MapResultHandler<Long, String> resultHandler = new MapResultHandler<>();
+                baseMapper.getLevelNamesByIds(resultHandler, levelIds);
+                Map<Long, String> levelNameMap = resultHandler.getMappedResults();
+                result.getRecords().forEach(v -> {
+                    if (v.getMemberLevelId() != null && levelNameMap.containsKey(v.getMemberLevelId())) {
+                        v.setMemberLevelName(levelNameMap.get(v.getMemberLevelId()));
+                    }
+                });
+            }
+        }
         return TableDataInfo.build(result);
     }
 
@@ -131,7 +161,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(AppletUserInformation entity){
+    private void validEntityBeforeSave(AppletUserInformation entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -144,7 +174,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
@@ -160,6 +190,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
 
     /**
      * 通过openid获取user
+     *
      * @param openId
      * @return
      */
@@ -173,16 +204,112 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
 
     /**
      * 更新用户状态
+     *
      * @param id
      * @param status
      * @return
      */
     @Override
     public boolean updateStatus(Long id, String status) {
-        if(Status.DISABLE.equals(status) || Status.ENABLE.equals(status)){
+        if (Status.DISABLE.equals(status) || Status.ENABLE.equals(status)) {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public Boolean updatePointsGoldByBo(AppletUserInformationBo bo) {
+        if (StringUtils.isBlank(bo.getModified())) {
+            return false;
+        }
+        if (bo.getModifiedValue() < 0) {
+            bo.setModifiedValue(0L);
+        }
+        AppletUserInformation app = baseMapper.selectById(bo.getUserId());
+        if (app == null ){
+            return false;
+        }
+        AppletUserInformation update = new AppletUserInformation();
+        update.setUserId(app.getUserId());
+        //修改积分
+        if (AddAndSubtract.ADD_POINTS.equals(bo.getModified())) {
+            addPoints(app, bo, update);
+        } else if (AddAndSubtract.SUBTRACT_POINTS.equals(bo.getModified())) {
+            subtractPoints(app, bo, update);
+        }else if (AddAndSubtract.ADD_GOLD.equals(bo.getModified())) {
+            addGold(app, bo, update);
+        }else if (AddAndSubtract.SUBTRACT_GOLD.equals(bo.getModified())) {
+            subtractGold(app, bo, update);
+        }
+
+        return baseMapper.updateById(update) > 0 ? true : false;
+    }
+
+    /**
+     * 减金币
+     *
+     * @param app
+     * @param bo
+     * @param update
+     */
+    private void subtractGold(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
+        if (app.getGold() != null && (bo != null || bo.getGold() != null)) {
+            Long newPoints = app.getGold() - bo.getGold();
+            newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
+            update.setGold(newPoints); // 设置新的积分值
+        }else {
+            update.setGold(app.getGold());
+        }
+    }
+
+    /**
+     * 加金币
+     *
+     * @param app
+     * @param bo
+     * @param update
+     */
+    private void addGold(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
+        if (app.getGold() != null && (bo != null || bo.getGold() != null)) {
+            Long newPoints = app.getGold() + bo.getGold();
+            newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
+            update.setGold(newPoints); // 设置新的积分值
+        }else {
+            update.setGold(app.getGold());
+        }
+    }
+
+    /**
+     * 减积分
+     *
+     * @param app
+     * @param bo
+     * @return
+     */
+    private void subtractPoints(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
+        if (app.getPoints() != null && (bo != null || bo.getGold() != null)) {
+            Long newPoints = app.getPoints() - bo.getPoints();
+            newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
+            update.setPoints(newPoints); // 设置新的积分值
+        }else {
+            update.setPoints(app.getPoints());
+        }
+    }
+
+    /**
+     * 加积分
+     *
+     * @param app
+     * @param bo
+     */
+    private void addPoints(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
+        if (app.getPoints() != null && (bo != null || bo.getGold() != null)) {
+            Long newPoints = app.getPoints() + bo.getPoints();
+            newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
+            update.setPoints(newPoints); // 设置新的积分值
+        }else {
+            update.setPoints(app.getPoints());
+        }
     }
 
 }
