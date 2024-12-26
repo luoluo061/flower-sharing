@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
+import java.util.List;
+
 /**
  * 会员等级业务对象 member_level
  *
@@ -71,8 +73,14 @@ public class MemberLevelBo extends BaseEntity {
     private Long display;
 
     /**
-     * 会员权益标签
+     * 会员权益说明
      */
-    private String memberTag;
+    private String privilege;
+
+    /**
+     * 会员权益集合
+     */
+    private List<MemberLevelPrivilegeBo> privilegeBos;
+
 
 }

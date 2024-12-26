@@ -11,7 +11,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -89,11 +89,15 @@ public class MemberLevelVo implements Serializable {
     @ExcelDictFormat(dictType = "radio_status")
     private Long display;
 
+
     /**
-     * 会员权益标签
+     * 会员权益说明
      */
-    @ExcelProperty(value = "会员权益标签")
-    private String memberTag;
+    @ExcelProperty(value = "会员权益说明")
+    private String privilege;
 
-
+    /**
+     * 会员权益集合
+     */
+    private List<MemberLevelPrivilegeVo> privilegeVos;
 }

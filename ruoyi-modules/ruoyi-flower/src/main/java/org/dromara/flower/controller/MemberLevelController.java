@@ -2,6 +2,7 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -102,4 +103,5 @@ public class MemberLevelController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(memberLevelService.deleteWithValidByIds(List.of(ids), true));
     }
+
 }

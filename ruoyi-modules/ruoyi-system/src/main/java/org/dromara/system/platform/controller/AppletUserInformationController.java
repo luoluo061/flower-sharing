@@ -103,4 +103,14 @@ public class AppletUserInformationController extends BaseController {
                           @PathVariable Long[] userIds) {
         return toAjax(appletUserInformationService.deleteWithValidByIds(List.of(userIds), true));
     }
+
+    /**
+     * 修改小程序用户信息
+     */
+    @Log(title = "小程序用户信息", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("editPointsGold")
+    public R<Void> editPointsGold(@Validated(EditGroup.class) @RequestBody AppletUserInformationBo bo) {
+        return toAjax(appletUserInformationService.updatePointsGoldByBo(bo));
+    }
 }

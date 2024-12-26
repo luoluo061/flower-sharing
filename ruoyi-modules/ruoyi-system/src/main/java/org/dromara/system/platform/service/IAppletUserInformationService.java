@@ -89,4 +89,5 @@ public interface IAppletUserInformationService {
      */
     boolean updateStatus(Long id, String status);
 
+    Boolean updatePointsGoldByBo(AppletUserInformationBo bo);
 }

@@ -73,9 +73,7 @@ public class MemberLevel extends TenantEntity {
     private Long display;
 
     /**
-     * 会员权益标签
+     * 会员权益说明
      */
-    private String memberTag;
-
-
+    private String privilege;
 }
