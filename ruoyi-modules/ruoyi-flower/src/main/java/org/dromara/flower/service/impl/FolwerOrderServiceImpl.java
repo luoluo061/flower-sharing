@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
 import org.dromara.flower.domain.vo.FolwerOrderVo;
@@ -40,6 +41,17 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
     @Override
     public FolwerOrderVo queryById(Long orderId){
         return baseMapper.selectVoById(orderId);
+    }
+
+    /**
+     * 查询订单详细
+     *
+     * @param orderId 主键
+     * @return 订单
+     */
+    @Override
+    public FolwerOrderInfoVo queryInfoById(Long orderId){
+        return baseMapper.selectOrderInfoVoById(orderId);
     }
 
     /**

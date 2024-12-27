@@ -1,5 +1,6 @@
 package org.dromara.flower.service;
 
+import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
 import org.dromara.flower.domain.vo.FolwerOrderVo;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -23,6 +24,14 @@ public interface IFolwerOrderService {
      * @return 订单
      */
     FolwerOrderVo queryById(Long orderId);
+
+    /**
+     * 查询订单详情
+     *
+     * @param orderId 主键
+     * @return 订单
+     */
+    FolwerOrderInfoVo queryInfoById(Long orderId);
 
     /**
      * 分页查询订单列表

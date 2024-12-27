@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -31,6 +32,11 @@ public class FolwerProductBo extends BaseEntity {
      */
 //    @NotBlank(message = "商品名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String productName;
+
+    /**
+     * 商品单位
+     */
+    private String unit;
 
     /**
      * 商品列表图

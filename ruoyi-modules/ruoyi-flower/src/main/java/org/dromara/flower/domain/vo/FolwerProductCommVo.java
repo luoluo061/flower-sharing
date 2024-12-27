@@ -20,7 +20,7 @@ import java.util.Date;
  * 商品评价视图对象 folwer_product_comm
  *
  * @author Lion Li
- * @date 2024-12-25
+ * @date 2024-12-26
  */
 @Data
 @ExcelIgnoreUnannotated

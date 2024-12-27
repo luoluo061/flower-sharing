@@ -1,0 +1,75 @@
+package org.dromara.flower.domain.bo;
+
+import org.dromara.flower.domain.FolwerSku;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
+import io.github.linpeilie.annotations.AutoMapper;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import jakarta.validation.constraints.*;
+
+/**
+ * 单品SKU业务对象 folwer_sku
+ *
+ * @author mlhxj
+ * @date 2024-12-26
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AutoMapper(target = FolwerSku.class, reverseConvertGenerate = false)
+public class FolwerSkuBo extends BaseEntity {
+
+    /**
+     * 单品ID
+     */
+    @NotNull(message = "单品ID不能为空", groups = { EditGroup.class })
+    private Long skuId;
+
+    /**
+     * 商品ID
+     */
+    private Long prodId;
+
+    /**
+     * 规格图ID
+     */
+    private String skuPicid;
+
+    /**
+     * 商品颜色
+     */
+    private String colour;
+
+    /**
+     * 数量
+     */
+    private String number;
+
+    /**
+     * 商品重量
+     */
+    private String weight;
+
+    /**
+     * 商品尺寸
+     */
+    private String size;
+
+    /**
+     * 价格
+     */
+    private Long price;
+
+    /**
+     * 库存
+     */
+    private Long actualStocks;
+
+    /**
+     * 0 禁用 1 启用
+     */
+    private Long status;
+
+
+}

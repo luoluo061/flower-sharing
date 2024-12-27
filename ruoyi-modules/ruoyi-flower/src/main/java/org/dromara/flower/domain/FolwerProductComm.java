@@ -1,6 +1,6 @@
 package org.dromara.flower.domain;
 
-import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,12 +13,12 @@ import java.io.Serial;
  * 商品评价对象 folwer_product_comm
  *
  * @author Lion Li
- * @date 2024-12-25
+ * @date 2024-12-26
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("folwer_product_comm")
-public class FolwerProductComm extends BaseEntity {
+public class FolwerProductComm extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

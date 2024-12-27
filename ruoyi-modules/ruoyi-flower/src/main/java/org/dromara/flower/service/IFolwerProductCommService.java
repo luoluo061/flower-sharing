@@ -12,7 +12,7 @@ import java.util.List;
  * 商品评价Service接口
  *
  * @author Lion Li
- * @date 2024-12-25
+ * @date 2024-12-26
  */
 public interface IFolwerProductCommService {
 

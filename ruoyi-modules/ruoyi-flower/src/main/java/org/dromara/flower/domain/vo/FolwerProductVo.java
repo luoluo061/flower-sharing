@@ -14,7 +14,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -42,6 +42,14 @@ public class FolwerProductVo implements Serializable {
      */
     @ExcelProperty(value = "商品名称")
     private String productName;
+
+    /**
+     * 商品单位
+     */
+    @ExcelProperty(value = "商品单位")
+    private String unit;
+
+
 
     /**
      * 商品列表图
@@ -180,6 +188,12 @@ public class FolwerProductVo implements Serializable {
      */
     @ExcelProperty(value = "商品评论")
     private String remarks;
+
+    /**
+     * 商品多规格
+     */
+    @ExcelProperty(value = "商品多规格")
+    private List<FolwerSkuVo> prodSKU;
 
 
 }

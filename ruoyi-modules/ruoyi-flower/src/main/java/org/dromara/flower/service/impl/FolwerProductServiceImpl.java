@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import jakarta.annotation.Resource;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -9,11 +10,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.vo.FolwerCategoryVo;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.service.IFolwerCategoryService;
+import org.dromara.flower.service.IFolwerSkuService;
 import org.dromara.system.domain.SysOss;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
@@ -33,13 +37,17 @@ import java.util.*;
 @Service
 public class FolwerProductServiceImpl implements IFolwerProductService {
 
+    @Resource
     private final FolwerProductMapper baseMapper;
 
     private final IFolwerCategoryService folwerCategoryService;
 
     private final ISysOssService sysOssService;
 
+    @Resource
     private final SysOssMapper sysOssMapper;
+
+    private final IFolwerSkuService folwerSkuService;
 
     /**
      * 查询商品管理
@@ -66,6 +74,11 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                     // 设置图片Url
                     folwerProductVo.setProductListPicture(stringStringMap.get(folwerProductVo.getProductListPictureUrl()));
                 }
+            }
+
+            if (folwerProductVo.getNormsType().equals(1L)) {
+                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
+                folwerProductVo.setProdSKU(folwerSkuVos);
             }
 
         }
@@ -95,19 +108,18 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 }
             }
 
-//            List<Long> longList = result.getRecords().stream().
-//                map(FolwerProductVo::getProductListPictureUrl).
-//                map(String::toString).
-//                map(Long::parseLong).
-//                toList();
-
             List<Long> longList = new ArrayList<>();
-                result.getRecords().forEach(record ->{
-                        if (record.getProductListPictureUrl() != null && !record.getProductListPictureUrl().isEmpty()){
-                            longList.add(Long.valueOf(record.getProductListPictureUrl()));
-                        }
+            result.getRecords().forEach(record ->{
+                if (record.getProductListPictureUrl() != null && !record.getProductListPictureUrl().isEmpty()){
+                    longList.add(Long.valueOf(record.getProductListPictureUrl()));
                 }
-            );
+                //多规格
+                if (record.getNormsType().equals(1L)){
+                    List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(record.getId());
+                    record.setProdSKU(folwerSkuVos);
+                }
+            });
+
             if (!longList.isEmpty()){
                 Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
                 if (!longStringMap.isEmpty()){
@@ -141,6 +153,24 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                     vo.setCategoryName("");
                 }
             }
+
+            if (vo.getProductListPictureUrl() != null && !vo.getProductListPictureUrl().isEmpty())
+            {
+                Collection<Long> ossIds = new ArrayList<>();
+
+                ossIds.add(Long.valueOf(vo.getProductListPictureUrl()));
+                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+                if (!stringStringMap.isEmpty()){
+                    // 设置图片Url
+                    vo.setProductListPicture(stringStringMap.get(vo.getProductListPictureUrl()));
+                }
+            }
+
+            if (vo.getNormsType().equals(1L)) {
+                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(vo.getId());
+                vo.setProdSKU(folwerSkuVos);
+            }
+
         }
         return folwerProductVos;
     }

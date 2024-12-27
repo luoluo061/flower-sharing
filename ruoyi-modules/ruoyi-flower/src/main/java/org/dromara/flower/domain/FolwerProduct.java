@@ -37,6 +37,11 @@ public class FolwerProduct extends TenantEntity {
     private String productName;
 
     /**
+     * 商品单位
+     */
+    private String unit;
+
+    /**
      * 商品列表图
      */
     private String productListPictureUrl;
