@@ -42,6 +42,7 @@ public class FolwerCategoryController extends BaseController {
     @SaCheckPermission("flower:category:list")
     @GetMapping("/list")
     public TableDataInfo<FolwerCategoryVo> list(FolwerCategoryBo bo, PageQuery pageQuery) {
+        bo.setParentId(0L);
         return folwerCategoryService.queryPageList(bo, pageQuery);
     }
 
@@ -52,6 +53,7 @@ public class FolwerCategoryController extends BaseController {
     @GetMapping("/allList")
     public R<List<FolwerCategoryVo>> list() {
         FolwerCategoryBo bo = new FolwerCategoryBo();
+        bo.setParentId(0L);
         return R.ok(folwerCategoryService.queryList(bo));
     }
 

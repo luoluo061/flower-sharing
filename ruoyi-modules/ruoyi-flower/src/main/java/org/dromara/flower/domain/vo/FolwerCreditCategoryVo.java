@@ -1,30 +1,26 @@
 package org.dromara.flower.domain.vo;
 
-import org.dromara.flower.domain.FolwerCategory;
+import org.dromara.flower.domain.FolwerCreditCategory;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import org.dromara.common.excel.annotation.ExcelDictFormat;
-import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 /**
- * 产品类目视图对象 folwer_category
+ * 积分商城产品类目视图对象 folwer_credit_category
  *
- * @author Lion Li
- * @date 2024-12-20
+ * @author mlhxj
+ * @date 2024-12-27
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = FolwerCategory.class)
-public class FolwerCategoryVo implements Serializable {
+@AutoMapper(target = FolwerCreditCategory.class)
+public class FolwerCreditCategoryVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -63,19 +59,19 @@ public class FolwerCategoryVo implements Serializable {
      * 排序
      */
     @ExcelProperty(value = "排序")
-    private Integer seq;
+    private Long seq;
 
     /**
      * 默认是1，表示正常状态,0为下线状态
      */
     @ExcelProperty(value = "默认是1，表示正常状态,0为下线状态")
-    private Integer status;
+    private Long status;
 
     /**
      * 二级分类
      */
     @ExcelProperty(value = "二级分类")
-    private List<FolwerCategoryVo> children;
+    private List<FolwerCreditCategoryVo> children;
 
 
 }

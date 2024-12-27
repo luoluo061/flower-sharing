@@ -56,21 +56,33 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
      * @return 商品管理
      */
     @Override
-    public FolwerProductVo queryById(Long id){
+    public FolwerProductVo queryById(Long id) {
         FolwerProductVo folwerProductVo = baseMapper.selectVoById(id);
-        if (folwerProductVo != null){
+        if (folwerProductVo != null) {
+            // 设置分类名称
+            String categoryName = null;
             FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(folwerProductVo.getCategoryId());
             if (folwerCategoryVo != null){
-                folwerProductVo.setCategoryName(folwerCategoryVo.getCategoryName());
+                if (!folwerCategoryVo.getParentId().equals(0L)) {
+                    FolwerCategoryVo ParentFolwerCategoryVo = folwerCategoryService.queryById(folwerCategoryVo.getParentId());
+                    categoryName = ParentFolwerCategoryVo.getCategoryName();
+                }
+                if (categoryName == null) {
+                    categoryName = folwerCategoryVo.getCategoryName();
+                } else {
+                    categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                }
+                folwerProductVo.setCategoryName(categoryName);
+            }  else {
+                folwerProductVo.setCategoryName("");
             }
 
-            if (folwerProductVo.getProductListPictureUrl() != null && !folwerProductVo.getProductListPictureUrl().isEmpty())
-            {
+            // 设置图片Url
+            if (folwerProductVo.getProductListPictureUrl() != null && !folwerProductVo.getProductListPictureUrl().isEmpty()) {
                 Collection<Long> ossIds = new ArrayList<>();
-
                 ossIds.add(Long.valueOf(folwerProductVo.getProductListPictureUrl()));
                 Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                if (!stringStringMap.isEmpty()){
+                if (!stringStringMap.isEmpty()) {
                     // 设置图片Url
                     folwerProductVo.setProductListPicture(stringStringMap.get(folwerProductVo.getProductListPictureUrl()));
                 }
@@ -80,7 +92,6 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
                 folwerProductVo.setProdSKU(folwerSkuVos);
             }
-
         }
         return folwerProductVo;
     }
@@ -99,12 +110,21 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         if (!result.getRecords().isEmpty()){
             for (FolwerProductVo vo : result.getRecords()){
                 if (vo.getId() != null){
+                    // 设置分类名称
+                    String categoryName = null;
                     FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
-                     if (folwerCategoryVo != null){
-                         vo.setCategoryName(folwerCategoryVo.getCategoryName());
-                     }else {
-                         vo.setCategoryName("");
-                     }
+                    if(!folwerCategoryVo.getParentId().equals(0L)){
+                        FolwerCategoryVo ParentFolwerCategoryVo = folwerCategoryService.queryById(folwerCategoryVo.getParentId());
+                        categoryName = ParentFolwerCategoryVo.getCategoryName();
+                    }
+                    if(categoryName == null){
+                        categoryName = folwerCategoryVo.getCategoryName();
+                    }else {
+                        categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                    }
+                    vo.setCategoryName(categoryName);
+                }else {
+                    vo.setCategoryName("");
                 }
             }
 
@@ -145,13 +165,22 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         LambdaQueryWrapper<FolwerProduct> lqw = buildQueryWrapper(bo);
         List<FolwerProductVo> folwerProductVos = baseMapper.selectVoList(lqw);
         for (FolwerProductVo vo : folwerProductVos){
-            if (vo.getId() != null){
-                FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
-                if (folwerCategoryVo != null){
-                    vo.setCategoryName(folwerCategoryVo.getCategoryName());
-                }else {
-                    vo.setCategoryName("");
+            // 设置分类名称
+            String categoryName = null;
+            FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
+            if (folwerCategoryVo != null){
+                if (!folwerCategoryVo.getParentId().equals(0L)) {
+                    FolwerCategoryVo ParentFolwerCategoryVo = folwerCategoryService.queryById(folwerCategoryVo.getParentId());
+                    categoryName = ParentFolwerCategoryVo.getCategoryName();
                 }
+                if (categoryName == null) {
+                    categoryName = folwerCategoryVo.getCategoryName();
+                } else {
+                    categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                }
+                vo.setCategoryName(categoryName);
+            }  else {
+                vo.setCategoryName("");
             }
 
             if (vo.getProductListPictureUrl() != null && !vo.getProductListPictureUrl().isEmpty())

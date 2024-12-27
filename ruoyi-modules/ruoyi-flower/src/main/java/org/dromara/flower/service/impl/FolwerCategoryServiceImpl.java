@@ -20,10 +20,7 @@ import org.dromara.flower.domain.FolwerCategory;
 import org.dromara.flower.mapper.FolwerCategoryMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -48,7 +45,27 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
      */
     @Override
     public FolwerCategoryVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+
+        FolwerCategoryVo folwerCategoryVo = baseMapper.selectVoById(id);
+        // 设置图片Url
+        Collection<Long> ossIds  = new ArrayList<>();
+        ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
+        if (!ossIds.isEmpty()){
+            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+            if (!stringStringMap.isEmpty()){
+                // 设置图片Url
+                folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
+            }
+        }
+
+        //二级分类
+        if (!folwerCategoryVo.getParentId().equals(0)){
+            FolwerCategoryBo childrenBo = new FolwerCategoryBo();
+            childrenBo.setParentId(folwerCategoryVo.getId());
+            List<FolwerCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
+            folwerCategoryVo.setChildren(childrenFolwerCategoryVos);
+        }
+        return folwerCategoryVo;
     }
 
     /**
@@ -64,18 +81,25 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
         Page<FolwerCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
 
         if (!result.getRecords().isEmpty()){
-
-                Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                    result.getRecords().stream().
-                    map(FolwerCategoryVo::getIcon).
-                    map(Long::parseLong).toList());
-                if (!longStringMap.isEmpty()){
-                    // 设置图片Url
-                    result.getRecords().forEach(record ->
-                        record.setIconUrl(longStringMap.get(record.getIcon()))
-                    );
+            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+                result.getRecords().stream().
+                map(FolwerCategoryVo::getIcon).
+                map(Long::parseLong).toList());
+            if (!longStringMap.isEmpty()){
+                // 设置图片Url
+                result.getRecords().forEach(record ->
+                    record.setIconUrl(longStringMap.get(record.getIcon()))
+                );
+            }
+            //二级分类
+            result.getRecords().forEach(record ->{
+                if(!record.getParentId().equals(0)){
+                    FolwerCategoryBo childrenBo = new FolwerCategoryBo();
+                    childrenBo.setParentId(record.getId());
+                    List<FolwerCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
+                    record.setChildren(childrenFolwerCategoryVos);
                 }
-
+            });
         }
 
         return TableDataInfo.build(result);
@@ -92,7 +116,6 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
         LambdaQueryWrapper<FolwerCategory> lqw = buildQueryWrapper(bo);
         List<FolwerCategoryVo> folwerCategoryVos = baseMapper.selectVoList(lqw);
         if (!folwerCategoryVos.isEmpty()){
-//            for (FolwerCategoryVo vo : result.getRecords()){
             Map<String, String> longStringMap = sysOssService.listUrlByIds(
                 folwerCategoryVos.stream().
                     map(FolwerCategoryVo::getIcon).
@@ -104,11 +127,18 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
                     record.setIconUrl(longStringMap.get(record.getIcon()))
                 );
             }
-
-//            }
         }
-        return folwerCategoryVos;
+        //二级分类
+        folwerCategoryVos.forEach(record ->{
+            if(!record.getParentId().equals(0)){
+                FolwerCategoryBo childrenBo = new FolwerCategoryBo();
+                childrenBo.setParentId(record.getId());
+                List<FolwerCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
+                record.setChildren(childrenFolwerCategoryVos);
+            }
 
+        });
+        return folwerCategoryVos;
     }
 
     private LambdaQueryWrapper<FolwerCategory> buildQueryWrapper(FolwerCategoryBo bo) {
