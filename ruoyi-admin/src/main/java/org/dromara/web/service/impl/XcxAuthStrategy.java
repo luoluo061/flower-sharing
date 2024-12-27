@@ -3,9 +3,6 @@ package org.dromara.web.service.impl;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.model.XcxLoginBody;
@@ -15,13 +12,11 @@ import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.flower.domain.MemberLevel;
-import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.mapper.MemberLevelMapper;
-import org.dromara.system.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.system.domain.vo.SysClientVo;
-import org.dromara.system.platform.domain.bo.AppletUserInformationBo;
-import org.dromara.system.platform.service.IAppletUserInformationService;
+import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.XcxPhoneInfoVo;
 import org.dromara.web.properties.InitialMemberLevelProperties;
@@ -29,8 +24,6 @@ import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**

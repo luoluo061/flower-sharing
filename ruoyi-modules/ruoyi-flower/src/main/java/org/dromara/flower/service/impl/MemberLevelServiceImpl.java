@@ -137,16 +137,18 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
-            bo.setId(add.getId());
-            List<MemberLevelPrivilege> privileges = bo.getPrivilegeBos().stream()
-                .map(vo -> {
-                    vo.setMemberLevelId(add.getId());
-                    return MapstructUtils.convert(vo, MemberLevelPrivilege.class);
-                })
-                .toList();
-            // 保存 会员权益
-            if (!privileges.isEmpty()){
-                memberLevelPrivilegeMapper.insertBatch(privileges);
+            if (!bo.getPrivilegeBos().isEmpty()){
+                bo.setId(add.getId());
+                List<MemberLevelPrivilege> privileges = bo.getPrivilegeBos().stream()
+                    .map(vo -> {
+                        vo.setMemberLevelId(add.getId());
+                        return MapstructUtils.convert(vo, MemberLevelPrivilege.class);
+                    })
+                    .toList();
+                // 保存 会员权益
+                if (!privileges.isEmpty()){
+                    memberLevelPrivilegeMapper.insertBatch(privileges);
+                }
             }
         }
 

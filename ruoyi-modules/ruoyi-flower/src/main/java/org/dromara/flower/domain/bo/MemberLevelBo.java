@@ -64,7 +64,7 @@ public class MemberLevelBo extends BaseEntity {
     /**
      * 可以花券/张
      */
-    @NotNull(message = "可用花券/张不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "可用花券/张不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long coupon;
 
     /**

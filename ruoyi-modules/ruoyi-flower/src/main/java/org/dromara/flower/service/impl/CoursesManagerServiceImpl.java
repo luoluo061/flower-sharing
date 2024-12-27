@@ -1,0 +1,140 @@
+package org.dromara.flower.service.impl;
+
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.dromara.flower.domain.bo.CoursesManagerBo;
+import org.dromara.flower.domain.vo.CoursesManagerVo;
+import org.dromara.flower.domain.CoursesManager;
+import org.dromara.flower.mapper.CoursesManagerMapper;
+import org.dromara.flower.service.ICoursesManagerService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Collection;
+
+/**
+ * 视频管理Service业务层处理
+ *
+ * @author mlhxj
+ * @date 2024-12-27
+ */
+@RequiredArgsConstructor
+@Service
+public class CoursesManagerServiceImpl implements ICoursesManagerService {
+
+    private final CoursesManagerMapper baseMapper;
+
+    /**
+     * 查询视频管理
+     *
+     * @param id 主键
+     * @return 视频管理
+     */
+    @Override
+    public CoursesManagerVo queryById(Long id){
+        return baseMapper.selectVoById(id);
+    }
+
+    /**
+     * 分页查询视频管理列表
+     *
+     * @param bo        查询条件
+     * @param pageQuery 分页参数
+     * @return 视频管理分页列表
+     */
+    @Override
+    public TableDataInfo<CoursesManagerVo> queryPageList(CoursesManagerBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<CoursesManager> lqw = buildQueryWrapper(bo);
+        Page<CoursesManagerVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
+
+    /**
+     * 查询符合条件的视频管理列表
+     *
+     * @param bo 查询条件
+     * @return 视频管理列表
+     */
+    @Override
+    public List<CoursesManagerVo> queryList(CoursesManagerBo bo) {
+        LambdaQueryWrapper<CoursesManager> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectVoList(lqw);
+    }
+
+    private LambdaQueryWrapper<CoursesManager> buildQueryWrapper(CoursesManagerBo bo) {
+        Map<String, Object> params = bo.getParams();
+        LambdaQueryWrapper<CoursesManager> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getDeptId() != null, CoursesManager::getDeptId, bo.getDeptId());
+        lqw.like(StringUtils.isNotBlank(bo.getName()), CoursesManager::getName, bo.getName());
+        lqw.eq(StringUtils.isNotBlank(bo.getSubtitle()), CoursesManager::getSubtitle, bo.getSubtitle());
+        lqw.eq(StringUtils.isNotBlank(bo.getCode()), CoursesManager::getCode, bo.getCode());
+        lqw.eq(bo.getCourseTypeId() != null, CoursesManager::getCourseTypeId, bo.getCourseTypeId());
+        lqw.eq(bo.getPublishDate() != null, CoursesManager::getPublishDate, bo.getPublishDate());
+        lqw.eq(bo.getNumber() != null, CoursesManager::getNumber, bo.getNumber());
+        lqw.eq(StringUtils.isNotBlank(bo.getAccessLevel()), CoursesManager::getAccessLevel, bo.getAccessLevel());
+        lqw.eq(bo.getPrice() != null, CoursesManager::getPrice, bo.getPrice());
+        lqw.eq(bo.getStatus() != null, CoursesManager::getStatus, bo.getStatus());
+        lqw.eq(StringUtils.isNotBlank(bo.getDescription()), CoursesManager::getDescription, bo.getDescription());
+        lqw.eq(bo.getCoverUrlId() != null, CoursesManager::getCoverUrlId, bo.getCoverUrlId());
+        return lqw;
+    }
+
+    /**
+     * 新增视频管理
+     *
+     * @param bo 视频管理
+     * @return 是否新增成功
+     */
+    @Override
+    public Boolean insertByBo(CoursesManagerBo bo) {
+        CoursesManager add = MapstructUtils.convert(bo, CoursesManager.class);
+        validEntityBeforeSave(add);
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setId(add.getId());
+        }
+        return flag;
+    }
+
+    /**
+     * 修改视频管理
+     *
+     * @param bo 视频管理
+     * @return 是否修改成功
+     */
+    @Override
+    public Boolean updateByBo(CoursesManagerBo bo) {
+        CoursesManager update = MapstructUtils.convert(bo, CoursesManager.class);
+        validEntityBeforeSave(update);
+        return baseMapper.updateById(update) > 0;
+    }
+
+    /**
+     * 保存前的数据校验
+     */
+    private void validEntityBeforeSave(CoursesManager entity){
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    /**
+     * 校验并批量删除视频管理信息
+     *
+     * @param ids     待删除的主键集合
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    @Override
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return baseMapper.deleteByIds(ids) > 0;
+    }
+}

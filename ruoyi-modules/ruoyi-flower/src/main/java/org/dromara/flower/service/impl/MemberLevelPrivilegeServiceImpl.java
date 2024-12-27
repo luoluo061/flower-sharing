@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -88,6 +89,9 @@ public class MemberLevelPrivilegeServiceImpl implements IMemberLevelPrivilegeSer
     public Boolean insertByBo(MemberLevelPrivilegeBo bo) {
         MemberLevelPrivilege add = MapstructUtils.convert(bo, MemberLevelPrivilege.class);
         validEntityBeforeSave(add);
+        if (ObjectUtil.isEmpty(bo.getMemberLevelId())){
+            return false;
+        }
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
