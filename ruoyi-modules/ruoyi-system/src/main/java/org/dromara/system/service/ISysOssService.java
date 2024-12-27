@@ -78,6 +78,11 @@ public interface ISysOssService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
+    /**
+     * 根据文件ids 查询 文件URL
+     * @param ossIds
+     * @return
+     */
     Map<String,String> listUrlByIds(Collection<Long> ossIds);
 
 }

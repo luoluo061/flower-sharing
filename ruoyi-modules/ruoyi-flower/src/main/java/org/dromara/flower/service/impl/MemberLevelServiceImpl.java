@@ -75,6 +75,7 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
                 result.getRecords().stream()
                     .map(MemberLevelVo::getGradeIcon) // 获取 gradeIcon
                     .filter(Objects::nonNull) // 过滤掉 null 值
+                    .distinct()
                     .filter(gradeIcon -> {
                         try {
                             Long.parseLong(gradeIcon); // 尝试转换为 Long
