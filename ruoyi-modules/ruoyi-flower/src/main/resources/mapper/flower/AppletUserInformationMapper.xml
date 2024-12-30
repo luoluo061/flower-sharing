@@ -9,6 +9,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="value" column="grade"/>
     </resultMap>
 
+    <resultMap id="mapUserIdToName" type="map">
+        <result property="key" column="user_id"/>
+        <result property="value" column="name"/>
+    </resultMap>
+
     <select id="selectMemberLevelByid" resultType="java.lang.String">
         select grade from member_level where id = #{id}
     </select>
@@ -17,6 +22,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             DISTINCT id,
                      grade
         FROM member_level WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")" >
+            #{id}
+        </foreach>
+    </select>
+    <select id="getParentNameByIds" resultMap="mapUserIdToName">
+        SELECT
+            user_id,
+            `name`
+        FROM applet_user_information
+        WHERE user_id IN
         <foreach collection="ids" item="id" separator="," open="(" close=")" >
             #{id}
         </foreach>

@@ -171,10 +171,16 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         if (!bo.getPrivilegeBos().isEmpty()){
             List<MemberLevelPrivilege> privileges = bo.getPrivilegeBos().stream()
                 .map(vo -> {
+                    vo.setId(null);
                     vo.setMemberLevelId(bo.getId());
                     return MapstructUtils.convert(vo, MemberLevelPrivilege.class);
                 })
                 .toList();
+            LambdaQueryWrapper<MemberLevelPrivilege> mlp = new LambdaQueryWrapper<>();
+            mlp.eq(MemberLevelPrivilege::getMemberLevelId, bo.getId());
+            // 根据会员等级移除历史数据
+            memberLevelPrivilegeMapper.delete(mlp);
+            // 重新插入
             memberLevelPrivilegeMapper.insertOrUpdate(privileges);
         }
         return baseMapper.updateById(update) > 0;

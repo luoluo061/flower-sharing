@@ -163,16 +163,34 @@ public class AppletUserInformationVo implements Serializable {
     private Long promotion;
 
     /**
+     * 推广提成
+     */
+    @ExcelProperty(value = "推广提成")
+    private Long promotionCommission;
+
+    /**
      * 累计金币
      */
     @ExcelProperty(value = "累计金币")
     private Long gold;
 
     /**
+     * 兑换次数
+     */
+    @ExcelProperty(value = "兑换次数")
+    private Long exchangeNum;
+
+    /**
      * 介绍人ID 0 表示没有介绍人
      */
     @ExcelProperty(value = "介绍人ID 0 表示没有介绍人")
     private Long parentId;
+
+    /**
+     * 介绍人名称
+     */
+    @ExcelProperty(value = "介绍人名称")
+    private String parentName;
 
     /**
      * 行政区域(如云南省昆明市盘龙区拓东街道)

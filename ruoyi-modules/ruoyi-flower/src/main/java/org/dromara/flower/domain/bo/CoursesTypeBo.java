@@ -47,8 +47,8 @@ public class CoursesTypeBo extends BaseEntity {
     /**
      * 排序
      */
-    @NotNull(message = "排序不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long order;
+//    @NotNull(message = "排序不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long sort;
 
     /**
      * 父级Id

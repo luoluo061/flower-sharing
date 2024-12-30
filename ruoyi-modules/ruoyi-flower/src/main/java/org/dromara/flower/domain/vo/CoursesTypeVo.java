@@ -56,7 +56,7 @@ public class CoursesTypeVo implements Serializable {
      * 排序
      */
     @ExcelProperty(value = "排序")
-    private Long order;
+    private Long sort;
 
     /**
      * 父级Id

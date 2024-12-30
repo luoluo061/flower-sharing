@@ -20,4 +20,6 @@ public interface AppletUserInformationMapper extends BaseMapperPlus<AppletUserIn
     String selectMemberLevelByid(@Param("id") Long memberLevelId);
 
     void getLevelNamesByIds(@Param("resultHandler") MapResultHandler<Long, String> resultHandler, @Param("ids")List<Long> levelIds);
+
+    void getParentNameByIds(@Param("resultHandler") MapResultHandler resultHandler, @Param("ids") List<Long> parentIds);
 }

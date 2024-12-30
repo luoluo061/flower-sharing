@@ -74,7 +74,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         lqw.eq(bo.getDeptId() != null, CoursesType::getDeptId, bo.getDeptId());
         lqw.like(StringUtils.isNotBlank(bo.getName()), CoursesType::getName, bo.getName());
         lqw.eq(bo.getStatus() != null, CoursesType::getStatus, bo.getStatus());
-        lqw.eq(bo.getOrder() != null, CoursesType::getOrder, bo.getOrder());
+        lqw.eq(bo.getSort() != null, CoursesType::getSort, bo.getSort());
         lqw.eq(bo.getParentId() != null, CoursesType::getParentId, bo.getParentId());
         return lqw;
     }

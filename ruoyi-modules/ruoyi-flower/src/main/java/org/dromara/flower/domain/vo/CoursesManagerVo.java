@@ -1,6 +1,9 @@
 package org.dromara.flower.domain.vo;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.flower.domain.CoursesManager;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
@@ -41,6 +44,12 @@ public class CoursesManagerVo implements Serializable {
      */
     @ExcelProperty(value = "部门id")
     private Long deptId;
+
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
 
     /**
      * 课程名称

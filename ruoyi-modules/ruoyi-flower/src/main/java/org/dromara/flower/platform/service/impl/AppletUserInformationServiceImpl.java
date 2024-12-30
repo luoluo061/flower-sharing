@@ -74,13 +74,13 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         LambdaQueryWrapper<AppletUserInformation> lqw = buildQueryWrapper(bo);
         Page<AppletUserInformationVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()) {
+            // 获取会员等级中文
             List<Long> levelIds = result.getRecords().stream()
                 .filter(Objects::nonNull)
                 .map(AppletUserInformationVo::getMemberLevelId)
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
-
             if (!levelIds.isEmpty()) {
                 MapResultHandler<Long, String> resultHandler = new MapResultHandler<>();
                 baseMapper.getLevelNamesByIds(resultHandler, levelIds);
@@ -91,6 +91,24 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
                     }
                 });
             }
+            // 获取推荐人中文
+            List<Long> parentIds = result.getRecords().stream()
+                .filter(Objects::nonNull)
+                .map(AppletUserInformationVo::getParentId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+            MapResultHandler<Long, String> map = new MapResultHandler();
+            baseMapper.getParentNameByIds(map, parentIds);
+            Map<Long, String> mappedResults = map.getMappedResults();
+            if (!mappedResults.isEmpty()){
+                result.getRecords().forEach(v -> {
+                    if (v.getParentId() != null && mappedResults.containsKey(v.getParentId())) {
+                        v.setParentName(mappedResults.get(v.getParentId()));
+                    }
+                });
+            }
+
         }
         return TableDataInfo.build(result);
     }
@@ -226,7 +244,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
 
     @Override
     public Boolean updatePointsGoldByBo(AppletUserInformationBo bo) {
-        if (staticString.contains(bo.getModified())){
+        if (!staticString.contains(bo.getModified())) {
             return false;
         }
         if (StringUtils.isBlank(bo.getModified())) {
@@ -264,7 +282,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     private void subtractGold(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
         if (app.getGold() != null && (bo != null || bo.getGold() != null)) {
-            Long newPoints = app.getGold() - bo.getGold();
+            Long newPoints = app.getGold() - bo.getModifiedValue();
             newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
             update.setGold(newPoints); // 设置新的积分值
         } else {
@@ -281,7 +299,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     private void addGold(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
         if (app.getGold() != null && (bo != null || bo.getGold() != null)) {
-            Long newPoints = app.getGold() + bo.getGold();
+            Long newPoints = app.getGold() + bo.getModifiedValue();
             newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
             update.setGold(newPoints); // 设置新的积分值
         } else {
@@ -298,7 +316,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     private void subtractPoints(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
         if (app.getPoints() != null && (bo != null || bo.getGold() != null)) {
-            Long newPoints = app.getPoints() - bo.getPoints();
+            Long newPoints = app.getPoints() - bo.getModifiedValue();
             newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
             update.setPoints(newPoints); // 设置新的积分值
         } else {
@@ -314,7 +332,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     private void addPoints(AppletUserInformation app, AppletUserInformationBo bo, AppletUserInformation update) {
         if (app.getPoints() != null && (bo != null || bo.getGold() != null)) {
-            Long newPoints = app.getPoints() + bo.getPoints();
+            Long newPoints = app.getPoints() + bo.getModifiedValue();
             newPoints = Math.max(newPoints, ZERO); // 确保积分不会小于0
             update.setPoints(newPoints); // 设置新的积分值
         } else {

@@ -50,7 +50,7 @@ public class CoursesType extends TenantEntity {
     /**
      * 排序
      */
-    private Long order;
+    private Long sort;
 
     /**
      * 父级Id

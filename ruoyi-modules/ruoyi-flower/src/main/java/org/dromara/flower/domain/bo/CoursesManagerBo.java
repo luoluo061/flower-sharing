@@ -55,7 +55,7 @@ public class CoursesManagerBo extends BaseEntity {
     /**
      * 课程类型
      */
-    @NotNull(message = "课程类型不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "课程类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long courseTypeId;
 
     /**
@@ -67,7 +67,7 @@ public class CoursesManagerBo extends BaseEntity {
     /**
      * 课程数
      */
-    @NotNull(message = "课程数不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "课程数不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long number;
 
     /**
@@ -100,5 +100,8 @@ public class CoursesManagerBo extends BaseEntity {
 //    @NotNull(message = "封面URL的id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long coverUrlId;
 
-
+    /**
+     * 课程详情
+     */
+    private CoursesManagerDetailBo detailBo;
 }
