@@ -186,6 +186,7 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerCreditProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerCreditProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerCreditProduct::getRemarks, bo.getRemarks());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

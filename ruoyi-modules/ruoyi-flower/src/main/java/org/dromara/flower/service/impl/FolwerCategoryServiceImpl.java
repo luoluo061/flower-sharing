@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.domain.vo.FolwerProductVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.system.service.ISysOssService;
@@ -47,24 +48,31 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     public FolwerCategoryVo queryById(Long id){
 
         FolwerCategoryVo folwerCategoryVo = baseMapper.selectVoById(id);
-        // 设置图片Url
-        Collection<Long> ossIds  = new ArrayList<>();
-        ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
-        if (!ossIds.isEmpty()){
-            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-            if (!stringStringMap.isEmpty()){
+        if (folwerCategoryVo != null){
+            if (folwerCategoryVo.getIcon() != null){
                 // 设置图片Url
-                folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
+                Collection<Long> ossIds  = new ArrayList<>();
+                ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
+                if (!ossIds.isEmpty()){
+                    Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+                    if (!stringStringMap.isEmpty()){
+                        // 设置图片Url
+                        folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
+                    }
+                }
+            }else {
+                folwerCategoryVo.setIconUrl("");
+            }
+
+            //二级分类
+            if (!folwerCategoryVo.getParentId().equals(0L)){
+                FolwerCategoryBo childrenBo = new FolwerCategoryBo();
+                childrenBo.setParentId(folwerCategoryVo.getId());
+                List<FolwerCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
+                folwerCategoryVo.setChildren(childrenFolwerCategoryVos);
             }
         }
 
-        //二级分类
-        if (!folwerCategoryVo.getParentId().equals(0)){
-            FolwerCategoryBo childrenBo = new FolwerCategoryBo();
-            childrenBo.setParentId(folwerCategoryVo.getId());
-            List<FolwerCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-            folwerCategoryVo.setChildren(childrenFolwerCategoryVos);
-        }
         return folwerCategoryVo;
     }
 
@@ -149,6 +157,7 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), FolwerCategory::getIcon, bo.getIcon());
         lqw.eq(bo.getSeq() != null, FolwerCategory::getSeq, bo.getSeq());
         lqw.eq(bo.getStatus() != null, FolwerCategory::getStatus, bo.getStatus());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCategory::getCreateTime, bo.getStartTime(), bo.getEndTime());
 //        lqw.eq(bo.getDeptId() != null, FolwerCategory::getDeptId, bo.getDeptId());
         return lqw;
     }

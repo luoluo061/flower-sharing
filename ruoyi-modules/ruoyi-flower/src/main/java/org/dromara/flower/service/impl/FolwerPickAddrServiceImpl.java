@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerOrder;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerPickAddrBo;
 import org.dromara.flower.domain.vo.FolwerPickAddrVo;
@@ -80,6 +81,7 @@ public class FolwerPickAddrServiceImpl implements IFolwerPickAddrService {
         lqw.eq(StringUtils.isNotBlank(bo.getCity()), FolwerPickAddr::getCity, bo.getCity());
         lqw.eq(bo.getAreaId() != null, FolwerPickAddr::getAreaId, bo.getAreaId());
         lqw.eq(StringUtils.isNotBlank(bo.getArea()), FolwerPickAddr::getArea, bo.getArea());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerPickAddr::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

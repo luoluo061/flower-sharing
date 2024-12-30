@@ -6,15 +6,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectOrderInfoVoById" resultType="org.dromara.flower.domain.vo.FolwerOrderInfoVo">
         SELECT fo.order_id, fo.status, fo.actual_total, fo.freight_amount, fo.total, fo.pay_type, fo.pay_time,
-               aui.name, aui.phone, fpa.addr, fpa.mobile, fpa.addr,
-               fd.dvy_name, fo.dvy_flow_id, fd.dvy_addr,
-               fo.remarks, fo.remarks
+               aui.name as userName, aui.phone as userPhone, fpa.addr as addrName, fpa.mobile as mobile, fpa.addr as addr,
+               fd.dvy_name as dvyName, fo.dvy_flow_id as dvyFlowId, fd.dvy_addr as dvyAddr,
+               fo.remarks
         FROM folwer_order as fo
                  left join applet_user_information aui on fo.user_id = aui.user_id
                  left join folwer_delivery fd on fo.dvy_id = fd.dvy_id
                  left join folwer_pick_addr fpa on fo.addr_order_id = fpa.addr_id
         where fo.order_id = #{orderId}
-
     </select>
 
 </mapper>

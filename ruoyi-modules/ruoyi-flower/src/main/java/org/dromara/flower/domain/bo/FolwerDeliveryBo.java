@@ -34,7 +34,7 @@ public class FolwerDeliveryBo extends BaseEntity {
     private String dvyName;
 
     /**
-     * 配送方式 1:商家配送, 默认商家配送 2:物流快递 
+     * 配送方式 1:商家配送, 默认商家配送 2:物流快递
      */
     private Long dvyType;
 
@@ -67,6 +67,16 @@ public class FolwerDeliveryBo extends BaseEntity {
      * 发货地址
      */
     private String dvyAddr;
+
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
 
 
 }

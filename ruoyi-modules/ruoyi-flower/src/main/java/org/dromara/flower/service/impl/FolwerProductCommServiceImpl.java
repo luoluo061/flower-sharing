@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerPickAddr;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerProductCommBo;
 import org.dromara.flower.domain.vo.FolwerProductCommVo;
@@ -82,6 +83,7 @@ public class FolwerProductCommServiceImpl implements IFolwerProductCommService {
         lqw.eq(bo.getScore() != null, FolwerProductComm::getScore, bo.getScore());
         lqw.eq(bo.getIsAnonymous() != null, FolwerProductComm::getIsAnonymous, bo.getIsAnonymous());
         lqw.eq(bo.getStatus() != null, FolwerProductComm::getStatus, bo.getStatus());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerProductComm::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

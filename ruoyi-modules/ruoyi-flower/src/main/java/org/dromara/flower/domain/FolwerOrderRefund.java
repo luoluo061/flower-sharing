@@ -55,7 +55,7 @@ public class FolwerOrderRefund extends TenantEntity {
     private Long actualTotal;
 
     /**
-     * 退款状态 0:拒绝退款 1：已退款 
+     * 退款状态 0:拒绝退款 1：已退款
      */
     private Long refundStatus;
 
@@ -93,6 +93,11 @@ public class FolwerOrderRefund extends TenantEntity {
      * 售后备注
      */
     private String refundRemark;
+
+    /**
+     * 售后凭证
+     */
+    private String refundRemarkPic;
 
     /**
      * 删除标志 0 否 2 是

@@ -113,7 +113,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                     // 设置分类名称
                     String categoryName = null;
                     FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
-                    if(!folwerCategoryVo.getParentId().equals(0L)){
+                    if(!folwerCategoryVo.getParentId().equals(0L) && folwerCategoryVo.getParentId() != null && folwerCategoryVo.getParentId().toString().length() >= 19){
                         FolwerCategoryVo ParentFolwerCategoryVo = folwerCategoryService.queryById(folwerCategoryVo.getParentId());
                         categoryName = ParentFolwerCategoryVo.getCategoryName();
                     }
@@ -220,7 +220,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
-//        lqw.eq(bo.getDeptId() != null, FolwerProduct::getDeptId, bo.getDeptId());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

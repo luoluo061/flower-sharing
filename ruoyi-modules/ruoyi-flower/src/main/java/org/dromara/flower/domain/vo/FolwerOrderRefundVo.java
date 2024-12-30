@@ -67,7 +67,7 @@ public class FolwerOrderRefundVo implements Serializable {
     private Long actualTotal;
 
     /**
-     * 退款状态 0:拒绝退款 1：已退款 
+     * 退款状态 0:拒绝退款 1：已退款
      */
     @ExcelProperty(value = "退款状态 0:拒绝退款 1：已退款 ")
     private Long refundStatus;
@@ -113,6 +113,12 @@ public class FolwerOrderRefundVo implements Serializable {
      */
     @ExcelProperty(value = "售后备注")
     private String refundRemark;
+
+    /**
+     * 售后凭证
+     */
+    @ExcelProperty(value = "售后凭证")
+    private String refundRemarkPic;
 
 
 }

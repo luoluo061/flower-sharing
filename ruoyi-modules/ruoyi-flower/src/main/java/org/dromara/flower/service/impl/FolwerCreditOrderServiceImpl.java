@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerCreditProduct;
+import org.dromara.flower.domain.vo.FolwerCreditOrderInfoVo;
+import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerCreditOrderBo;
 import org.dromara.flower.domain.vo.FolwerCreditOrderVo;
@@ -57,6 +60,44 @@ public class FolwerCreditOrderServiceImpl implements IFolwerCreditOrderService {
     }
 
     /**
+     * 查询积分订单详情
+     * @param orderId
+     * @return
+     */
+    @Override
+    public FolwerCreditOrderInfoVo queryInfoById(Long orderId) {
+        FolwerCreditOrderInfoVo folwerCreditOrderInfoVo = baseMapper.selectCreditOrderInfoVoById(orderId);
+        if (folwerCreditOrderInfoVo != null){
+            int i = folwerCreditOrderInfoVo.getStatus().intValue();
+            if (folwerCreditOrderInfoVo != null) {
+                switch (i) {
+                    case 0:
+                        folwerCreditOrderInfoVo.setStatusStr("待兑换");
+                        break;
+                    case 1:
+                        folwerCreditOrderInfoVo.setStatusStr("已兑换");
+                        break;
+                    case 2:
+                        folwerCreditOrderInfoVo.setStatusStr("待发货");
+                        break;
+                    case 3:
+                        folwerCreditOrderInfoVo.setStatusStr("待收货");
+                        break;
+                    case 4:
+                        folwerCreditOrderInfoVo.setStatusStr("待评价");
+                        break;
+                }
+            }
+            folwerCreditOrderInfoVo.setActualTotalStr("积分余额");
+        }
+
+
+        return folwerCreditOrderInfoVo;
+    }
+
+
+
+    /**
      * 查询符合条件的积分订单列表
      *
      * @param bo 查询条件
@@ -88,6 +129,7 @@ public class FolwerCreditOrderServiceImpl implements IFolwerCreditOrderService {
         lqw.eq(bo.getFinallyTime() != null, FolwerCreditOrder::getFinallyTime, bo.getFinallyTime());
         lqw.eq(bo.getCancelTime() != null, FolwerCreditOrder::getCancelTime, bo.getCancelTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCancelMsg()), FolwerCreditOrder::getCancelMsg, bo.getCancelMsg());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditOrder::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

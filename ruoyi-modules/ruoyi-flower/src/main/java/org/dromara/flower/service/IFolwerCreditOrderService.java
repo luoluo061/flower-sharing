@@ -1,5 +1,6 @@
 package org.dromara.flower.service;
 
+import org.dromara.flower.domain.vo.FolwerCreditOrderInfoVo;
 import org.dromara.flower.domain.vo.FolwerCreditOrderVo;
 import org.dromara.flower.domain.bo.FolwerCreditOrderBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -32,6 +33,14 @@ public interface IFolwerCreditOrderService {
      * @return 积分订单分页列表
      */
     TableDataInfo<FolwerCreditOrderVo> queryPageList(FolwerCreditOrderBo bo, PageQuery pageQuery);
+
+    /**
+     * 查询积分订单详情
+     *
+     * @param orderId 主键
+     * @return 积分订单详情
+     */
+    FolwerCreditOrderInfoVo queryInfoById(Long orderId);
 
     /**
      * 查询符合条件的积分订单列表

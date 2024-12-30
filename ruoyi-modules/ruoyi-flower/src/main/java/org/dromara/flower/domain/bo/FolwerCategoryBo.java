@@ -62,5 +62,15 @@ public class FolwerCategoryBo extends BaseEntity {
 //    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
 //    private Long deptId;
 
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
+
 
 }

@@ -1,5 +1,6 @@
 package org.dromara.flower.service;
 
+import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.dromara.flower.domain.vo.FolwerOrderRefundVo;
 import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -23,6 +24,14 @@ public interface IFolwerOrderRefundService {
      * @return 订单退款
      */
     FolwerOrderRefundVo queryById(Long refundId);
+
+    /**
+     * 获取订单退款详细信息
+     *
+     * @param refundId
+     * @return
+     */
+    FolwerOrderRefundInfoVo queryInfoById(Long refundId);
 
     /**
      * 分页查询订单退款列表

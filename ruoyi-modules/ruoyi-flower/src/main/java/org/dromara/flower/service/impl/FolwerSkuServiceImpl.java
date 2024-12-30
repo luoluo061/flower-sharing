@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerProductComm;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerSkuBo;
@@ -158,6 +159,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         lqw.eq(bo.getPrice() != null, FolwerSku::getPrice, bo.getPrice());
         lqw.eq(bo.getActualStocks() != null, FolwerSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerSku::getStatus, bo.getStatus());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerSku::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

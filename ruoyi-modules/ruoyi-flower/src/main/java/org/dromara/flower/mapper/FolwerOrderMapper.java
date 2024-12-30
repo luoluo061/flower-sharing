@@ -14,6 +14,6 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface FolwerOrderMapper extends BaseMapperPlus<FolwerOrder, FolwerOrderVo> {
 
-     FolwerOrderInfoVo selectOrderInfoVoById(@Param("orderNumber") Long orderId);
+     FolwerOrderInfoVo selectOrderInfoVoById(@Param("orderId") Long orderId);
 
 }

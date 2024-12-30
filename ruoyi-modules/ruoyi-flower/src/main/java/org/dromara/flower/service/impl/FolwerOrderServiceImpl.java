@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerOrderRefund;
 import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
@@ -103,6 +104,7 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
         lqw.eq(bo.getFinallyTime() != null, FolwerOrder::getFinallyTime, bo.getFinallyTime());
         lqw.eq(bo.getCancelTime() != null, FolwerOrder::getCancelTime, bo.getCancelTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCancelMsg()), FolwerOrder::getCancelMsg, bo.getCancelMsg());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerOrder::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

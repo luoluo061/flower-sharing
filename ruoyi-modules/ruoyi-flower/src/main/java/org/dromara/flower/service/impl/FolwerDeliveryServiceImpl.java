@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerCategory;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerDeliveryBo;
 import org.dromara.flower.domain.vo.FolwerDeliveryVo;
@@ -78,6 +79,7 @@ public class FolwerDeliveryServiceImpl implements IFolwerDeliveryService {
         lqw.eq(bo.getRecTime() != null, FolwerDelivery::getRecTime, bo.getRecTime());
         lqw.eq(bo.getModifyTime() != null, FolwerDelivery::getModifyTime, bo.getModifyTime());
         lqw.eq(StringUtils.isNotBlank(bo.getQueryUrl()), FolwerDelivery::getQueryUrl, bo.getQueryUrl());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerDelivery::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

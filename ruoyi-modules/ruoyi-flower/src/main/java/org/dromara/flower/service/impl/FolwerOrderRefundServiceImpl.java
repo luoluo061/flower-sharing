@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerDelivery;
+import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
 import org.dromara.flower.domain.vo.FolwerOrderRefundVo;
@@ -15,6 +17,7 @@ import org.dromara.flower.domain.FolwerOrderRefund;
 import org.dromara.flower.mapper.FolwerOrderRefundMapper;
 import org.dromara.flower.service.IFolwerOrderRefundService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -40,6 +43,72 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
     @Override
     public FolwerOrderRefundVo queryById(Long refundId){
         return baseMapper.selectVoById(refundId);
+    }
+
+    /**
+     * 查询订单退款详情
+     * @param refundId
+     * @return
+     */
+    @Override
+    public FolwerOrderRefundInfoVo queryInfoById(Long refundId) {
+        FolwerOrderRefundInfoVo folwerOrderRefundInfoVo = baseMapper.selectOrderRefundInfoVoById(refundId);
+        if (folwerOrderRefundInfoVo != null){
+            switch (folwerOrderRefundInfoVo.getStatus().intValue()) {
+                case 0:
+                    folwerOrderRefundInfoVo.setStatusStr("待付款");
+                    break;
+                case 1:
+                    folwerOrderRefundInfoVo.setStatusStr("已支付");
+                    break;
+                case 2:
+                    folwerOrderRefundInfoVo.setStatusStr("已取消");
+                    break;
+                case 3:
+                    folwerOrderRefundInfoVo.setStatusStr("已退款");
+                    break;
+                case 4:
+                    folwerOrderRefundInfoVo.setStatusStr("拒绝退款");
+                    break;
+                case 5:
+                    folwerOrderRefundInfoVo.setStatusStr("待发货");
+                    break;
+                case 6:
+                    folwerOrderRefundInfoVo.setStatusStr("待收货");
+                    break;
+                case 7:
+                    folwerOrderRefundInfoVo.setStatusStr("待评价");
+                    break;
+            }
+
+            switch (folwerOrderRefundInfoVo.getPayType().intValue()){
+                case 0:
+                    folwerOrderRefundInfoVo.setPayTypeStr("手动代付");
+                    break;
+                case 1:
+                    folwerOrderRefundInfoVo.setPayTypeStr("微信支付");
+                    break;
+                case 2:
+                    folwerOrderRefundInfoVo.setPayTypeStr("支付宝");
+                    break;
+            }
+
+            switch (folwerOrderRefundInfoVo.getApplyType().intValue()){
+                case 1:
+                    folwerOrderRefundInfoVo.setApplyTypeStr("拒绝退款");
+                    break;
+                case 2:
+                    folwerOrderRefundInfoVo.setApplyTypeStr("同意退款");
+                    break;
+            }
+        }
+        // 使用split方法按逗号分割字符串
+        String[] splitArray = folwerOrderRefundInfoVo.getRefundPic().split(",");
+        // 将String数组转换为List
+        List<String> splitList = Arrays.asList(splitArray);
+        folwerOrderRefundInfoVo.setRefundMsgPic(splitList);
+        folwerOrderRefundInfoVo.setRefundPic(null);
+        return folwerOrderRefundInfoVo;
     }
 
     /**
@@ -84,6 +153,7 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
         lqw.eq(bo.getRefundTime() != null, FolwerOrderRefund::getRefundTime, bo.getRefundTime());
         lqw.eq(StringUtils.isNotBlank(bo.getBuyerMsg()), FolwerOrderRefund::getBuyerMsg, bo.getBuyerMsg());
         lqw.eq(StringUtils.isNotBlank(bo.getRefundRemark()), FolwerOrderRefund::getRefundRemark, bo.getRefundRemark());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerOrderRefund::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

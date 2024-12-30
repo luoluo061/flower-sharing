@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.domain.vo.FolwerCreditOrderInfoVo;
+import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -43,6 +45,19 @@ public class FolwerCreditOrderController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<FolwerCreditOrderVo> list(FolwerCreditOrderBo bo, PageQuery pageQuery) {
         return folwerCreditOrderService.queryPageList(bo, pageQuery);
+    }
+
+
+    /**
+     * 获取页面积分订单详细信息
+     *
+     * @param orderId 主键
+     */
+    @SaCheckPermission("flower:order:queryinfo")
+    @GetMapping("/info/{orderId}")
+    public R<FolwerCreditOrderInfoVo> getInfoById(@NotNull(message = "主键不能为空")
+                                                  @PathVariable Long orderId) {
+        return R.ok(folwerCreditOrderService.queryInfoById(orderId));
     }
 
     /**

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
+import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -66,6 +68,18 @@ public class FolwerOrderRefundController extends BaseController {
     public R<FolwerOrderRefundVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long refundId) {
         return R.ok(folwerOrderRefundService.queryById(refundId));
+    }
+
+    /**
+     * 获取页面订单详细信息
+     *
+     * @param refundId 主键
+     */
+    @SaCheckPermission("flower:order:queryinfo")
+    @GetMapping("/info/{refundId}")
+    public R<FolwerOrderRefundInfoVo> getInfoById(@NotNull(message = "主键不能为空")
+                                            @PathVariable Long refundId) {
+        return R.ok(folwerOrderRefundService.queryInfoById(refundId));
     }
 
     /**

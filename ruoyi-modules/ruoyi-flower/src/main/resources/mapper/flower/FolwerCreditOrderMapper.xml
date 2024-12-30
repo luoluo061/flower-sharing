@@ -4,4 +4,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.FolwerCreditOrderMapper">
 
+    <select id="selectCreditOrderInfoVoById" resultType="org.dromara.flower.domain.vo.FolwerCreditOrderInfoVo">
+        SELECT fco.order_id, fco.status, fco.actual_total, fco.freight_amount, fco.pay_time,
+               aui.name as userName, aui.phone as userPhone, fpa.addr as addrName, fpa.mobile as mobile, fpa.addr as addr,
+               fd.dvy_name as dvyName, fco.dvy_flow_id as dvyFlowId, fd.dvy_addr as dvyAddr,
+               fco.remarks
+        FROM folwer_credit_order as fco
+                 left join applet_user_information aui on fco.user_id = aui.user_id
+                 left join folwer_delivery fd on fco.dvy_id = fd.dvy_id
+                 left join folwer_pick_addr fpa on fco.addr_order_id = fpa.addr_id
+        where fco.order_id = #{orderId}
+    </select>
+
 </mapper>

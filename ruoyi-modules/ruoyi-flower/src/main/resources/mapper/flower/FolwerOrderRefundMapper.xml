@@ -4,4 +4,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.FolwerOrderRefundMapper">
 
+    <select id="selectOrderRefundInfoVoById" resultType="org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo">
+        SELECT fof.order_id, fo.status, fo.actual_total, fo.freight_amount, fo.total,fof.refund_amount, fo.pay_type, fo.pay_time,
+               aui.name as userName, aui.phone as userPhone, fof.apply_type, fof.refund_time, fof.refund_msg,  fof.refund_remark_pic as refundPic,
+               fof.refund_remark, fo.remarks as orderRemark, fo.remarks as remark
+        FROM folwer_order_refund as fof
+                 left join folwer_order fo on fof.order_id = fo.order_id
+                 left join applet_user_information aui on fo.user_id = aui.user_id
+        where fof.refund_id = #{orderId}
+    </select>
+
 </mapper>

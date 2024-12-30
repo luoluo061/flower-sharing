@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerCreditGetrecords;
 import org.dromara.flower.domain.bo.FolwerCategoryBo;
 import org.dromara.flower.domain.vo.FolwerCategoryVo;
 import org.dromara.system.service.ISysOssService;
@@ -147,6 +148,7 @@ public class FolwerCreditCategoryServiceImpl implements IFolwerCreditCategorySer
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), FolwerCreditCategory::getIcon, bo.getIcon());
         lqw.eq(bo.getSeq() != null, FolwerCreditCategory::getSeq, bo.getSeq());
         lqw.eq(bo.getStatus() != null, FolwerCreditCategory::getStatus, bo.getStatus());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditCategory::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

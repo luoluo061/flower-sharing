@@ -94,5 +94,15 @@ public class FolwerProductCommBo extends BaseEntity {
     @NotNull(message = "是否显示，1:为显示，0:待审核， -1：不通过审核，不显示。 如果需要审核评论，则是0,，否则1不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
+
 
 }
