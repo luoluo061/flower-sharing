@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.flower.domain.CoursesType;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -11,7 +13,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -64,5 +66,14 @@ public class CoursesTypeVo implements Serializable {
     @ExcelProperty(value = "父级Id")
     private Long parentId;
 
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
 
+    /**
+     * 子级数据
+     */
+    private List<CoursesTypeVo> child;
 }
