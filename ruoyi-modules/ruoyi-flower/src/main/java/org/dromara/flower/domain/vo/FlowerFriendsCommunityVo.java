@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.flower.domain.FlowerFriendsCommunity;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -11,7 +13,8 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -71,6 +74,12 @@ public class FlowerFriendsCommunityVo implements Serializable {
     private String grade;
 
     /**
+     * 会员等级名称
+     */
+    @ExcelProperty(value = "会员等级会员等级名称")
+    private String gradeName;
+
+    /**
      * 浏览量
      */
     @ExcelProperty(value = "浏览量")
@@ -89,10 +98,15 @@ public class FlowerFriendsCommunityVo implements Serializable {
     private String content;
 
     /**
-     * 视频或图片URL，多个文件逗号(,)分隔
+     * 视频或图片ID，多个文件逗号(,)分隔
      */
-    @ExcelProperty(value = "视频或图片URL，多个文件逗号(,)分隔")
-    private String videoImagesUrl;
+    @ExcelProperty(value = "视频或图片ID，多个文件逗号(,)分隔")
+    private String videoImagesIds;
+    /**
+     * 视频或图片URL
+     */
+    @ExcelProperty(value = "视频或图片URL")
+    private List<String> videoImagesUrl;
 
     /**
      * 是否隐匿 0 否 1是
@@ -100,5 +114,9 @@ public class FlowerFriendsCommunityVo implements Serializable {
     @ExcelProperty(value = "是否隐匿 0 否 1是")
     private Long status;
 
-
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
 }

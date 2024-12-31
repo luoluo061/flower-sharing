@@ -4,19 +4,21 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
 
 /**
- * 课程分类对象 courses_type
+ * 花友圈--评论详情对象 flower_friends_community_comment
  *
  * @author mlhxj
- * @date 2024-12-27
+ * @date 2024-12-31
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("courses_type")
-public class CoursesType extends TenantEntity {
+@TableName("flower_friends_community_comment")
+public class FlowerFriendsCommunityComment extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -34,28 +36,33 @@ public class CoursesType extends TenantEntity {
     /**
      * 删除标志 0 否 2 是
      */
-    @TableLogic
+//    @TableLogic
     private Long delFlag;
 
     /**
-     * 分类名称
+     * 花友圈ID
      */
-    private String name;
+    private Long flowerFriendsCommunityId;
 
     /**
-     * 状态
+     * 跑路时间
      */
-    private Long status;
+    private Date commentTime;
 
     /**
-     * 排序
+     * 评论内容
      */
-    private Long sort;
+    private String commentContent;
 
     /**
-     * 父级Id
+     * 评论Id，0标识顶级评论，不为 0 表示沟通回复
      */
     private Long parentId;
+
+    /**
+     * 用户ID
+     */
+    private Long appletUserInformationId;
 
 
 }

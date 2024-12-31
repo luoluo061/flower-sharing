@@ -11,7 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             `name`,
             `status`,
             sort
-                parent_id,
+            parent_id,
             create_time
         FROM
             courses_type

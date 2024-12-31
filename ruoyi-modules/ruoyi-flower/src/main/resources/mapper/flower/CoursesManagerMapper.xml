@@ -4,4 +4,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.CoursesManagerMapper">
 
+    <resultMap id="mapResultCoursesType" type="map">
+        <result property="key" column="id"/>
+        <result property="value" column="name"/>
+    </resultMap>
+
+    <select id="selectIdCoursesType" resultMap="mapResultCoursesType">
+        WITH RECURSIVE parent_categories AS (
+        -- 基础查询：找到所有当前分类
+        SELECT id, name, parent_id, id AS root_id -- 保留根节点id
+        FROM courses_type
+        WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+
+        UNION ALL
+
+        -- 递归查询：找到父级分类
+        SELECT ct.id, ct.name, ct.parent_id, pc.root_id -- 保留根节点id
+        FROM courses_type ct
+        INNER JOIN parent_categories pc ON ct.id = pc.parent_id
+        )
+        SELECT
+        pc1.root_id AS id,
+        GROUP_CONCAT(pc1.name ORDER BY pc1.id DESC SEPARATOR '/') AS name
+        FROM parent_categories pc1
+        GROUP BY pc1.root_id;
+    </select>
 </mapper>

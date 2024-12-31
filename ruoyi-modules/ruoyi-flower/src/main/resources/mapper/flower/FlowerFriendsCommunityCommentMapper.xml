@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper">
+
+    <!--实体映射-->
+    <resultMap id="base_result_map" type="org.dromara.flower.domain.FlowerFriendsCommunityComment">
+        <!--主键-->
+        <result column="id" property="id"  />
+        <!--租户编号-->
+        <result column="tenant_id" property="tenantId"  />
+        <!--部门id-->
+        <result column="dept_id" property="deptId"  />
+        <!--创建部门-->
+        <result column="create_dept" property="createDept"  />
+        <!--创建时间-->
+        <result column="create_time" property="createTime"  />
+        <!--创建人-->
+        <result column="create_by" property="createBy"  />
+        <!--更新时间-->
+        <result column="update_time" property="updateTime"  />
+        <!--更新人-->
+        <result column="update_by" property="updateBy"  />
+        <!--删除标志 0 否 2 是-->
+        <result column="del_flag" property="delFlag"  />
+        <!--花友圈ID-->
+        <result column="flower_friends_community_id" property="flowerFriendsCommunityId"  />
+        <!--跑路时间-->
+        <result column="comment_time" property="commentTime"  />
+        <!--评论内容-->
+        <result column="comment_content" property="commentContent"  />
+        <!--评论Id，0标识顶级评论，不为 0 表示回复-->
+        <result column="parent_id" property="parentId"  />
+        <!--用户ID-->
+        <result column="applet_user_information_id" property="appletUserInformationId"  />
+    </resultMap>
+
+
+    <!-- 通用查询结果列-->
+    <sql id="base_column_list">
+        id,tenant_id,dept_id,create_dept,create_time,
+		 create_by,update_time,update_by,del_flag,flower_friends_community_id,
+		comment_time,comment_content,parent_id,applet_user_information_id
+
+    </sql>
+
+    <!-- 基本查询列 -->
+    <sql id="base_condition_filed">
+        <if test="query.id != null and query.id != 0 ">
+            and  id = #{query.id}
+        </if>
+        <if test="query.tenantId != null and query.tenantId != '' ">
+            and  tenant_id = #{query.tenantId}
+        </if>
+        <if test="query.deptId != null and query.deptId != 0 ">
+            and  dept_id = #{query.deptId}
+        </if>
+        <if test="query.createDept != null and query.createDept != 0 ">
+            and  create_dept = #{query.createDept}
+        </if>
+        <if test="query.createTime != null and query.createTime != '' ">
+            <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="query.createBy != null and query.createBy != 0 ">
+            and  create_by = #{query.createBy}
+        </if>
+        <if test="query.updateTime != null and query.updateTime != '' ">
+            <![CDATA[ and  update_time=str_to_date(#{query.updateTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="query.updateBy != null and query.updateBy != 0 ">
+            and  update_by = #{query.updateBy}
+        </if>
+        <if test="query.delFlag != null and query.delFlag != 0 ">
+            and  del_flag = #{query.delFlag}
+        </if>
+        <if test="query.flowerFriendsCommunityId != null and query.flowerFriendsCommunityId != 0 ">
+            and  flower_friends_community_id = #{query.flowerFriendsCommunityId}
+        </if>
+        <if test="query.commentTime != null and query.commentTime != '' ">
+            <![CDATA[ and  comment_time=str_to_date(#{query.commentTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="query.commentContent != null and query.commentContent != '' ">
+            and  comment_content = #{query.commentContent}
+        </if>
+        <if test="query.parentId != null and query.parentId != 0 ">
+            and  parent_id = #{query.parentId}
+        </if>
+        <if test="query.appletUserInformationId != null and query.appletUserInformationId != 0 ">
+            and  applet_user_information_id = #{query.appletUserInformationId}
+        </if>
+    </sql>
+    <!-- 通用条件列-->
+    <sql id="base_condition">
+        <where>
+            <include refid="base_condition_filed" />
+        </where>
+    </sql>
+
+
+</mapper>

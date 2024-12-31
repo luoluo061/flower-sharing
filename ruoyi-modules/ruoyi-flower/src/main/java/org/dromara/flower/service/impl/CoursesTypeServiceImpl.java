@@ -1,14 +1,17 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.TreeBuildUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.system.domain.SysOss;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.CoursesTypeBo;
 import org.dromara.flower.domain.vo.CoursesTypeVo;
@@ -56,31 +59,19 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         bo.setParentId(ZERO);
         LambdaQueryWrapper<CoursesType> lqw = buildQueryWrapper(bo);
         Page<CoursesTypeVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        List<CoursesTypeVo> child = new ArrayList<>();
         // 构造子级
         if (!result.getRecords().isEmpty()) {
-            List<Long> parentIds = result.getRecords().stream()
-                .filter(Objects::nonNull)
-                .map(CoursesTypeVo::getId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .toList();
-
-            if (!parentIds.isEmpty()) {
-                List<CoursesTypeVo> childs = baseMapper.selectChildList(parentIds);
-                Map<Long, List<CoursesTypeVo>> childMap;
-
-                if (!childs.isEmpty()) {
-                    childMap = childs.stream()
-                        .collect(Collectors.groupingBy(CoursesTypeVo::getParentId));
-                } else {
-                    childMap = new HashMap<>();
-                }
-
-                result.getRecords().forEach(vo -> {
-                    vo.setChild(childMap.getOrDefault(vo.getId(), Collections.emptyList()));
-                });
+            // 查询所有的数据
+            LambdaQueryWrapper<CoursesType> all = new LambdaQueryWrapper<>();
+            all.eq(CoursesType::getDelFlag, 0);
+            List<CoursesTypeVo> list = baseMapper.selectVoList(all);
+            child = buildTree(list);
+            if (!child.isEmpty()){
+                result.setRecords(child);
             }
         }
+
         return TableDataInfo.build(result);
     }
 
@@ -158,4 +149,33 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+
+    public static List<CoursesTypeVo> buildTree(List<CoursesTypeVo> nodes) {
+        // 存储所有节点的 Map，key 是节点 ID，value 是节点对象
+        Map<Long, CoursesTypeVo> nodeMap = new HashMap<>();
+        // 存储根节点
+        List<CoursesTypeVo> roots = new ArrayList<>();
+
+        // 1. 将所有节点放入 nodeMap
+        for (CoursesTypeVo node : nodes) {
+            nodeMap.put(node.getId(), node);
+        }
+
+        // 2. 遍历节点，根据 parentId 将子节点加入父节点的 child 列表
+        for (CoursesTypeVo node : nodes) {
+            if (node.getParentId() == null || node.getParentId() == 0) {
+                // 如果 parentId 为 null 或 0，表示是根节点
+                roots.add(node);
+            } else {
+                // 找到父节点并加入 child 列表
+                CoursesTypeVo parent = nodeMap.get(node.getParentId());
+                if (parent != null) {
+                    parent.getChildren().add(node);
+                }
+            }
+        }
+
+        return roots;
+    }
 }
+

@@ -78,9 +78,9 @@ public class FlowerFriendsCommunity extends TenantEntity {
     private String content;
 
     /**
-     * 视频或图片URL，多个文件逗号(,)分隔
+     * 视频或图片ID，多个文件逗号(,)分隔
      */
-    private String videoImagesUrl;
+    private String videoImagesIds;
 
     /**
      * 是否隐匿 0 否 1是

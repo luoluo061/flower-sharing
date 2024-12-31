@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.flower.constant.LockKeyString;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,8 @@ import org.dromara.flower.mapper.CoursesManagerMapper;
 import org.dromara.flower.service.ICoursesManagerService;
 
 import java.time.Duration;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 视频管理Service业务层处理
@@ -68,6 +67,31 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
     public TableDataInfo<CoursesManagerVo> queryPageList(CoursesManagerBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<CoursesManager> lqw = buildQueryWrapper(bo);
         Page<CoursesManagerVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        // 根据当前课程类型父级id查询课程类型名称
+        if (!result.getRecords().isEmpty()) {
+            MapResultHandler<Long, String> map = new MapResultHandler<>();
+            List<Long> ids = result.getRecords().stream()
+                .filter(Objects::nonNull)
+                .map(CoursesManagerVo::getCourseTypeId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+            if (!ids.isEmpty()){
+                baseMapper.selectIdCoursesType(map, ids);
+            }
+            Map<Long, String> mappedResults = map.getMappedResults();
+            Map<Long, String> reversedResults;
+            if (!mappedResults.isEmpty()){
+                reversedResults = reversePathsWithStream(mappedResults);
+            } else {
+                reversedResults = new HashMap<>();
+            }
+            if (!reversedResults.isEmpty()){
+                result.getRecords().forEach(vo->{
+                    vo.setCourseTypeName(reversedResults.get(vo.getCourseTypeId()));
+                });
+            }
+        }
         return TableDataInfo.build(result);
     }
 
@@ -156,6 +180,11 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    @Override
+    public int getCoursesTypeInfo() {
+        return 0;
+    }
+
     /**
      * 生成课程编号 cv2024123000001
      *
@@ -193,6 +222,21 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         }
         //结束
         return coursesCode;
+    }
+
+    private static Map<Long, String> reversePathsWithStream(Map<Long, String> originalMap) {
+        return originalMap.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,  // 保留原始的 key
+                entry -> {
+                    // 将路径按 "/" 分割，反转顺序，再拼接
+                    String[] pathParts = entry.getValue().split("/");
+                    String reversedPath = java.util.stream.Stream.of(pathParts)
+                        .reduce((first, second) -> second + "/" + first)
+                        .orElse("");
+                    return reversedPath;
+                }
+            ));
     }
 
 }

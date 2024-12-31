@@ -76,6 +76,12 @@ public class CoursesManagerVo implements Serializable {
     private Long courseTypeId;
 
     /**
+     * 课程类型
+     */
+    @ExcelProperty(value = "课程类型递归父类名称")
+    private String courseTypeName;
+
+    /**
      * 发布时间
      */
     @ExcelProperty(value = "发布时间")

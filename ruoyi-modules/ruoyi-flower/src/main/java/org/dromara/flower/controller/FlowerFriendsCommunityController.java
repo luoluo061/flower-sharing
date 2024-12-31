@@ -2,10 +2,12 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -101,5 +103,18 @@ public class FlowerFriendsCommunityController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(flowerFriendsCommunityService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    /**
+     * 获取评论信息
+     *
+     * @param ids 主键串
+     */
+    @Log(title = "花友圈", businessType = BusinessType.DELETE)
+    @GetMapping("/comment/{communityId}")
+    @SaIgnore
+    public R<List<FlowerFriendsCommunityCommentVo>> getComment(@NotNull(message = "主键不能为空")
+                          @PathVariable Long communityId) {
+        return flowerFriendsCommunityService.getCommentById(communityId, true);
     }
 }

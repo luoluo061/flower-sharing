@@ -1,5 +1,7 @@
 package org.dromara.flower.service;
 
+import org.dromara.common.core.domain.R;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -65,4 +67,6 @@ public interface IFlowerFriendsCommunityService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    R<List<FlowerFriendsCommunityCommentVo>> getCommentById(Long communityId, boolean b);
 }

@@ -81,10 +81,10 @@ public class FlowerFriendsCommunityBo extends BaseEntity {
     private String content;
 
     /**
-     * 视频或图片URL，多个文件逗号(,)分隔
+     * 视频或图片ID，多个文件逗号(,)分隔
      */
 //    @NotBlank(message = "视频或图片URL，多个文件逗号(,)分隔不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String videoImagesUrl;
+    private String videoImagesIds;
 
     /**
      * 是否隐匿 0 否 1是

@@ -102,4 +102,16 @@ public class CoursesManagerController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(coursesManagerService.deleteWithValidByIds(List.of(ids), true));
     }
+
+    /**
+     * 删除视频管理
+     *
+     * @param ids 主键串
+     */
+    @SaCheckPermission("flower:manager:remove")
+    @Log(title = "视频管理", businessType = BusinessType.DELETE)
+    @GetMapping("/coursesType")
+    public R<Void> getCoursesTypeInfo() {
+        return toAjax(coursesManagerService.getCoursesTypeInfo());
+    }
 }

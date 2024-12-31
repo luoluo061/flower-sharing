@@ -1,8 +1,12 @@
 package org.dromara.flower.domain.vo;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import org.dromara.flower.domain.CoursesType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.flower.domain.FlowerFriendsCommunityComment;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
@@ -12,21 +16,20 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 /**
- * 课程分类视图对象 courses_type
+ * 花友圈--评论详情视图对象 flower_friends_community_comment
  *
  * @author mlhxj
- * @date 2024-12-27
+ * @date 2024-12-31
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = CoursesType.class)
-public class CoursesTypeVo implements Serializable {
+@AutoMapper(target = FlowerFriendsCommunityComment.class)
+public class FlowerFriendsCommunityCommentVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -44,28 +47,34 @@ public class CoursesTypeVo implements Serializable {
     private Long deptId;
 
     /**
-     * 课程名称
+     * 花友圈ID
      */
-    @ExcelProperty(value = "课程名称")
-    private String name;
+    @ExcelProperty(value = "花友圈ID")
+    private Long flowerFriendsCommunityId;
 
     /**
-     * 状态
+     * 跑路时间
      */
-    @ExcelProperty(value = "状态")
-    private Long status;
+    @ExcelProperty(value = "跑路时间")
+    private Date commentTime;
 
     /**
-     * 排序
+     * 评论内容
      */
-    @ExcelProperty(value = "排序")
-    private Long sort;
+    @ExcelProperty(value = "评论内容")
+    private String commentContent;
 
     /**
-     * 父级Id
+     * 评论Id，0标识顶级评论，不为 0 表示回复
      */
-    @ExcelProperty(value = "父级Id")
+    @ExcelProperty(value = "评论Id，0标识顶级评论，不为 0 表示沟通回复")
     private Long parentId;
+
+    /**
+     * 用户ID
+     */
+    @ExcelProperty(value = "用户ID")
+    private Long appletUserInformationId;
 
     /**
      * 创建时间
@@ -73,8 +82,9 @@ public class CoursesTypeVo implements Serializable {
     @ExcelProperty(value = "创建时间")
     private Date createTime;
 
+
     /**
-     * 子级数据
+     * 评论的子级
      */
-    private List<CoursesTypeVo> children = new ArrayList<>();
+    private List<FlowerFriendsCommunityCommentVo> replies = new ArrayList<>();
 }
