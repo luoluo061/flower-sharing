@@ -1,26 +1,31 @@
-package org.dromara.flower.domain.vo;
+package org.dromara.flowerapplet.domain.vo;
 
-import org.dromara.flower.domain.FolwerCreditProduct;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
+
 
 
 /**
- * 积分商品管理视图对象 folwer_credit_product
+ * 小程序端商品管理视图对象 folwer_product
  *
- * @author mlhxj
- * @date 2024-12-27
+ * @author LL
+ * @date 2024-12-31
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = FolwerCreditProduct.class)
-public class FolwerCreditProductVo implements Serializable {
+@AutoMapper(target = FolwerAppletProduct.class)
+public class FolwerAppletProductVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -50,11 +55,10 @@ public class FolwerCreditProductVo implements Serializable {
     private String productListPictureUrl;
 
     /**
-     * 商品列表图
+     * 商品列表图Url
      */
-    @ExcelProperty(value = "商品列表图URL")
-    private String productListPicture;
-
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productListPictureUrl")
+    private String productListPictureUrlUrl;
     /**
      * 商品轮播图
      */
@@ -62,28 +66,39 @@ public class FolwerCreditProductVo implements Serializable {
     private String productCarouselPictureUrl;
 
     /**
+     * 商品轮播图Url
+     */
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productCarouselPictureUrl")
+    private String productCarouselPictureUrlUrl;
+    /**
      * 商品分类
      */
     @ExcelProperty(value = "商品分类")
     private Long categoryId;
 
     /**
-     * 产品类目名称
+     * 原价
      */
-    @ExcelProperty(value = "产品类目名称")
-    private String categoryName;
+    @ExcelProperty(value = "原价")
+    private Long oriPrice;
 
     /**
-     * 兑换积分
+     * 划线价
      */
-    @ExcelProperty(value = "兑换积分")
-    private Long redeemPrice;
+    @ExcelProperty(value = "划线价")
+    private Long derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格
      */
     @ExcelProperty(value = "规格类型 默认是0，表示单规格，1表示多规格")
     private Long normsType;
+
+    /**
+     * 单品SKUID
+     */
+    @ExcelProperty(value = "单品SKUID")
+    private Long skuId;
 
     /**
      * 规格图片
@@ -110,19 +125,6 @@ public class FolwerCreditProductVo implements Serializable {
     private Long weight;
 
     /**
-     * 限购数量
-     */
-    @ExcelProperty(value = "限购数量")
-    private Long quotaNumber;
-
-
-    /**
-     * 售后政策
-     */
-    @ExcelProperty(value = "限购数量")
-    private String afterSales;
-
-    /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
     @ExcelProperty(value = "配送方式 默认是1，表示物流配送, 0，商家配送")
@@ -137,7 +139,8 @@ public class FolwerCreditProductVo implements Serializable {
     /**
      * 默认是1，表示正常状态, -1表示删除, 0下架
      */
-    @ExcelProperty(value = "默认是1，表示正常状态, -1表示删除, 0下架")
+    @ExcelProperty(value = "默认是1，表示正常状态, -1表示删除, 0下架", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "shop_status")
     private Long status;
 
     /**
@@ -147,21 +150,24 @@ public class FolwerCreditProductVo implements Serializable {
     private Long isCoupon;
 
     /**
-     * 是否支持退款1 是 2  否
+     * 是否支持退款1 是 2  否 
      */
-    @ExcelProperty(value = "是否支持退款1 是 2  否 ")
+    @ExcelProperty(value = "是否支持退款1 是 2  否 ", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "shop_yesno_status")
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否
+     * 是否免费配送 1 是 2  否 
      */
-    @ExcelProperty(value = "是否免费配送 1 是 2  否 ")
+    @ExcelProperty(value = "是否免费配送 1 是 2  否 ", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "shop_yesno_status")
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否
+     * 是否预警 1 是 2  否 
      */
-    @ExcelProperty(value = "是否预警 1 是 2  否 ")
+    @ExcelProperty(value = "是否预警 1 是 2  否 ", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "shop_yesno_status")
     private Long ifEarlyWarning;
 
     /**
@@ -177,16 +183,10 @@ public class FolwerCreditProductVo implements Serializable {
     private Long inventoryEarlyWarningProportion;
 
     /**
-     * 商品详情
+     * 商品评论
      */
-    @ExcelProperty(value = "商品详情")
+    @ExcelProperty(value = "商品评论")
     private String remarks;
-
-    /**
-     * 商品多规格
-     */
-    @ExcelProperty(value = "商品多规格")
-    private List<FolwerSkuVo> prodSKU;
 
 
 }

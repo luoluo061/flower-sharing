@@ -57,21 +57,21 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
               // 设置分类名称
             String categoryName = null;
             FolwerCreditCategoryVo folwerCategoryVo = folwerCreditCategoryService.queryById(folwerCreditProductVo.getCategoryId());
-
-            if(!folwerCategoryVo.getParentId().equals(0L)){
-                FolwerCreditCategoryVo ParentFolwerCategoryVo = folwerCreditCategoryService.queryById(folwerCategoryVo.getParentId());
-                categoryName = ParentFolwerCategoryVo.getCategoryName();
-            }
-            if(categoryName == null){
-                categoryName = folwerCategoryVo.getCategoryName();
+            if (folwerCategoryVo != null){
+                if(!folwerCategoryVo.getParentId().equals(0L)){
+                    FolwerCreditCategoryVo ParentFolwerCategoryVo = folwerCreditCategoryService.queryById(folwerCategoryVo.getParentId());
+                    categoryName = ParentFolwerCategoryVo.getCategoryName();
+                }
+                if(categoryName == null){
+                    categoryName = folwerCategoryVo.getCategoryName();
+                }else {
+                    categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                }
+                folwerCreditProductVo.setCategoryName(categoryName);
             }else {
-                categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                folwerCreditProductVo.setCategoryName("");
             }
-            folwerCreditProductVo.setCategoryName(categoryName);
-        }else {
-            folwerCreditProductVo.setCategoryName("");
         }
-
         // 设置图片Url
         if (folwerCreditProductVo.getProductListPictureUrl() != null && !folwerCreditProductVo.getProductListPictureUrl().isEmpty()) {
             Collection<Long> ossIds = new ArrayList<>();
@@ -108,17 +108,20 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
                     // 设置分类名称
                     String categoryName = null;
                     FolwerCreditCategoryVo folwerCategoryVo = folwerCreditCategoryService.queryById(vo.getCategoryId());
-
-                    if(!folwerCategoryVo.getParentId().equals(0L)){
-                        FolwerCreditCategoryVo ParentFolwerCategoryVo = folwerCreditCategoryService.queryById(folwerCategoryVo.getParentId());
-                        categoryName = ParentFolwerCategoryVo.getCategoryName();
-                    }
-                    if(categoryName == null){
-                        categoryName = folwerCategoryVo.getCategoryName();
+                    if (folwerCategoryVo != null){
+                        if(!folwerCategoryVo.getParentId().equals(0L)){
+                            FolwerCreditCategoryVo ParentFolwerCategoryVo = folwerCreditCategoryService.queryById(folwerCategoryVo.getParentId());
+                            categoryName = ParentFolwerCategoryVo.getCategoryName();
+                        }
+                        if(categoryName == null){
+                            categoryName = folwerCategoryVo.getCategoryName();
+                        }else {
+                            categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                        }
+                        vo.setCategoryName(categoryName);
                     }else {
-                        categoryName = categoryName + "/" + folwerCategoryVo.getCategoryName();
+                        vo.setCategoryName("");
                     }
-                    vo.setCategoryName(categoryName);
                 }else {
                     vo.setCategoryName("");
                 }
@@ -186,7 +189,10 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerCreditProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerCreditProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerCreditProduct::getRemarks, bo.getRemarks());
-        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
+        if (bo.getStartTime() != null && bo.getEndTime() != null){
+            lqw.between(FolwerCreditProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
+        }
+//        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

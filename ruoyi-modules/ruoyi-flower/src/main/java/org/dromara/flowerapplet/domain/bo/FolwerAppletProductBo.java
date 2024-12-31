@@ -1,30 +1,30 @@
-package org.dromara.flower.domain;
+package org.dromara.flowerapplet.domain.bo;
 
-import org.dromara.common.tenant.core.TenantEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import org.dromara.flowerapplet.domain.FolwerAppletProduct;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serial;
+import jakarta.validation.constraints.*;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 
 /**
- * 积分商品管理对象 folwer_credit_product
+ * 小程序端商品管理业务对象 folwer_product
  *
- * @author mlhxj
- * @date 2024-12-27
+ * @author LL
+ * @date 2024-12-31
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("folwer_credit_product")
-public class FolwerCreditProduct extends TenantEntity {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@AutoMapper(target = FolwerAppletProduct.class, reverseConvertGenerate = false)
+public class FolwerAppletProductBo extends BaseEntity {
 
     /**
      * 主键
      */
-    @TableId(value = "id")
     private Long id;
 
     /**
@@ -53,14 +53,24 @@ public class FolwerCreditProduct extends TenantEntity {
     private Long categoryId;
 
     /**
-     * 兑换积分
+     * 原价
      */
-    private Long redeemPrice;
+    private Long oriPrice;
+
+    /**
+     * 划线价
+     */
+    private Long derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格
      */
     private Long normsType;
+
+    /**
+     * 单品SKUID
+     */
+    private Long skuId;
 
     /**
      * 规格图片
@@ -81,18 +91,6 @@ public class FolwerCreditProduct extends TenantEntity {
      * 重量
      */
     private Long weight;
-
-
-    /**
-     * 限购数量
-     */
-    private Long quotaNumber;
-
-
-    /**
-     * 售后政策
-     */
-    private String afterSales;
 
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
@@ -115,17 +113,17 @@ public class FolwerCreditProduct extends TenantEntity {
     private Long isCoupon;
 
     /**
-     * 是否支持退款1 是 2  否
+     * 是否支持退款1 是 2  否 
      */
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否
+     * 是否免费配送 1 是 2  否 
      */
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否
+     * 是否预警 1 是 2  否 
      */
     private Long ifEarlyWarning;
 
@@ -140,15 +138,9 @@ public class FolwerCreditProduct extends TenantEntity {
     private Long inventoryEarlyWarningProportion;
 
     /**
-     * 商品详情
+     * 商品评论
      */
     private String remarks;
-
-    /**
-     * 删除标志 0 否 1 是
-     */
-    @TableLogic
-    private Long delFlag;
 
 
 }

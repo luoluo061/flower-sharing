@@ -73,6 +73,17 @@ public class FolwerCreditProductBo extends BaseEntity {
     private Long totalStocks;
 
     /**
+     * 限购数量
+     */
+    private Long quotaNumber;
+
+
+    /**
+     * 售后政策
+     */
+    private String afterSales;
+
+    /**
      * 重量
      */
     private Long weight;

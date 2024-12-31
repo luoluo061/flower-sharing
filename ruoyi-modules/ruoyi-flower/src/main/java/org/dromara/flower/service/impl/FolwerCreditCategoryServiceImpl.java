@@ -47,22 +47,24 @@ public class FolwerCreditCategoryServiceImpl implements IFolwerCreditCategorySer
     @Override
     public FolwerCreditCategoryVo queryById(Long id){
         FolwerCreditCategoryVo folwerCreditCategoryVo = baseMapper.selectVoById(id);
-        // 设置图片Url
-        Collection<Long> ossIds  = new ArrayList<>();
-        ossIds.add(Long.valueOf(folwerCreditCategoryVo.getIcon()));
-        if (!ossIds.isEmpty()){
-            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-            if (!stringStringMap.isEmpty()){
-                // 设置图片Url
-                folwerCreditCategoryVo.setIconUrl(stringStringMap.get(folwerCreditCategoryVo.getIcon()));
+        if(folwerCreditCategoryVo != null){
+            // 设置图片Url
+            Collection<Long> ossIds  = new ArrayList<>();
+            ossIds.add(Long.valueOf(folwerCreditCategoryVo.getIcon()));
+            if (!ossIds.isEmpty()){
+                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+                if (!stringStringMap.isEmpty()){
+                    // 设置图片Url
+                    folwerCreditCategoryVo.setIconUrl(stringStringMap.get(folwerCreditCategoryVo.getIcon()));
+                }
             }
-        }
-        //二级分类
-        if (!folwerCreditCategoryVo.getParentId().equals(0)){
-            FolwerCreditCategoryBo childrenBo = new FolwerCreditCategoryBo();
-            childrenBo.setParentId(folwerCreditCategoryVo.getId());
-            List<FolwerCreditCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-            folwerCreditCategoryVo.setChildren(childrenFolwerCategoryVos);
+            //二级分类
+            if (!folwerCreditCategoryVo.getParentId().equals(0)){
+                FolwerCreditCategoryBo childrenBo = new FolwerCreditCategoryBo();
+                childrenBo.setParentId(folwerCreditCategoryVo.getId());
+                List<FolwerCreditCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
+                folwerCreditCategoryVo.setChildren(childrenFolwerCategoryVos);
+            }
         }
         return folwerCreditCategoryVo;
     }

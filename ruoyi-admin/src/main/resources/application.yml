@@ -223,6 +223,8 @@ springdoc:
       packages-to-scan: org.dromara.generator
     - group: 5.美立花享家
       packages-to-scan: org.dromara.flower
+    - group: 6.美立花享家小程序端
+      packages-to-scan: org.dromara.flowerapplet
 
 # 防止XSS攻击
 xss:
