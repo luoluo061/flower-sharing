@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -15,9 +16,8 @@ import org.dromara.flower.domain.CoursesType;
 import org.dromara.flower.mapper.CoursesTypeMapper;
 import org.dromara.flower.service.ICoursesTypeService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 课程分类Service业务层处理
@@ -31,6 +31,8 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
 
     private final CoursesTypeMapper baseMapper;
 
+    private static final Long ZERO = 0L;
+
     /**
      * 查询课程分类
      *
@@ -38,7 +40,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
      * @return 课程分类
      */
     @Override
-    public CoursesTypeVo queryById(Long id){
+    public CoursesTypeVo queryById(Long id) {
         return baseMapper.selectVoById(id);
     }
 
@@ -51,8 +53,34 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
      */
     @Override
     public TableDataInfo<CoursesTypeVo> queryPageList(CoursesTypeBo bo, PageQuery pageQuery) {
+        bo.setParentId(ZERO);
         LambdaQueryWrapper<CoursesType> lqw = buildQueryWrapper(bo);
         Page<CoursesTypeVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        // 构造子级
+        if (!result.getRecords().isEmpty()) {
+            List<Long> parentIds = result.getRecords().stream()
+                .filter(Objects::nonNull)
+                .map(CoursesTypeVo::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+            if (!parentIds.isEmpty()) {
+                List<CoursesTypeVo> childs = baseMapper.selectChildList(parentIds);
+                Map<Long, List<CoursesTypeVo>> childMap;
+
+                if (!childs.isEmpty()) {
+                    childMap = childs.stream()
+                        .collect(Collectors.groupingBy(CoursesTypeVo::getParentId));
+                } else {
+                    childMap = new HashMap<>();
+                }
+
+                result.getRecords().forEach(vo -> {
+                    vo.setChild(childMap.getOrDefault(vo.getId(), Collections.emptyList()));
+                });
+            }
+        }
         return TableDataInfo.build(result);
     }
 
@@ -112,7 +140,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(CoursesType entity){
+    private void validEntityBeforeSave(CoursesType entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -125,7 +153,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;

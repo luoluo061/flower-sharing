@@ -35,13 +35,13 @@ public class MemberLevelBo extends BaseEntity {
     /**
      * 等级
      */
-    @NotNull(message = "等级不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "等级不能为空", groups = { AddGroup.class, EditGroup.class })
     private String grade;
 
     /**
      * 等级中文名称
      */
-    @NotBlank(message = "等级中文名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "等级中文名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String gradeName;
 
     /**
@@ -52,13 +52,13 @@ public class MemberLevelBo extends BaseEntity {
     /**
      * 折扣比率数值(无百分号)
      */
-    @NotNull(message = "折扣比率数值(无百分号)不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "折扣比率数值(无百分号)不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long discountRatio;
 
     /**
      * 价格
      */
-    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long price;
 
     /**
