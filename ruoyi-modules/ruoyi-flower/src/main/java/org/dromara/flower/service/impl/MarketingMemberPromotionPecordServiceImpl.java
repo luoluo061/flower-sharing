@@ -1,0 +1,143 @@
+package org.dromara.flower.service.impl;
+
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.dromara.flower.domain.bo.MarketingMemberPromotionPecordBo;
+import org.dromara.flower.domain.vo.MarketingMemberPromotionPecordVo;
+import org.dromara.flower.domain.MarketingMemberPromotionPecord;
+import org.dromara.flower.mapper.MarketingMemberPromotionPecordMapper;
+import org.dromara.flower.service.IMarketingMemberPromotionPecordService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Collection;
+
+/**
+ * 会员推广记录Service业务层处理
+ *
+ * @author chy
+ * @date 2024-12-31
+ */
+@RequiredArgsConstructor
+@Service
+public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemberPromotionPecordService {
+
+    private final MarketingMemberPromotionPecordMapper baseMapper;
+
+    /**
+     * 查询会员推广记录
+     *
+     * @param id 主键
+     * @return 会员推广记录
+     */
+    @Override
+    public MarketingMemberPromotionPecordVo queryById(Long id){
+        return baseMapper.selectVoById(id);
+    }
+
+    /**
+     * 分页查询会员推广记录列表
+     *
+     * @param bo        查询条件
+     * @param pageQuery 分页参数
+     * @return 会员推广记录分页列表
+     */
+    @Override
+    public TableDataInfo<MarketingMemberPromotionPecordVo> queryPageList(MarketingMemberPromotionPecordBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<MarketingMemberPromotionPecord> lqw = buildQueryWrapper(bo);
+        Page<MarketingMemberPromotionPecordVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
+
+    /**
+     * 查询符合条件的会员推广记录列表
+     *
+     * @param bo 查询条件
+     * @return 会员推广记录列表
+     */
+    @Override
+    public List<MarketingMemberPromotionPecordVo> queryList(MarketingMemberPromotionPecordBo bo) {
+        LambdaQueryWrapper<MarketingMemberPromotionPecord> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectVoList(lqw);
+    }
+
+    private LambdaQueryWrapper<MarketingMemberPromotionPecord> buildQueryWrapper(MarketingMemberPromotionPecordBo bo) {
+        Map<String, Object> params = bo.getParams();
+        LambdaQueryWrapper<MarketingMemberPromotionPecord> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getDeptId() != null, MarketingMemberPromotionPecord::getDeptId, bo.getDeptId());
+        lqw.eq(bo.getPromotionId() != null, MarketingMemberPromotionPecord::getPromotionId, bo.getPromotionId());
+        lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), MarketingMemberPromotionPecord::getMemberId, bo.getMemberId());
+        lqw.like(StringUtils.isNotBlank(bo.getMemberName()), MarketingMemberPromotionPecord::getMemberName, bo.getMemberName());
+        lqw.eq(bo.getAppletUserInformationId() != null, MarketingMemberPromotionPecord::getAppletUserInformationId, bo.getAppletUserInformationId());
+        lqw.eq(bo.getPromotedPersonId() != null, MarketingMemberPromotionPecord::getPromotedPersonId, bo.getPromotedPersonId());
+        lqw.like(StringUtils.isNotBlank(bo.getPromotedPersonName()), MarketingMemberPromotionPecord::getPromotedPersonName, bo.getPromotedPersonName());
+        lqw.eq(bo.getPromotedPersonStatus() != null, MarketingMemberPromotionPecord::getPromotedPersonStatus, bo.getPromotedPersonStatus());
+        lqw.eq(StringUtils.isNotBlank(bo.getPromotedPersonLevel()), MarketingMemberPromotionPecord::getPromotedPersonLevel, bo.getPromotedPersonLevel());
+        lqw.eq(bo.getPromoterAmount() != null, MarketingMemberPromotionPecord::getPromoterAmount, bo.getPromoterAmount());
+        lqw.eq(bo.getConsumptionAmount() != null, MarketingMemberPromotionPecord::getConsumptionAmount, bo.getConsumptionAmount());
+        lqw.eq(bo.getShoppingRebate() != null, MarketingMemberPromotionPecord::getShoppingRebate, bo.getShoppingRebate());
+        lqw.eq(bo.getRewardSetting() != null, MarketingMemberPromotionPecord::getRewardSetting, bo.getRewardSetting());
+        lqw.eq(bo.getPromotionCashback() != null, MarketingMemberPromotionPecord::getPromotionCashback, bo.getPromotionCashback());
+        lqw.eq(bo.getCreatedAt() != null, MarketingMemberPromotionPecord::getCreatedAt, bo.getCreatedAt());
+        return lqw;
+    }
+
+    /**
+     * 新增会员推广记录
+     *
+     * @param bo 会员推广记录
+     * @return 是否新增成功
+     */
+    @Override
+    public Boolean insertByBo(MarketingMemberPromotionPecordBo bo) {
+        MarketingMemberPromotionPecord add = MapstructUtils.convert(bo, MarketingMemberPromotionPecord.class);
+        validEntityBeforeSave(add);
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setId(add.getId());
+        }
+        return flag;
+    }
+
+    /**
+     * 修改会员推广记录
+     *
+     * @param bo 会员推广记录
+     * @return 是否修改成功
+     */
+    @Override
+    public Boolean updateByBo(MarketingMemberPromotionPecordBo bo) {
+        MarketingMemberPromotionPecord update = MapstructUtils.convert(bo, MarketingMemberPromotionPecord.class);
+        validEntityBeforeSave(update);
+        return baseMapper.updateById(update) > 0;
+    }
+
+    /**
+     * 保存前的数据校验
+     */
+    private void validEntityBeforeSave(MarketingMemberPromotionPecord entity){
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    /**
+     * 校验并批量删除会员推广记录信息
+     *
+     * @param ids     待删除的主键集合
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    @Override
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return baseMapper.deleteByIds(ids) > 0;
+    }
+}
