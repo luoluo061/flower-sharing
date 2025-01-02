@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.CoursesManager;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -77,6 +78,11 @@ public class CoursesManagerBo extends BaseEntity {
     private String accessLevel;
 
     /**
+     * 会员查看权限对应ID,多个权益之间逗号分隔
+     */
+    private String accessIds;
+
+    /**
      * 价格
      */
 //    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
@@ -104,4 +110,15 @@ public class CoursesManagerBo extends BaseEntity {
      * 课程详情
      */
     private CoursesManagerDetailBo detailBo;
+
+    /**
+     * 查询条件开始时间
+     */
+    private Date beginDate;
+
+    /**
+     * 查询条件结束时间
+     */
+    private Date endDate;
+
 }

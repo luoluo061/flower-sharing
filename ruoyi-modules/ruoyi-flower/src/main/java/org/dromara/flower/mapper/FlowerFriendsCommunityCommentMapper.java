@@ -1,8 +1,11 @@
 package org.dromara.flower.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flower.domain.FlowerFriendsCommunityComment;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
+
+import java.util.List;
 
 /**
  * 花友圈--评论详情Mapper接口
@@ -12,4 +15,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface FlowerFriendsCommunityCommentMapper extends BaseMapperPlus<FlowerFriendsCommunityComment, FlowerFriendsCommunityCommentVo> {
 
+    List<FlowerFriendsCommunityCommentVo> selectVoListByCommunityId(@Param("communityId") Long communityId);
 }

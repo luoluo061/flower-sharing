@@ -19,12 +19,15 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.flower.constant.LockKeyString;
+import org.dromara.flower.domain.CoursesManagerDetail;
+import org.dromara.flower.mapper.CoursesManagerDetailMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.CoursesManagerBo;
 import org.dromara.flower.domain.vo.CoursesManagerVo;
 import org.dromara.flower.domain.CoursesManager;
 import org.dromara.flower.mapper.CoursesManagerMapper;
 import org.dromara.flower.service.ICoursesManagerService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.*;
@@ -42,6 +45,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
 
     private final CoursesManagerMapper baseMapper;
     private final LockTemplate lockTemplate;
+    private final CoursesManagerDetailMapper coursesManagerDetailMapper;
 
     private static final long TIMEOUT = 86400;
 
@@ -113,9 +117,9 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         lqw.eq(bo.getDeptId() != null, CoursesManager::getDeptId, bo.getDeptId());
         lqw.like(StringUtils.isNotBlank(bo.getName()), CoursesManager::getName, bo.getName());
         lqw.eq(StringUtils.isNotBlank(bo.getSubtitle()), CoursesManager::getSubtitle, bo.getSubtitle());
-        lqw.eq(StringUtils.isNotBlank(bo.getCode()), CoursesManager::getCode, bo.getCode());
+        lqw.like(StringUtils.isNotBlank(bo.getCode()), CoursesManager::getCode, bo.getCode());
         lqw.eq(bo.getCourseTypeId() != null, CoursesManager::getCourseTypeId, bo.getCourseTypeId());
-        lqw.eq(bo.getPublishDate() != null, CoursesManager::getPublishDate, bo.getPublishDate());
+        lqw.between(bo.getBeginDate() != null && bo.getEndDate() != null, CoursesManager::getPublishDate, bo.getBeginDate(), bo.getEndDate());
         lqw.eq(bo.getNumber() != null, CoursesManager::getNumber, bo.getNumber());
         lqw.eq(StringUtils.isNotBlank(bo.getAccessLevel()), CoursesManager::getAccessLevel, bo.getAccessLevel());
         lqw.eq(bo.getPrice() != null, CoursesManager::getPrice, bo.getPrice());
@@ -132,6 +136,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
      * @return 是否新增成功
      */
     @Override
+    @Transactional
     public Boolean insertByBo(CoursesManagerBo bo) {
         CoursesManager add = MapstructUtils.convert(bo, CoursesManager.class);
         validEntityBeforeSave(add);
@@ -141,6 +146,12 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
+        }
+        // 保存课程相关的富文本
+        if (bo.getDetailBo() != null){
+            CoursesManagerDetail cmd = MapstructUtils.convert(bo.getDetailBo(), CoursesManagerDetail.class);
+            cmd.setCoursesManagerId(add.getId());
+            coursesManagerDetailMapper.insert(cmd);
         }
         return flag;
     }

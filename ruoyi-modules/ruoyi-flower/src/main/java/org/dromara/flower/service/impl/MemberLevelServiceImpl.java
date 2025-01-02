@@ -1,17 +1,23 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.tree.Tree;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.TreeBuildUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.MemberLevelPrivilege;
+import org.dromara.flower.domain.vo.CoursesTypeVo;
 import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
 import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
 import org.dromara.system.service.ISysOssService;
@@ -24,6 +30,7 @@ import org.dromara.flower.service.IMemberLevelService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 会员等级Service业务层处理
@@ -208,6 +215,23 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    @Override
+    public R<List<Map<String,String>>> getMemberLevelTree() {
+        MapResultHandler<Long, String> resultHandler = new MapResultHandler<>();
+        baseMapper.selectIdMapGrade(resultHandler);
+        Map<Long,String> map = resultHandler.getMappedResults();
+        Map<Long, String> sortedMap = new TreeMap<>(map);
+        List<Map<String, String>> resultList = sortedMap.entrySet().stream()
+            .map(entry -> {
+                Map<String, String> item = new HashMap<>();
+                item.put("label", entry.getValue());
+                item.put("value", entry.getKey().toString());
+                return item;
+            })
+            .toList();
+        return R.ok(resultList);
+    }
+
     /**
      * 获取当前登录用户信息
      *
@@ -223,4 +247,5 @@ public class MemberLevelServiceImpl implements IMemberLevelService {
         }
         return loginUser;
     }
+
 }

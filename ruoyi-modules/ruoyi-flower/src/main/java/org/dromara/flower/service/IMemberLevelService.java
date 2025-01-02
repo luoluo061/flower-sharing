@@ -1,5 +1,7 @@
 package org.dromara.flower.service;
 
+import cn.hutool.core.lang.tree.Tree;
+import org.dromara.common.core.domain.R;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.domain.bo.MemberLevelBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -7,6 +9,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 会员等级Service接口
@@ -65,5 +68,11 @@ public interface IMemberLevelService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 下拉类型树结构列表
+     * @return 树结构
+     */
+    R<List<Map<String,String>>> getMemberLevelTree();
 
 }

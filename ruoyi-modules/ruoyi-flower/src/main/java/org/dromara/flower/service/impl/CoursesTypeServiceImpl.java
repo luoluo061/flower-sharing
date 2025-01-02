@@ -1,7 +1,9 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.TreeBuildUtils;
@@ -12,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.system.domain.SysOss;
+import org.dromara.system.domain.vo.SysDeptVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.CoursesTypeBo;
 import org.dromara.flower.domain.vo.CoursesTypeVo;
@@ -150,6 +153,18 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    /**
+     * 下拉类型树结构列表
+     * @return
+     */
+    @Override
+    public R<List<Tree<Long>>> getCoursesTypeTree() {
+        LambdaQueryWrapper<CoursesType> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(CoursesType::getDelFlag, 0);
+        List<CoursesTypeVo> list = baseMapper.selectVoList(lqw);
+        return R.ok(buildCoursesTypeTree(list));
+    }
+
     public static List<CoursesTypeVo> buildTree(List<CoursesTypeVo> nodes) {
         // 存储所有节点的 Map，key 是节点 ID，value 是节点对象
         Map<Long, CoursesTypeVo> nodeMap = new HashMap<>();
@@ -176,6 +191,24 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         }
 
         return roots;
+    }
+
+    /**
+     * 构建前端所需要下拉树结构
+     *
+     * @param coursesTypeVos 课程类型列表
+     * @return 下拉树结构列表
+     */
+    @Override
+    public List<Tree<Long>> buildCoursesTypeTree(List<CoursesTypeVo> coursesTypeVos) {
+        if (CollUtil.isEmpty(coursesTypeVos)) {
+            return CollUtil.newArrayList();
+        }
+        return TreeBuildUtils.build(coursesTypeVos, (dept, tree) ->
+            tree.setId(dept.getId())
+                .setParentId(dept.getParentId())
+                .setName(dept.getName())
+                .setWeight(dept.getSort()));
     }
 }
 

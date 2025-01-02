@@ -72,9 +72,9 @@ public class CoursesPurchaseRecordsServiceImpl implements ICoursesPurchaseRecord
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<CoursesPurchaseRecords> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getDeptId() != null, CoursesPurchaseRecords::getDeptId, bo.getDeptId());
-        lqw.eq(StringUtils.isNotBlank(bo.getCode()), CoursesPurchaseRecords::getCode, bo.getCode());
+        lqw.like(StringUtils.isNotBlank(bo.getCode()), CoursesPurchaseRecords::getCode, bo.getCode());
         lqw.like(StringUtils.isNotBlank(bo.getCoursesName()), CoursesPurchaseRecords::getCoursesName, bo.getCoursesName());
-        lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), CoursesPurchaseRecords::getMemberId, bo.getMemberId());
+        lqw.like(StringUtils.isNotBlank(bo.getMemberId()), CoursesPurchaseRecords::getMemberId, bo.getMemberId());
         lqw.eq(bo.getAppletUserInformationId() != null, CoursesPurchaseRecords::getAppletUserInformationId, bo.getAppletUserInformationId());
         lqw.like(StringUtils.isNotBlank(bo.getName()), CoursesPurchaseRecords::getName, bo.getName());
         lqw.eq(bo.getPrice() != null, CoursesPurchaseRecords::getPrice, bo.getPrice());

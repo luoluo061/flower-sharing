@@ -41,9 +41,9 @@ public class FlowerFriendsCommunityCommentBo extends BaseEntity {
     private Long flowerFriendsCommunityId;
 
     /**
-     * 跑路时间
+     * 评论时间
      */
-//    @NotNull(message = "跑路时间不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "评论时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date commentTime;
 
     /**
@@ -57,12 +57,6 @@ public class FlowerFriendsCommunityCommentBo extends BaseEntity {
      */
 //    @NotNull(message = "评论Id，0标识顶级评论，不为 0 表示回复不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long parentId;
-
-    /**
-     * 用户ID
-     */
-//    @NotNull(message = "用户ID不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long appletUserInformationId;
 
 
 }

@@ -17,4 +17,6 @@ import java.util.List;
 public interface MemberLevelMapper extends BaseMapperPlus<MemberLevel, MemberLevelVo> {
 
     void selectMapByIds(@Param("resultHandler") MapResultHandler resultHandler, @Param("ids") List<Long> ids);
+
+    void selectIdMapGrade(@Param("resultHandler")MapResultHandler<Long, String> resultHandler);
 }

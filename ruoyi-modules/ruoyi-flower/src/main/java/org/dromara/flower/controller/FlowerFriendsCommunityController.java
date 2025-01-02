@@ -113,8 +113,8 @@ public class FlowerFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.DELETE)
     @GetMapping("/comment/{communityId}")
     @SaIgnore
-    public R<List<FlowerFriendsCommunityCommentVo>> getComment(@NotNull(message = "主键不能为空")
+    public List<FlowerFriendsCommunityCommentVo> getComment(@NotNull(message = "主键不能为空")
                           @PathVariable Long communityId) {
-        return flowerFriendsCommunityService.getCommentById(communityId, true);
+        return flowerFriendsCommunityService.getCommentById(communityId);
     }
 }

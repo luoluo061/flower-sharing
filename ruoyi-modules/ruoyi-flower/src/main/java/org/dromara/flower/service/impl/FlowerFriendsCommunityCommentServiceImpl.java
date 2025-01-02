@@ -76,7 +76,6 @@ public class FlowerFriendsCommunityCommentServiceImpl implements IFlowerFriendsC
         lqw.eq(bo.getCommentTime() != null, FlowerFriendsCommunityComment::getCommentTime, bo.getCommentTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCommentContent()), FlowerFriendsCommunityComment::getCommentContent, bo.getCommentContent());
         lqw.eq(bo.getParentId() != null, FlowerFriendsCommunityComment::getParentId, bo.getParentId());
-        lqw.eq(bo.getAppletUserInformationId() != null, FlowerFriendsCommunityComment::getAppletUserInformationId, bo.getAppletUserInformationId());
         return lqw;
     }
 

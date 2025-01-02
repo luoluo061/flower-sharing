@@ -50,7 +50,7 @@ public class CoursesManagerVideoVo implements Serializable {
      * 视频序号
      */
     @ExcelProperty(value = "视频序号")
-    private Long order;
+    private Long sort;
 
     /**
      * 视频状态 0 下架 1 上架

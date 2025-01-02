@@ -100,6 +100,12 @@ public class CoursesManagerVo implements Serializable {
     private String accessLevel;
 
     /**
+     * 会员查看权限对应ID,多个权益之间逗号分隔
+     */
+    @ExcelProperty(value = "会员查看权限对应ID,多个权益之间逗号分隔")
+    private String accessIds;
+
+    /**
      * 价格
      */
     @ExcelProperty(value = "价格")

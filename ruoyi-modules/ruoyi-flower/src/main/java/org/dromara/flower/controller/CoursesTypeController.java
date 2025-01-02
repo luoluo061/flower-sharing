@@ -2,6 +2,8 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.lang.tree.Tree;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -64,7 +66,7 @@ public class CoursesTypeController extends BaseController {
     @SaCheckPermission("flower:type:query")
     @GetMapping("/{id}")
     public R<CoursesTypeVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                    @PathVariable Long id) {
         return R.ok(coursesTypeService.queryById(id));
     }
 
@@ -102,4 +104,15 @@ public class CoursesTypeController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(coursesTypeService.deleteWithValidByIds(List.of(ids), true));
     }
+
+    /**
+     * 下拉类型树结构列表
+     */
+    @Log(title = "课程分类", businessType = BusinessType.DELETE)
+    @GetMapping("/tree")
+    public R<List<Tree<Long>>> getCoursesTypeTree() {
+        return coursesTypeService.getCoursesTypeTree();
+    }
+
+
 }

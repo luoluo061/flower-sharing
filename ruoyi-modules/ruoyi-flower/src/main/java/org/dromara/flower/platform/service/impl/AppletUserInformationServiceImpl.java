@@ -129,12 +129,12 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<AppletUserInformation> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getDeptId() != null, AppletUserInformation::getDeptId, bo.getDeptId());
-        lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), AppletUserInformation::getMemberId, bo.getMemberId());
+        lqw.like(StringUtils.isNotBlank(bo.getMemberId()), AppletUserInformation::getMemberId, bo.getMemberId());
         lqw.like(StringUtils.isNotBlank(bo.getName()), AppletUserInformation::getName, bo.getName());
         lqw.like(StringUtils.isNotBlank(bo.getNickName()), AppletUserInformation::getNickName, bo.getNickName());
         lqw.eq(bo.getAvatarUrl() != null, AppletUserInformation::getAvatarUrl, bo.getAvatarUrl());
         lqw.eq(StringUtils.isNotBlank(bo.getUserType()), AppletUserInformation::getUserType, bo.getUserType());
-        lqw.eq(StringUtils.isNotBlank(bo.getPhone()), AppletUserInformation::getPhone, bo.getPhone());
+        lqw.like(StringUtils.isNotBlank(bo.getPhone()), AppletUserInformation::getPhone, bo.getPhone());
         lqw.eq(StringUtils.isNotBlank(bo.getIdNumber()), AppletUserInformation::getIdNumber, bo.getIdNumber());
         lqw.eq(StringUtils.isNotBlank(bo.getOpenid()), AppletUserInformation::getOpenid, bo.getOpenid());
         lqw.eq(bo.getStatus() != null, AppletUserInformation::getStatus, bo.getStatus());

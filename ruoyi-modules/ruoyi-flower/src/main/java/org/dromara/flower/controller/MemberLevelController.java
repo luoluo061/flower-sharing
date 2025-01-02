@@ -1,8 +1,10 @@
 package org.dromara.flower.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.lang.tree.Tree;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -104,4 +106,12 @@ public class MemberLevelController extends BaseController {
         return toAjax(memberLevelService.deleteWithValidByIds(List.of(ids), true));
     }
 
+    /**
+     * 会员等级IdMapGrade
+     */
+    @Log(title = "会员等级", businessType = BusinessType.DELETE)
+    @GetMapping("/tree")
+    public R<List<Map<String,String>>> getMemberLevelTree() {
+        return memberLevelService.getMemberLevelTree();
+    }
 }

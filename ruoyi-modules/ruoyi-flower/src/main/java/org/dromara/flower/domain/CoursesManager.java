@@ -75,6 +75,11 @@ public class CoursesManager extends TenantEntity {
     private String accessLevel;
 
     /**
+     * 会员查看权限对应ID,多个权益之间逗号分隔
+     */
+    private String accessIds;
+
+    /**
      * 价格
      */
     private Long price;

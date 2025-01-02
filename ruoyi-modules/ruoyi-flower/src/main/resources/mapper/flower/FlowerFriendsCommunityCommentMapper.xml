@@ -96,6 +96,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <include refid="base_condition_filed" />
         </where>
     </sql>
+    <select id="selectVoListByCommunityId"
+            resultType="org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo">
+        SELECT
+            DISTINCT a.id,
+                     a.dept_id,
+                     a.flower_friends_community_id,
+                     a.comment_time,
+                     a.comment_content,
+                     a.parent_id,
+                     a.create_by,
+                     a.create_time,
+                     b.`name`,
+                     b.avatar_url,
+                     c.url
+        FROM
+            flower_friends_community_comment AS a
+                LEFT JOIN applet_user_information AS b ON a.create_by = b.user_id
+                LEFT JOIN sys_oss AS c ON b.avatar_url = c.oss_id
+        WHERE flower_friends_community_id = #{communityId}
+    </select>
 
 
 </mapper>

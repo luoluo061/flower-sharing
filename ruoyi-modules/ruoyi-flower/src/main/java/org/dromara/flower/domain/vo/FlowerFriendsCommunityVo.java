@@ -119,4 +119,15 @@ public class FlowerFriendsCommunityVo implements Serializable {
      */
     @ExcelProperty(value = "创建时间")
     private Date createTime;
+
+    /**
+     * 头像url
+     */
+    @ExcelProperty(value = "头像url")
+    private String url;
+
+    /**
+     * 评论详情
+     */
+    private List<FlowerFriendsCommunityCommentVo> commentVos;
 }

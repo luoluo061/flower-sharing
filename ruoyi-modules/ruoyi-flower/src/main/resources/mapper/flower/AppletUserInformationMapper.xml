@@ -9,6 +9,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="value" column="grade"/>
     </resultMap>
 
+    <resultMap id="mapUserIdToAvatarUrl" type="map">
+        <result property="key" column="id"/>
+        <result property="value" column="avatar_url"/>
+    </resultMap>
+
     <resultMap id="mapUserIdToName" type="map">
         <result property="key" column="user_id"/>
         <result property="value" column="name"/>
@@ -36,4 +41,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </select>
+    <select id="getUserAvatarUrlByMemberId" resultType="java.lang.String">
+        SELECT
+            b.url AS avatar_url
+        FROM
+            applet_user_information AS a
+                LEFT JOIN sys_oss AS b ON a.avatar_url = b.oss_id
+        WHERE a.member_id = #{memberId}
+    </select>
+
 </mapper>

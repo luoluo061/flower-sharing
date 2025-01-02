@@ -1,5 +1,7 @@
 package org.dromara.flower.service;
 
+import cn.hutool.core.lang.tree.Tree;
+import org.dromara.common.core.domain.R;
 import org.dromara.flower.domain.vo.CoursesTypeVo;
 import org.dromara.flower.domain.bo.CoursesTypeBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -65,4 +67,17 @@ public interface ICoursesTypeService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 下拉类型树结构列表
+     * @return
+     */
+    R<List<Tree<Long>>> getCoursesTypeTree();
+
+    /**
+     * 构建树结构
+     * @param coursesTypeVos
+     * @return
+     */
+    List<Tree<Long>> buildCoursesTypeTree(List<CoursesTypeVo> coursesTypeVos);
 }

@@ -68,5 +68,5 @@ public interface IFlowerFriendsCommunityService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    R<List<FlowerFriendsCommunityCommentVo>> getCommentById(Long communityId, boolean b);
+    List<FlowerFriendsCommunityCommentVo> getCommentById(Long communityId);
 }

@@ -73,7 +73,7 @@ public class CoursesManagerVideoServiceImpl implements ICoursesManagerVideoServi
         LambdaQueryWrapper<CoursesManagerVideo> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getDeptId() != null, CoursesManagerVideo::getDeptId, bo.getDeptId());
         lqw.like(StringUtils.isNotBlank(bo.getVideoName()), CoursesManagerVideo::getVideoName, bo.getVideoName());
-        lqw.eq(bo.getOrder() != null, CoursesManagerVideo::getOrder, bo.getOrder());
+        lqw.eq(bo.getSort() != null, CoursesManagerVideo::getSort, bo.getSort());
         lqw.eq(bo.getStatus() != null, CoursesManagerVideo::getStatus, bo.getStatus());
         lqw.eq(bo.getUrl() != null, CoursesManagerVideo::getUrl, bo.getUrl());
         lqw.eq(bo.getCoursesManagerId() != null, CoursesManagerVideo::getCoursesManagerId, bo.getCoursesManagerId());
@@ -129,6 +129,19 @@ public class CoursesManagerVideoServiceImpl implements ICoursesManagerVideoServi
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteByIds(ids) > 0;
+        if (!ids.isEmpty()){
+           ids.forEach(v->{
+               CoursesManagerVideoVo vo = baseMapper.selectVoById(v);
+               if (vo != null){
+                   // 根据视频 ID管理ID和 当前集数删除所有的
+                   LambdaQueryWrapper<CoursesManagerVideo> lqw = new LambdaQueryWrapper<>();
+                   lqw.eq(CoursesManagerVideo::getCoursesManagerId, vo.getCoursesManagerId());
+                   lqw.ge(CoursesManagerVideo::getSort, vo.getSort());
+                   baseMapper.delete(lqw);
+               }
+           });
+           return true;
+        }
+        return false;
     }
 }

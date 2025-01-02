@@ -53,9 +53,9 @@ public class FlowerFriendsCommunityCommentVo implements Serializable {
     private Long flowerFriendsCommunityId;
 
     /**
-     * 跑路时间
+     * 评论时间
      */
-    @ExcelProperty(value = "跑路时间")
+    @ExcelProperty(value = "评论时间")
     private Date commentTime;
 
     /**
@@ -71,17 +71,34 @@ public class FlowerFriendsCommunityCommentVo implements Serializable {
     private Long parentId;
 
     /**
-     * 用户ID
-     */
-    @ExcelProperty(value = "用户ID")
-    private Long appletUserInformationId;
-
-    /**
      * 创建时间
      */
     @ExcelProperty(value = "创建时间")
     private Date createTime;
 
+    /**
+     * 创建者
+     */
+    @ExcelProperty(value = "创建者")
+    private Long createBy;
+
+    /**
+     * 头像Id
+     */
+    @ExcelProperty(value = "头像Id")
+    private String avatarUrl;
+
+    /**
+     * 头像url
+     */
+    @ExcelProperty(value = "头像url")
+    private String url;
+
+    /**
+     * 评论人名称
+     */
+    @ExcelProperty(value = "评论人名称")
+    private String name;
 
     /**
      * 评论的子级

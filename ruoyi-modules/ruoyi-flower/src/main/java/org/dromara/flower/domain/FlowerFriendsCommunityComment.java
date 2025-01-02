@@ -45,7 +45,7 @@ public class FlowerFriendsCommunityComment extends TenantEntity {
     private Long flowerFriendsCommunityId;
 
     /**
-     * 跑路时间
+     * 评论时间
      */
     private Date commentTime;
 
@@ -58,11 +58,6 @@ public class FlowerFriendsCommunityComment extends TenantEntity {
      * 评论Id，0标识顶级评论，不为 0 表示沟通回复
      */
     private Long parentId;
-
-    /**
-     * 用户ID
-     */
-    private Long appletUserInformationId;
 
 
 }

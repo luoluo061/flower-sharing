@@ -18,4 +18,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </select>
+    <select id="selectIdMapGrade" resultMap="mapResult">
+        SELECT
+            id,
+            grade
+        FROM(
+                SELECT
+                    DISTINCT id,
+                             grade,
+                             create_time
+                FROM member_level WHERE del_flag = 0
+                ORDER BY create_time
+            ) AS a
+    </select>
 </mapper>

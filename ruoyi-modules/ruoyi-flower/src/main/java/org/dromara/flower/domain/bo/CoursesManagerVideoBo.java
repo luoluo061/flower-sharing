@@ -23,13 +23,13 @@ public class CoursesManagerVideoBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
      * 部门id
      */
-    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**
@@ -41,13 +41,13 @@ public class CoursesManagerVideoBo extends BaseEntity {
     /**
      * 视频序号
      */
-    @NotNull(message = "视频序号不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long order;
+//    @NotNull(message = "视频序号不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long sort;
 
     /**
      * 视频状态 0 下架 1 上架
      */
-    @NotNull(message = "视频状态 0 下架 1 上架不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "视频状态 0 下架 1 上架不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
     /**

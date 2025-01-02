@@ -1,6 +1,7 @@
 package org.dromara.flower.service.impl;
 
 import org.apache.ibatis.javassist.expr.NewArray;
+import org.apache.ibatis.javassist.expr.NewExpr;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -16,6 +17,7 @@ import org.dromara.flower.domain.vo.CoursesTypeVo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper;
 import org.dromara.flower.mapper.MemberLevelMapper;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.service.IFlowerFriendsCommunityCommentService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ public class FlowerFriendsCommunityServiceImpl implements IFlowerFriendsCommunit
     private final MemberLevelMapper memberLevelMapper;
     private final ISysOssService iSysOssService;
     private final FlowerFriendsCommunityCommentMapper communityCommentMapper;
+    private final AppletUserInformationMapper appletUserInformationMapper;
 
 
     /**
@@ -59,6 +62,15 @@ public class FlowerFriendsCommunityServiceImpl implements IFlowerFriendsCommunit
             if (!url.isEmpty()){
                 vo.setVideoImagesUrl(url.values().stream().toList());
             }
+        }
+        // 查询用户的头像url
+        if (vo != null && vo.getMemberId() != null){
+            String avatarUrl = appletUserInformationMapper.getUserAvatarUrlByMemberId(vo.getMemberId());
+            vo.setUrl(avatarUrl);
+        }
+        // 查询评论详情
+        if (vo != null){
+            vo.setCommentVos(this.getCommentById(id));
         }
         return vo;
     }
@@ -124,7 +136,7 @@ public class FlowerFriendsCommunityServiceImpl implements IFlowerFriendsCommunit
         lqw.eq(bo.getDeptId() != null, FlowerFriendsCommunity::getDeptId, bo.getDeptId());
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), FlowerFriendsCommunity::getTitle, bo.getTitle());
         lqw.eq(bo.getType() != null, FlowerFriendsCommunity::getType, bo.getType());
-        lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), FlowerFriendsCommunity::getMemberId, bo.getMemberId());
+        lqw.like(StringUtils.isNotBlank(bo.getMemberId()), FlowerFriendsCommunity::getMemberId, bo.getMemberId());
         lqw.like(StringUtils.isNotBlank(bo.getMemberName()), FlowerFriendsCommunity::getMemberName, bo.getMemberName());
         lqw.eq(StringUtils.isNotBlank(bo.getGrade()), FlowerFriendsCommunity::getGrade, bo.getGrade());
         lqw.eq(bo.getPageView() != null, FlowerFriendsCommunity::getPageView, bo.getPageView());
@@ -188,16 +200,12 @@ public class FlowerFriendsCommunityServiceImpl implements IFlowerFriendsCommunit
     }
 
     @Override
-    public R<List<FlowerFriendsCommunityCommentVo>> getCommentById(Long communityId, boolean b) {
-        LambdaQueryWrapper<FlowerFriendsCommunityComment> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(FlowerFriendsCommunityComment::getFlowerFriendsCommunityId, communityId);
-        lqw.eq(FlowerFriendsCommunityComment::getDelFlag, 0);
-        List<FlowerFriendsCommunityCommentVo> list = communityCommentMapper.selectVoList(lqw);
-        List<FlowerFriendsCommunityCommentVo> child = new ArrayList<>();
+    public List<FlowerFriendsCommunityCommentVo> getCommentById(Long communityId) {
+        List<FlowerFriendsCommunityCommentVo> list = communityCommentMapper.selectVoListByCommunityId(communityId);
         if (!list.isEmpty()){
-            child = buildTree(list);
+            list = buildTree(list);
         }
-        return R.ok(child);
+        return list;
     }
 
     public static List<Long> convertToLongList(String ids) {
