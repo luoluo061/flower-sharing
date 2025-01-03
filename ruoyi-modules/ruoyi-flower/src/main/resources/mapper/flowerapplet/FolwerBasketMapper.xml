@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.flowerapplet.mapper.FolwerBasketMapper">
+
+    <select id="getShopCartItems" resultType="org.dromara.flowerapplet.domain.bo.FolwerShopCartItemBo">
+        SELECT fb.*
+        FROM folwer_basket fb
+                 LEFT JOIN folwer_product fp ON fb.prod_id = fp.id
+                 LEFT JOIN applet_user_information aui ON fb.user_id = aui.user_id
+                 LEFT JOIN folwer_sku ts ON fb.sku_id = ts.sku_id
+        WHERE fb.user_id = #{userId}
+        ORDER BY fb.`basket_id` DESC
+    </select>
+
+</mapper>
