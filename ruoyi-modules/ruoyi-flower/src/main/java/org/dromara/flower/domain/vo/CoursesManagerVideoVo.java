@@ -65,10 +65,22 @@ public class CoursesManagerVideoVo implements Serializable {
     private Long url;
 
     /**
+     * 视频存储地址 http 地址
+     */
+    @ExcelProperty(value = "视频存储地址 http 地址")
+    private String addressUrl;
+
+    /**
      * 课程id
      */
     @ExcelProperty(value = "课程id")
     private Long coursesManagerId;
+
+    /**
+     * 集数
+     */
+    @ExcelProperty(value = "集数")
+    private Integer numberEpisode;
 
 
 }

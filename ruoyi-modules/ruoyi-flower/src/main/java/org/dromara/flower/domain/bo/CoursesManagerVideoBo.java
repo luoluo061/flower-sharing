@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.CoursesManagerVideo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -63,4 +64,9 @@ public class CoursesManagerVideoBo extends BaseEntity {
     private Long coursesManagerId;
 
 
+    /**
+     * 集数
+     */
+    @NotNull(message = "课程集数不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Integer numberEpisode;
 }

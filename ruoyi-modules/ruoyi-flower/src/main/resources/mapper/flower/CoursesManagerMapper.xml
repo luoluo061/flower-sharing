@@ -8,6 +8,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="key" column="id"/>
         <result property="value" column="name"/>
     </resultMap>
+    <update id="updateCoursesById">
+        UPDATE
+            courses_manager
+        SET `status` = 0
+        WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="selectIdCoursesType" resultMap="mapResultCoursesType">
         WITH RECURSIVE parent_categories AS (
