@@ -102,4 +102,17 @@ public class MarketingMemberPromotionPlanController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(marketingMemberPromotionPlanService.deleteWithValidByIds(List.of(ids), true));
     }
+
+
+    @SaCheckPermission("flower:memberPromotionPlan:editStatus")
+    @Log(title = "营销推广-会员推广计划",businessType = BusinessType.UPDATE)
+    @PutMapping("/{id}")
+    public R<Void> editStatus(@NotBlank(message = "id不能为空") @PathVariable Long id){
+        return toAjax(marketingMemberPromotionPlanService.updateStatus(id));
+    }
+
+
+
+
+
 }

@@ -103,4 +103,31 @@ public class MarketingAdvertisementController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(marketingAdvertisementService.deleteWithValidByIds(List.of(ids), true));
     }
+
+    /**
+     * 切换状态
+     */
+    @SaCheckPermission("flower:advertisement:remove")
+    @Log(title = "广告管理",businessType = BusinessType.UPDATE)
+    @PutMapping("/{id}")
+    public R<Void> editState(@NotNull(message = "不能为空") @PathVariable Long id){
+        return toAjax(marketingAdvertisementService.switchState(id));
+    }
+
+    /**
+     * 小程序端根据类型查询banner信息
+     * @param type
+     * @return
+     */
+    @SaCheckPermission("flower:advertisement:getInfoByType")
+    @GetMapping("/listByType")
+    public R<List<MarketingAdvertisementVo>> getInfoByType(@NotBlank(message = "类型名不能为空") String type){
+        return R.ok(marketingAdvertisementService.selectByType(type));
+
+    }
+
+
+
+
+
 }

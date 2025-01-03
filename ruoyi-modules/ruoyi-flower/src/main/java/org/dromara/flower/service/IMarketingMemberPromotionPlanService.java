@@ -65,4 +65,6 @@ public interface IMarketingMemberPromotionPlanService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    boolean updateStatus(Long id);
 }

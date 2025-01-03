@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -105,6 +106,14 @@ public class MarketingMemberPromotionPlan extends TenantEntity {
      * 推广计划说明
      */
     private String declare;
+
+
+    /**
+     * 剩余奖励额度
+     */
+    @ExcelProperty(value = "剩余奖励额度")
+    private Long surplusRewar;
+
 
 
 }

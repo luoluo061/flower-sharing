@@ -1,5 +1,8 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.service.IFolwerCategoryService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingMemberPromotionPlanBo;
 import org.dromara.flower.domain.vo.MarketingMemberPromotionPlanVo;
@@ -16,9 +20,8 @@ import org.dromara.flower.mapper.MarketingMemberPromotionPlanMapper;
 import org.dromara.flower.service.IMarketingMemberPromotionPlanService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.time.LocalTime;
+import java.util.*;
 
 /**
  * 营销推广-会员推广计划Service业务层处理
@@ -49,11 +52,41 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
      * @param bo        查询条件
      * @param pageQuery 分页参数
      * @return 营销推广-会员推广计划分页列表
+     *
+     *  活动状态 0 否 1 是
      */
     @Override
     public TableDataInfo<MarketingMemberPromotionPlanVo> queryPageList(MarketingMemberPromotionPlanBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MarketingMemberPromotionPlan> lqw = buildQueryWrapper(bo);
         Page<MarketingMemberPromotionPlanVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
+        List<MarketingMemberPromotionPlanVo> records = result.getRecords();
+
+        // 获取当前时间
+        Date nowTime = Calendar.getInstance().getTime();
+
+        UpdateWrapper<MarketingMemberPromotionPlan> updateWrapper = new UpdateWrapper<>();
+
+        for (MarketingMemberPromotionPlanVo record : records) {
+            Date activityBegin = record.getActivityBegin();
+            updateWrapper.eq("id",record.getId());
+
+            // 1. 时间过了，状态为失效 --活动已经结束了
+            if (nowTime.before(activityBegin) && record.getStatus()==1){
+                updateWrapper.set("status",0);
+                baseMapper.update(updateWrapper);
+            }
+            //2. 额度用完，状态为失效
+            if (record.getSurplusRewar()==0L){
+                updateWrapper.set("status",0);
+                baseMapper.update(updateWrapper);
+            }
+            //3. 活动分数用完，状态为失效
+            if (record.getResidue()==0L){
+                updateWrapper.set("status",0);
+                baseMapper.update(updateWrapper);
+            }
+        }
         return TableDataInfo.build(result);
     }
 
@@ -100,17 +133,21 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
     public Boolean insertByBo(MarketingMemberPromotionPlanBo bo) {
         MarketingMemberPromotionPlan add = MapstructUtils.convert(bo, MarketingMemberPromotionPlan.class);
         validEntityBeforeSave(add);
+        // 默认剩余次数
+        add.setResidue(add.getNum());
+        // 默认剩余额度
+        add.setSurplusRewar(add.getMaxRewar());
+
+
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
         }
         return flag;
-
-
-
-
-
     }
+
+
+
 
     /**
      * 修改营销推广-会员推广计划
@@ -130,6 +167,19 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
      */
     private void validEntityBeforeSave(MarketingMemberPromotionPlan entity){
         //TODO 做一些数据校验,如唯一约束
+
+        if (entity.getStatus() !=0 && entity.getStatus()!=1)
+            throw new ServiceException("状态码错误！");
+
+        if (entity.getSuperposition() !=0 && entity.getSuperposition() !=1)
+            throw new ServiceException("是否叠加请重新输入");
+
+        if (entity.getActivityBegin().compareTo(entity.getActivityEnd()) >0)
+            throw  new ServiceException("重新选择活动开始时间与活动结束时间");
+
+
+        if (entity.getName().length()>16) throw new ServiceException("推广名称过长");
+
     }
 
     /**
@@ -146,4 +196,42 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+
+
+    /**
+     * 切换状态
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean updateStatus(Long id) {
+        MarketingMemberPromotionPlan memberPromotionPlan = baseMapper.selectById(id);
+        if (ObjectUtils.isEmpty(memberPromotionPlan))
+            throw  new ServiceException("该记录不存在，请刷新");
+
+        Long status = memberPromotionPlan.getStatus();
+        status=((status == 0)?1L:0);
+
+        UpdateWrapper<MarketingMemberPromotionPlan> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",id);
+        updateWrapper.set("status",status);
+        int update = baseMapper.update(updateWrapper);
+
+
+        return update > 0;
+    }
+
+
+    /**
+     * 活动状态自动更新
+     */
+
+
+
+
+
 }
+
+
+
+

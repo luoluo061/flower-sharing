@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -20,6 +21,9 @@ public class TableDataInfo<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+
+
 
     /**
      * 总记录数

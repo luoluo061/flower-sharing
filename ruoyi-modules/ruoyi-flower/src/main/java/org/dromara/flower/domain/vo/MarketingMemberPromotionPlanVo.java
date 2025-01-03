@@ -66,6 +66,9 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
     @ExcelProperty(value = "活动结束时间")
     private Date activityEnd;
 
+
+
+
     /**
      * 活动状态 0 否 1 是
      */
@@ -85,7 +88,7 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
     private Long residue;
 
     /**
-     * 奖励设置 0 现金 1 花券 2 销售比例 3 积分 
+     * 奖励设置 0 现金 1 花券 2 销售比例 3 积分
      */
     @ExcelProperty(value = "奖励设置 0 现金 1 花券 2 销售比例 3 积分 ")
     private Long award;
@@ -109,6 +112,13 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
     private Long maxRewar;
 
     /**
+     * 剩余奖励额度
+     */
+    @ExcelProperty(value = "剩余奖励额度")
+    private Long surplusRewar;
+
+
+    /**
      * 是否叠加 0 否 1 是
      */
     @ExcelProperty(value = "是否叠加 0 否 1 是")
@@ -119,6 +129,16 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
      */
     @ExcelProperty(value = "推广计划说明")
     private String declare;
+
+
+    /**
+     * 创建时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date createTime;
+
+
+
 
 
 }

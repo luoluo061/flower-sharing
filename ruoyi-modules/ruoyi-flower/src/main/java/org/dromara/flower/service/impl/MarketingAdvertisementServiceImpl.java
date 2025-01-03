@@ -1,5 +1,9 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +12,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.system.service.impl.SysOssServiceImpl;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingAdvertisementBo;
 import org.dromara.flower.domain.vo.MarketingAdvertisementVo;
@@ -15,9 +21,8 @@ import org.dromara.flower.domain.MarketingAdvertisement;
 import org.dromara.flower.mapper.MarketingAdvertisementMapper;
 import org.dromara.flower.service.IMarketingAdvertisementService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 广告管理Service业务层处理
@@ -30,6 +35,8 @@ import java.util.Collection;
 public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisementService {
 
     private final MarketingAdvertisementMapper baseMapper;
+
+    private final SysOssServiceImpl sysOssService;
 
     /**
      * 查询广告管理
@@ -45,6 +52,7 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
     /**
      * 分页查询广告管理列表
      *
+     *
      * @param bo        查询条件
      * @param pageQuery 分页参数
      * @return 广告管理分页列表
@@ -52,9 +60,54 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
     @Override
     public TableDataInfo<MarketingAdvertisementVo> queryPageList(MarketingAdvertisementBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MarketingAdvertisement> lqw = buildQueryWrapper(bo);
+
         Page<MarketingAdvertisementVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        return TableDataInfo.build(result);
+        List<MarketingAdvertisementVo> records = result.getRecords();
+     /*   for (MarketingAdvertisementVo record : records) {
+            String s = sysOssService.selectUrlByIds(record.getThumbnail());
+          if (StringUtils.isNotBlank(s)) throw  new ServiceException("图片不存在");
+
+            record.setThumbnailUrl(s);
+
+
+        }*/
+
+/*        HashMap<String , List<MarketingAdvertisementVo>> groupedBanners  = new HashMap<>();
+        // 遍历对象列表，按类型进行分组
+        for(MarketingAdvertisementVo advertisementVo : records){
+            //如果Map中不存在当前类型的键，则创建一个新的ArrayList
+            groupedBanners.computeIfAbsent(advertisementVo.getType(),k->new ArrayList<>()).add(advertisementVo);
+        }
+
+        // 对每个分组按照 序列号排序
+        for (List<MarketingAdvertisementVo> group :groupedBanners.values()){
+            group.sort(Comparator.comparingLong(MarketingAdvertisementVo::getSortId));
+        }*/
+
+        LinkedHashMap<String, List<MarketingAdvertisementVo>> collectMap = records.stream().collect(Collectors.groupingBy(MarketingAdvertisementVo::getType))
+            .entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().stream()
+                    .sorted(Comparator.comparingLong(MarketingAdvertisementVo::getSortId))
+                    .collect(Collectors.toList()), (oldValue, newValue) -> oldValue,
+                LinkedHashMap::new
+            ));
+
+
+        records.clear();
+        for (List<MarketingAdvertisementVo> list : collectMap.values()) {
+            records.addAll(list);
+        }
+
+
+        TableDataInfo<MarketingAdvertisementVo> build = TableDataInfo.build(result);
+
+
+        return build;
     }
+
 
     /**
      * 查询符合条件的广告管理列表
@@ -116,6 +169,12 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
      */
     private void validEntityBeforeSave(MarketingAdvertisement entity){
         //TODO 做一些数据校验,如唯一约束
+
+
+        if (entity.getStatus()!=0 && entity.getStatus()!=1){
+            throw  new ServiceException("状态输入错误！");
+        }
+        if (entity.getName().length()>16) throw new ServiceException("名称过长！");
     }
 
     /**
@@ -132,4 +191,44 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+    /**
+     * 切换状态
+     * 状态 0 否 1 是
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean switchState(Long id) {
+        MarketingAdvertisement marketingAdvertisement = baseMapper.selectById(id);
+        if (ObjectUtils.isEmpty(marketingAdvertisement)) throw  new ServiceException("切换状态失败！");
+
+
+        Long status = marketingAdvertisement.getStatus();
+        //状态 0 否 1 是
+        status=((status == 0)?1L:0);
+        UpdateWrapper<MarketingAdvertisement> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",id);
+        updateWrapper.set("status",status);
+
+        return baseMapper.update(updateWrapper)>0;
+    }
+
+
+    /**
+     * 根据广告类型查询
+     * @param type
+     * @return
+     */
+    @Override
+    public List<MarketingAdvertisementVo> selectByType(String type) {
+        QueryWrapper queryWrapper = new QueryWrapper<MarketingAdvertisement>();
+        queryWrapper.eq("type",type);
+        List<MarketingAdvertisementVo> list = baseMapper.selectList(queryWrapper);
+
+        return list;
+    }
+
+
+
+
 }
