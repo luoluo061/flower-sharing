@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.CoursesManagerVideoBo;
 import org.dromara.flower.domain.vo.CoursesManagerVideoVo;
@@ -18,6 +20,7 @@ import org.dromara.flower.service.ICoursesManagerVideoService;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * 课程管理-视频管理-视频Service业务层处理
@@ -30,6 +33,7 @@ import java.util.Collection;
 public class CoursesManagerVideoServiceImpl implements ICoursesManagerVideoService {
 
     private final CoursesManagerVideoMapper baseMapper;
+    private final ISysOssService sysOssService;
 
     /**
      * 查询课程管理-视频管理-视频
@@ -53,6 +57,21 @@ public class CoursesManagerVideoServiceImpl implements ICoursesManagerVideoServi
     public TableDataInfo<CoursesManagerVideoVo> queryPageList(CoursesManagerVideoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<CoursesManagerVideo> lqw = buildQueryWrapper(bo);
         Page<CoursesManagerVideoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if (!result.getRecords().isEmpty()) {
+            // 获取图片Url
+            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+                result.getRecords().stream()
+                    .map(CoursesManagerVideoVo::getUrl) // 获取 gradeIcon
+                    .filter(Objects::nonNull) // 过滤掉 null 值
+                    .distinct()
+                    .toList());
+            if (!longStringMap.isEmpty()) {
+                // 设置图片Url
+                result.getRecords().forEach(record ->
+                    record.setAddressUrl(longStringMap.get(record.getUrl().toString()))
+                );
+            }
+        }
         return TableDataInfo.build(result);
     }
 
