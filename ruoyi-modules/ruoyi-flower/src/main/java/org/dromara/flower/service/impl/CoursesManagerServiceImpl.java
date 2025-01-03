@@ -80,18 +80,18 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
-            if (!ids.isEmpty()){
+            if (!ids.isEmpty()) {
                 baseMapper.selectIdCoursesType(map, ids);
             }
             Map<Long, String> mappedResults = map.getMappedResults();
             Map<Long, String> reversedResults;
-            if (!mappedResults.isEmpty()){
+            if (!mappedResults.isEmpty()) {
                 reversedResults = reversePathsWithStream(mappedResults);
             } else {
                 reversedResults = new HashMap<>();
             }
-            if (!reversedResults.isEmpty()){
-                result.getRecords().forEach(vo->{
+            if (!reversedResults.isEmpty()) {
+                result.getRecords().forEach(vo -> {
                     vo.setCourseTypeName(reversedResults.get(vo.getCourseTypeId()));
                 });
             }
@@ -148,7 +148,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
             bo.setId(add.getId());
         }
         // 保存课程相关的富文本
-        if (bo.getDetailBo() != null){
+        if (bo.getDetailBo() != null) {
             CoursesManagerDetail cmd = MapstructUtils.convert(bo.getDetailBo(), CoursesManagerDetail.class);
             cmd.setCoursesManagerId(add.getId());
             coursesManagerDetailMapper.insert(cmd);
@@ -191,9 +191,22 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    /**
+     * 批量修改视频下架
+     *
+     * @param ids
+     * @return
+     */
     @Override
-    public int getCoursesTypeInfo() {
-        return 0;
+    public Boolean editCoursesStatus(Long[] ids) {
+        if (ids.length == 0){
+            return false;
+        }
+        boolean flag = baseMapper.updateCoursesById(ids) > 0;
+        if (flag){
+            return true;
+        }
+        return false;
     }
 
     /**

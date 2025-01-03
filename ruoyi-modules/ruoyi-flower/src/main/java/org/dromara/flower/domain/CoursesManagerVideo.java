@@ -1,5 +1,8 @@
 package org.dromara.flower.domain;
 
+import jakarta.validation.constraints.NotNull;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -62,5 +65,8 @@ public class CoursesManagerVideo extends TenantEntity {
      */
     private Long coursesManagerId;
 
-
+    /**
+     * 集数
+     */
+    private Integer numberEpisode;
 }

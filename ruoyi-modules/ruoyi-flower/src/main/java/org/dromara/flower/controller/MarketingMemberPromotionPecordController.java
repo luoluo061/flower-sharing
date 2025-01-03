@@ -2,10 +2,12 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -102,4 +104,30 @@ public class MarketingMemberPromotionPecordController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(marketingMemberPromotionPecordService.deleteWithValidByIds(List.of(ids), true));
     }
+
+
+    /**
+     * 判断该 “推广人” 是否，已经是 “被推广人了”
+     *
+     */
+
+    @SaCheckPermission("flower:memberPromotionPecord:isPromoted")
+    @GetMapping("/promoted/{id}")
+    public R<MarketingMemberPromotionPecordVo> isPromoted(@NotNull(message = "主键不能为空") @PathVariable Long id){
+
+        MarketingMemberPromotionPecordVo promoted = marketingMemberPromotionPecordService.getPromoted(id);
+        Integer code= ObjectUtils.isEmpty(promoted)?200:500;
+        //200 可以成为推荐人,500 已经是 “被推荐人了”
+
+        if (code.intValue()==500){
+            return R.fail(promoted);
+        }
+        return  R.ok(null);
+    }
+
+
+
+
+
+
 }

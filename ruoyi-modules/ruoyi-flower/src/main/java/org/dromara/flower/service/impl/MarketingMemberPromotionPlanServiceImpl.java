@@ -81,7 +81,7 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
                 updateWrapper.set("status",0);
                 baseMapper.update(updateWrapper);
             }
-            //3. 活动分数用完，状态为失效
+            //3. 活动份数用完，状态为失效
             if (record.getResidue()==0L){
                 updateWrapper.set("status",0);
                 baseMapper.update(updateWrapper);

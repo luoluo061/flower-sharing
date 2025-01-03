@@ -65,4 +65,6 @@ public interface IMarketingMemberPromotionPecordService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    MarketingMemberPromotionPecordVo getPromoted(Long id);
 }

@@ -66,5 +66,10 @@ public interface ICoursesManagerService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    int getCoursesTypeInfo();
+    /**
+     * 批量下架视频
+     * @param ids
+     * @return
+     */
+    Boolean editCoursesStatus(Long[] ids);
 }

@@ -1,5 +1,7 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.mapper.MarketingMemberPromotionPlanMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingMemberPromotionPecordBo;
 import org.dromara.flower.domain.vo.MarketingMemberPromotionPecordVo;
@@ -30,6 +33,8 @@ import java.util.Collection;
 public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemberPromotionPecordService {
 
     private final MarketingMemberPromotionPecordMapper baseMapper;
+
+    private final MarketingMemberPromotionPlanMapper basePlanMapper;
 
     /**
      * 查询会员推广记录
@@ -140,4 +145,25 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+
+
+    /**
+     * 判断该用户是否已经是被推荐人了
+     * @param id
+     * @return
+     */
+    @Override
+    public MarketingMemberPromotionPecordVo getPromoted(Long id) {
+        QueryWrapper<MarketingMemberPromotionPecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("promoted_person_id",id);
+
+        return baseMapper.selectVoOne(queryWrapper);
+    }
+
+
+
+
+
+
+
 }
