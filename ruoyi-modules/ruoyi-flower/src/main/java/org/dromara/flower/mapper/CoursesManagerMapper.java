@@ -17,4 +17,6 @@ import java.util.List;
 public interface CoursesManagerMapper extends BaseMapperPlus<CoursesManager, CoursesManagerVo> {
 
     void selectIdCoursesType(@Param("resultHandler") MapResultHandler<Long, String> resultHandler, @Param("ids")List<Long> ids);
+
+    int updateCoursesById(@Param("ids") Long[] ids);
 }

@@ -104,14 +104,15 @@ public class CoursesManagerController extends BaseController {
     }
 
     /**
-     * 删除视频管理
+     * 修改课程上架下架状态
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("flower:manager:remove")
     @Log(title = "视频管理", businessType = BusinessType.DELETE)
-    @GetMapping("/coursesType")
-    public R<Void> getCoursesTypeInfo() {
-        return toAjax(coursesManagerService.getCoursesTypeInfo());
+    @GetMapping("/coursesType/{ids}")
+    public R<Void> editCoursesStatus(@NotEmpty(message = "主键不能为空")
+                                         @PathVariable Long[] ids) {
+        return toAjax(coursesManagerService.editCoursesStatus(ids));
     }
+
 }
