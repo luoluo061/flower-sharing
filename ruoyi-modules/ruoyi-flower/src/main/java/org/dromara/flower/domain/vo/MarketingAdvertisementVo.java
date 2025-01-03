@@ -76,5 +76,7 @@ public class MarketingAdvertisementVo implements Serializable {
     @ExcelProperty(value = "状态 0 否 1 是")
     private Long status;
 
+    @ExcelProperty(value = "缩影图url")
+    private String thumbnailUrl;
 
 }

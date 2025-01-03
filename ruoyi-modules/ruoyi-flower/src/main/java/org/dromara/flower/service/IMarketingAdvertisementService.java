@@ -65,4 +65,8 @@ public interface IMarketingAdvertisementService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    boolean switchState(Long id);
+
+    List<MarketingAdvertisementVo> selectByType(String type);
 }
