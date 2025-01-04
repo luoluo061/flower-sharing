@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.dromara.common.core.exception.ServiceException;
@@ -118,7 +119,7 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
         lqw.eq(StringUtils.isNotBlank(bo.getUnit()), MarketingMemberPromotionPlan::getUnit, bo.getUnit());
         lqw.eq(bo.getMaxRewar() != null, MarketingMemberPromotionPlan::getMaxRewar, bo.getMaxRewar());
         lqw.eq(bo.getSuperposition() != null, MarketingMemberPromotionPlan::getSuperposition, bo.getSuperposition());
-        lqw.eq(StringUtils.isNotBlank(bo.getDeclare()), MarketingMemberPromotionPlan::getDeclare, bo.getDeclare());
+        lqw.eq(StringUtils.isNotBlank(bo.getDeclareText()), MarketingMemberPromotionPlan::getDeclareText, bo.getDeclareText());
         return lqw;
     }
 
@@ -138,6 +139,8 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
         // 默认剩余额度
         add.setSurplusRewar(add.getMaxRewar());
 
+        //设置编号
+        add.setCode(String.valueOf(IdUtil.getSnowflakeNextId()));
 
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

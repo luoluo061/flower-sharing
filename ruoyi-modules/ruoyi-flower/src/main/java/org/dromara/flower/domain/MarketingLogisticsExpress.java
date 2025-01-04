@@ -6,18 +6,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.util.Date;
 
 /**
- * 广告管理对象 marketing_advertisement
+ * 营销推广-物流快递对象 marketing_logistics_express
  *
  * @author chy
- * @date 2024-12-31
+ * @date 2025-01-06
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("marketing_advertisement")
-public class MarketingAdvertisement extends TenantEntity {
+@TableName("marketing_logistics_express")
+public class MarketingLogisticsExpress extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -25,6 +24,7 @@ public class MarketingAdvertisement extends TenantEntity {
     /**
      * 主键
      */
+    @TableId(type=IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -39,36 +39,19 @@ public class MarketingAdvertisement extends TenantEntity {
     private Long delFlag;
 
     /**
-     * 序号
-     */
-    private Long sortId;
-
-    /**
-     * 类型
-     */
-    private String type;
-
-    /**
-     * 名称
+     * 快递名称
      */
     private String name;
 
     /**
-     * 缩影图url
+     * 快递编码
      */
-    private String thumbnail;
+    private String expressCode;
 
     /**
-     * 链接地址
+     * 排序
      */
-    private String link;
-
-    /**
-     * 状态 0 否 1 是
-     */
-    private Long status;
-
-
+    private Long sort;
 
 
 }

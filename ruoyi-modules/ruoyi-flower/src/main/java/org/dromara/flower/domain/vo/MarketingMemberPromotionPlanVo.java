@@ -2,6 +2,9 @@ package org.dromara.flower.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 import org.dromara.flower.domain.MarketingMemberPromotionPlan;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -128,7 +131,7 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
      * 推广计划说明
      */
     @ExcelProperty(value = "推广计划说明")
-    private String declare;
+    private String declareText;
 
 
     /**
@@ -138,6 +141,24 @@ public class MarketingMemberPromotionPlanVo implements Serializable {
     private Date createTime;
 
 
+    /**
+     * 推广类别
+     */
+    @ExcelProperty(value = "推广类型")
+    private String category;
+
+
+    /**
+     * 推广类别细项（会员规则id）
+     */
+    @ExcelProperty(value = "推广类别细项（会员规则id）")
+    private String categoryDetailsId;
+
+    /**
+     * 推广类别细项（会员规则名称）
+     */
+    @ExcelProperty(value = "推广类别细项（会员规则名称）")
+    private String categoryDetailsName;
 
 
 

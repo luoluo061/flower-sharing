@@ -27,6 +27,7 @@ public class MarketingMemberPromotionPlan extends TenantEntity {
     /**
      * 主键
      */
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -105,7 +106,7 @@ public class MarketingMemberPromotionPlan extends TenantEntity {
     /**
      * 推广计划说明
      */
-    private String declare;
+    private String declareText;
 
 
     /**
@@ -113,6 +114,26 @@ public class MarketingMemberPromotionPlan extends TenantEntity {
      */
     @ExcelProperty(value = "剩余奖励额度")
     private Long surplusRewar;
+
+    /**
+     * 推广类别
+     */
+    @ExcelProperty(value = "推广类型")
+    private String category;
+
+    /**
+     * 推广类别细项（会员规则id）
+     */
+    @ExcelProperty(value = "推广类别细项（会员规则id）")
+    private String categoryDetailsId;
+
+    /**
+     * 推广类别细项（会员规则名称）
+     */
+    @ExcelProperty(value = "推广类别细项（会员规则名称）")
+    private String categoryDetailsName;
+
+
 
 
 

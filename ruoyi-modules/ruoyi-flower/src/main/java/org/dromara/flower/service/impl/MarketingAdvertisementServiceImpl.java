@@ -63,14 +63,14 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
 
         Page<MarketingAdvertisementVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         List<MarketingAdvertisementVo> records = result.getRecords();
-     /*   for (MarketingAdvertisementVo record : records) {
+        for (MarketingAdvertisementVo record : records) {
             String s = sysOssService.selectUrlByIds(record.getThumbnail());
-          if (StringUtils.isNotBlank(s)) throw  new ServiceException("图片不存在");
+          if (StringUtils.isBlank(s)) throw  new ServiceException("图片不存在");
 
             record.setThumbnailUrl(s);
 
 
-        }*/
+        }
 
 /*        HashMap<String , List<MarketingAdvertisementVo>> groupedBanners  = new HashMap<>();
         // 遍历对象列表，按类型进行分组
