@@ -114,4 +114,13 @@ public class AppletUserInformationController extends BaseController {
         return toAjax(appletUserInformationService.updatePointsGoldByBo(bo));
     }
 
+    /**
+     * 查询小程序所有用户信息,无分页,后期实现建议使用用户分组进行管理
+     */
+    @SaCheckPermission("system:userInformation:list")
+    @GetMapping("/memberInfo")
+    public R<List<AppletUserInformationVo>> list() {
+        return appletUserInformationService.queryMemberInfoList();
+    }
+
 }

@@ -25,4 +25,9 @@ public class XcxLoginBody extends LoginBody {
     @NotBlank(message = "{xcx.code.not.blank}")
     private String xcxCode;
 
+    /**
+     * 推荐人ID 如果不是扫别人二维码登录的 传 0
+     */
+    private Long parentId;
+
 }

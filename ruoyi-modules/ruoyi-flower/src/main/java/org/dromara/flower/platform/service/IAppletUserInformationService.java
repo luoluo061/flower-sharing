@@ -1,6 +1,7 @@
 package org.dromara.flower.platform.service;
 
 
+import org.dromara.common.core.domain.R;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
@@ -91,4 +92,10 @@ public interface IAppletUserInformationService {
 
     Boolean updatePointsGoldByBo(AppletUserInformationBo bo);
 
+    /**
+     * 查询所有会员信息
+     * 查询小程序所有用户信息,无分页,后期实现建议使用用户分组进行管理
+     * @return
+     */
+    R<List<AppletUserInformationVo>> queryMemberInfoList();
 }

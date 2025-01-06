@@ -1,5 +1,6 @@
 package org.dromara.flower.platform.domain.vo;
 
+import jakarta.validation.constraints.Size;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 
@@ -209,4 +210,5 @@ public class AppletUserInformationVo implements Serializable {
      */
     @ExcelProperty(value = "生日例子:1999-10-10")
     private String birthday;
+
 }

@@ -7,12 +7,25 @@ import lombok.Data;
  */
 @Data
 public class XcxPhoneInfoVo {
-
+    /**
+     * 登陆人手机号
+     */
     private String phoneNumber;
 
+    /**
+     * 登陆人手机号
+     */
     private String purePhoneNumber;
 
+    /**
+     * 登陆人手机号
+     */
     private String countryCode;
 
+    /**
+     * 登陆人手机号
+     */
     private String watermark;
+
+
 }

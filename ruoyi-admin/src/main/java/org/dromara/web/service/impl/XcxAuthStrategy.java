@@ -2,21 +2,47 @@ package org.dromara.web.service.impl;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.lock.LockInfo;
+import com.baomidou.lock.LockTemplate;
+import com.baomidou.lock.executor.RedissonLockExecutor;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import javassist.expr.NewArray;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.constant.UserConstants;
 import org.dromara.common.core.domain.model.XcxLoginBody;
 import org.dromara.common.core.domain.model.XcxLoginUser;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.utils.CodeUtils;
+import org.dromara.common.core.utils.DateUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.constant.LockKeyString;
+import org.dromara.flower.domain.CoursesManager;
 import org.dromara.flower.mapper.MemberLevelMapper;
+import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.system.domain.SysRole;
+import org.dromara.system.domain.SysUserRole;
+import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
+import org.dromara.system.domain.vo.SysRoleVo;
+import org.dromara.system.mapper.SysRoleMapper;
+import org.dromara.system.mapper.SysUserPostMapper;
+import org.dromara.system.mapper.SysUserRoleMapper;
+import org.dromara.system.service.impl.SysUserServiceImpl;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.XcxPhoneInfoVo;
 import org.dromara.web.properties.InitialMemberLevelProperties;
@@ -24,6 +50,8 @@ import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -40,10 +68,14 @@ public class XcxAuthStrategy implements IAuthStrategy {
 
     private final IAppletUserInformationService appletUserInformationService;
 
-    private final MemberLevelMapper memberLevelMapper;
-
     private final InitialMemberLevelProperties initialMemberLevelProperties;
 
+    private final AppletUserInformationMapper appletUserInformationMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final LockTemplate lockTemplate;
+
+    private final static Long ZERO = 0L;
 
     @Override
     public LoginVo login(String body, SysClientVo client) {
@@ -62,7 +94,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
         /*XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
         phoneInfo.setPhoneNumber("15912341234");*/
         //加载用户信息
-        XcxLoginUser loginUser = loadUserByPhone(phoneInfo.getPhoneNumber());
+        XcxLoginUser loginUser = loadUserByPhone(phoneInfo.getPhoneNumber(), loginBody);
 
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
@@ -132,27 +164,34 @@ public class XcxAuthStrategy implements IAuthStrategy {
 
     /**
      * 通过手机号加载用户信息
+     *
      * @param phone
      * @return
      */
-    private XcxLoginUser loadUserByPhone(String phone) {
+    private XcxLoginUser loadUserByPhone(String phone, XcxLoginBody loginBody) {
         // 通过手机号登录使用手机号作为唯一标识
         //先查询是否有该用户
         AppletUserInformationVo user = appletUserInformationService.getByPhone(phone);
         XcxLoginUser loginUser = new XcxLoginUser();
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在...准备插入用户信息", phone);
-            AppletUserInformationBo bo = new AppletUserInformationBo();
-            bo.setPhone(phone);
-            bo.setUserType("xcx");
-            bo.setMemberId(creaetMemberId());
-            if (appletUserInformationService.insertByBo(bo)) {
-                loginUser.setUserId(bo.getUserId());
-                loginUser.setUserType(bo.getUserType());
-                loginUser.setPhone(bo.getPhone());
+            AppletUserInformationBo aib = new AppletUserInformationBo();
+            aib.setPhone(phone);
+            aib.setUserType("xcx");
+            aib.setMemberId(createMemberId());
+            aib.setParentId(loginBody.getParentId() != null ? loginBody.getParentId() : ZERO);
+            aib.setMemberLevelId(Long.parseLong(initialMemberLevelProperties.getInitialId()));
+            aib.setCreateBy(1L);
+            aib.setCreateDept(103L);
+            if (appletUserInformationService.insertByBo(aib)) {
+                loginUser.setUserId(aib.getUserId());
+                loginUser.setUserType(aib.getUserType());
+                loginUser.setPhone(aib.getPhone());
             } else {
                 throw new ServiceException("添加小程序用户失败");
             }
+            // 设置小程序用户 新增用户角色信息
+            insertUserRole(aib.getUserId(),new Long[]{1871386666300637186L},true);
         } else if (Status.DISABLE.equals(user.getStatus())) {
             throw new ServiceException("登录用户：" + phone + "已被停用");
         } else {
@@ -168,15 +207,77 @@ public class XcxAuthStrategy implements IAuthStrategy {
 
     /**
      * 创建会员编号
+     *
+     * @return 会员编号
      */
-    private String creaetMemberId() {
-        // TODO 后期改为分布式锁生成
-        Random random = new Random();
-        int min = 1000000; // 最小7位数
-        int max = 9999999; // 最大7位数
-        int randomNumber = random.nextInt(max - min + 1) + min;
-        return String.valueOf(randomNumber);
+    private String createMemberId() {
+        // 后期看是否需要调整 26670497793
+        String coursesCode = "";
+        final LockInfo lockInfo = lockTemplate.lock(LockKeyString.COURSES_CODE_LOCK_KEY, 30000L, 5000L, RedissonLockExecutor.class);
+        if (null == lockInfo) {
+            throw new RuntimeException("业务处理中,请稍后再试");
+        }
+        // 获取锁成功，处理业务
+        try {
+            try {
+                QueryWrapper<AppletUserInformation> wrapper = new QueryWrapper<>();
+                wrapper.orderByDesc("create_time");
+                wrapper.last("limit 1");
+                AppletUserInformation aui = appletUserInformationMapper.selectOne(wrapper);
+                if (aui != null) {
+                    // 获取 memberId
+                    String memberId = aui.getMemberId();
+
+                    // 将 memberId 转换为整数并加 1
+                    Long memberIdInt = Long.parseLong(memberId);
+                    Long newMemberIdInt = memberIdInt + 1;
+
+                    // 将新的 memberId 转换回字符串
+                    coursesCode = String.valueOf(newMemberIdInt);
+                } else {
+                    // 如果没有查询到记录，处理这种情况
+                    coursesCode = "26670497794";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println("执行简单方法1 , 当前线程:" + Thread.currentThread().getName());
+        } finally {
+            //释放锁
+            lockTemplate.releaseLock(lockInfo);
+        }
+        //结束
+        return coursesCode;
     }
 
 
+    /**
+     * 新增用户角色信息
+     *
+     * @param userId  用户ID
+     * @param roleIds 角色组
+     * @param clear   清除已存在的关联数据
+     */
+    private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
+        // 小程序角色组 ID 目前写死 1871386666300637186
+        roleIds = new Long[]{1871386666300637186L};
+        if (ArrayUtil.isNotEmpty(roleIds)) {
+            List<Long> roleList = new ArrayList<>(List.of(roleIds));
+            if (!LoginHelper.isSuperAdmin(userId)) {
+                roleList.remove(UserConstants.SUPER_ADMIN_ID);
+            }
+            if (clear) {
+                // 删除用户与角色关联
+                userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
+            }
+            // 新增用户与角色管理
+            List<SysUserRole> list = StreamUtils.toList(roleList, roleId -> {
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(userId);
+                ur.setRoleId(roleId);
+                return ur;
+            });
+            userRoleMapper.insertBatch(list);
+        }
+    }
 }
