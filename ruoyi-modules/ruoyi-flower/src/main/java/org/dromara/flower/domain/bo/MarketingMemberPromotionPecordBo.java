@@ -37,7 +37,7 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 推广编号
      */
-    @NotNull(message = "推广编号不能为空", groups = { AddGroup.class, EditGroup.class })
+     @NotNull(message = "推广编号不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long promotionId;
 
     /**
