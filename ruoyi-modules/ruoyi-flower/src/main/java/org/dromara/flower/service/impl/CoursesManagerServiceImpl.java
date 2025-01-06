@@ -140,6 +140,9 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
     public Boolean insertByBo(CoursesManagerBo bo) {
         CoursesManager add = MapstructUtils.convert(bo, CoursesManager.class);
         validEntityBeforeSave(add);
+        if (add == null){
+            return false;
+        }
         // 生成课程编号
         String coursesCode = createCourses();
         add.setCode(coursesCode);
@@ -248,6 +251,12 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         return coursesCode;
     }
 
+    /**
+     * 查询出来的等级为 c/b/a 转换为 a/b/c
+     *
+     * @param originalMap
+     * @return
+     */
     private static Map<Long, String> reversePathsWithStream(Map<Long, String> originalMap) {
         return originalMap.entrySet().stream()
             .collect(Collectors.toMap(

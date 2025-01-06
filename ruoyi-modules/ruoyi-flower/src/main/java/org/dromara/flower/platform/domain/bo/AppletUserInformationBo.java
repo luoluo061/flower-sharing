@@ -69,7 +69,7 @@ public class AppletUserInformationBo extends BaseEntity {
     private String openid;
 
     /**
-     * 状态 0 否 1 是
+     * 用户状态 0 否 1 是
      */
     private Long status;
 

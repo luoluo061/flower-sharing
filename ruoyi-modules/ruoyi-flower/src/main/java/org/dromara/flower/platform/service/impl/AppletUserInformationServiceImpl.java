@@ -1,6 +1,7 @@
 package org.dromara.flower.platform.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -271,6 +272,12 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         }
 
         return baseMapper.updateById(update) > 0 ? true : false;
+    }
+
+    @Override
+    public R<List<AppletUserInformationVo>> queryMemberInfoList() {
+        List<AppletUserInformationVo> appletUserInformationVos = baseMapper.selectVoList();
+        return R.ok(appletUserInformationVos);
     }
 
     /**

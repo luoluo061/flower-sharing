@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
+import org.dromara.flower.service.IFlowerFriendsCommunityService;
+import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityVo;
+import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -21,7 +24,6 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
-import org.dromara.flower.service.IFlowerFriendsCommunityService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -108,7 +110,7 @@ public class FlowerFriendsCommunityController extends BaseController {
     /**
      * 获取评论信息
      *
-     * @param ids 主键串
+     * @param communityId 主键串
      */
     @Log(title = "花友圈", businessType = BusinessType.DELETE)
     @GetMapping("/comment/{communityId}")
