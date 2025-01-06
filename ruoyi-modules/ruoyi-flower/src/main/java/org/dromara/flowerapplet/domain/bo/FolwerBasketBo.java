@@ -8,14 +8,17 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+import org.dromara.flowerapplet.domain.FolwerShopCartItem;
+import org.w3c.dom.stylesheets.LinkStyle;
+
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
 
 /**
  * 小程序购物车业务对象 folwer_basket
  *
  * @author mlhxj
- * @date 2025-01-02
+ * @date 2025-01-06
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -38,6 +41,11 @@ public class FolwerBasketBo extends BaseEntity {
     private Long skuId;
 
     /**
+     * 优惠券ID
+     */
+//    private Long couponId;
+
+    /**
      * 用户ID
      */
     private String userId;
@@ -51,6 +59,12 @@ public class FolwerBasketBo extends BaseEntity {
      * 购物时间
      */
     private Date basketDate;
+
+    /**
+     * 默认是1，表示正常状态,0为下架状态
+     */
+    private Long status;
+
 
 
 }

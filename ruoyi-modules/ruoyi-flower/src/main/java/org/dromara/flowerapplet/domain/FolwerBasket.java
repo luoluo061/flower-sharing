@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
 
@@ -13,7 +12,7 @@ import java.io.Serial;
  * 小程序购物车对象 folwer_basket
  *
  * @author mlhxj
- * @date 2025-01-02
+ * @date 2025-01-06
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -40,6 +39,11 @@ public class FolwerBasket extends TenantEntity {
     private Long skuId;
 
     /**
+     * 优惠券ID
+     */
+//    private Long couponId;
+
+    /**
      * 用户ID
      */
     private String userId;
@@ -53,6 +57,11 @@ public class FolwerBasket extends TenantEntity {
      * 购物时间
      */
     private Date basketDate;
+
+    /**
+     * 默认是1，表示正常状态,0为下架状态
+     */
+    private Long status;
 
     /**
      * 删除标志 0 否 1 是

@@ -9,7 +9,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.redis.utils.RedisUtils;
-import org.dromara.flowerapplet.domain.bo.FolwerShopCartItemBo;
+import org.dromara.flowerapplet.domain.FolwerShopCartItem;
+import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerBasketBo;
 import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
@@ -35,21 +36,24 @@ public class FolwerBasketServiceImpl implements IFolwerBasketService {
     private final FolwerBasketMapper baseMapper;
 
     @Override
-    public List<FolwerShopCartItemBo> getShopCartItems(String userId) {
+    public FolwerShopCartItem getShopCartItems(String userId) {
         // 在这个类里面要调用这里的缓存信息，并没有使用aop，所以不使用注解
 //        List<FolwerShopCartItemBo> shopCartItemDtoList = cacheManagerUtil.getCache("ShopCartItems", userId);
         String key = "shopcar:" + userId;
-        List<FolwerShopCartItemBo> shopCartItemDtoList = RedisUtils.getCacheObject(key);
-        if (shopCartItemDtoList != null) {
-
-            return shopCartItemDtoList;
+        FolwerShopCartItem folwerShopCartItem = RedisUtils.getCacheObject(key);
+        if (folwerShopCartItem != null) {
+            return folwerShopCartItem;
         }
-        shopCartItemDtoList = baseMapper.getShopCartItems(userId);
-        for (FolwerShopCartItemBo shopCartItemDto : shopCartItemDtoList) {
-//            shopCartItemDto.setProductTotalAmount(Arith.mul(shopCartItemDto.getProdCount(), shopCartItemDto.getPrice()));
+        List<FolwerBasketVo> folwerBasketVos = baseMapper.getShopCartItems(userId);
+        for (FolwerBasketVo folwerBasketVo : folwerBasketVos) {
+            folwerBasketVo.setTotalAmount((long) Arith.mul(folwerBasketVo.getBasketCount(), folwerBasketVo.getPrice()));
         }
-        RedisUtils.setCacheObject(key, shopCartItemDtoList, Duration.ofDays(30));
-        return shopCartItemDtoList;
+        folwerShopCartItem.setFolwerBasketVos(folwerBasketVos);
+        folwerShopCartItem.setProductTotalAmount(folwerBasketVos.stream().mapToDouble(FolwerBasketVo::getTotalAmount).sum());
+        folwerShopCartItem.setBasketCount(folwerBasketVos.stream().mapToLong(FolwerBasketVo::getBasketCount).sum());
+        //不过期
+        RedisUtils.setCacheObject(key, folwerShopCartItem);
+        return folwerShopCartItem;
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.dromara.flowerapplet.service;
 
-import org.dromara.flowerapplet.domain.bo.FolwerShopCartItemBo;
+import org.dromara.flowerapplet.domain.FolwerShopCartItem;
 import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
 import org.dromara.flowerapplet.domain.bo.FolwerBasketBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -23,7 +23,7 @@ public interface IFolwerBasketService {
      * @param userId 用户id
      * @return 购物车商品列表
      */
-    List<FolwerShopCartItemBo> getShopCartItems(String userId);
+    FolwerShopCartItem getShopCartItems(String userId);
 
     /**
      * 查询小程序购物车

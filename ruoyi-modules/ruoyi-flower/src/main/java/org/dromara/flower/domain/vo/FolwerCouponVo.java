@@ -3,6 +3,8 @@ package org.dromara.flower.domain.vo;
 import org.dromara.flower.domain.FolwerCoupon;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
@@ -14,7 +16,7 @@ import java.io.Serializable;
  * 优惠券管理视图对象 folwer_coupon
  *
  * @author mlhxj
- * @date 2025-01-03
+ * @date 2025-01-06
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -51,7 +53,8 @@ public class FolwerCouponVo implements Serializable {
     /**
      * 优惠券类型
      */
-    @ExcelProperty(value = "优惠券类型")
+    @ExcelProperty(value = "优惠券类型", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "coupon_type")
     private String couponType;
 
     /**
@@ -63,7 +66,8 @@ public class FolwerCouponVo implements Serializable {
     /**
      * 优惠券种类，默认是0，表示普通优惠券,1为定向优惠券
      */
-    @ExcelProperty(value = "优惠券种类，默认是0，表示普通优惠券,1为定向优惠券")
+    @ExcelProperty(value = "优惠券种类，默认是0，表示普通优惠券,1为定向优惠券", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "coupon_types")
     private Long type;
 
     /**
@@ -85,15 +89,29 @@ public class FolwerCouponVo implements Serializable {
     private Long total;
 
     /**
+     * 满减金额
+     */
+    @ExcelProperty(value = "满减金额")
+    private Long price;
+
+    /**
+     * 优惠金额
+     */
+    @ExcelProperty(value = "优惠金额")
+    private Long couponPrice;
+
+    /**
      * 状态 默认是1，表示正常领取,0为关闭
      */
-    @ExcelProperty(value = "状态 默认是1，表示正常领取,0为关闭")
+    @ExcelProperty(value = "状态 默认是1，表示正常领取,0为关闭", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "radio_status")
     private Long status;
 
     /**
      * 展示 默认是1，表示展示,0为不展示
      */
-    @ExcelProperty(value = "展示 默认是1，表示展示,0为不展示")
+    @ExcelProperty(value = "展示 默认是1，表示展示,0为不展示", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "radio_status")
     private Long isShow;
 
     /**

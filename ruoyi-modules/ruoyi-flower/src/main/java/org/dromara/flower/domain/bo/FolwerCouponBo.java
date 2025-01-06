@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  * 优惠券管理业务对象 folwer_coupon
  *
  * @author mlhxj
- * @date 2025-01-03
+ * @date 2025-01-06
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -66,6 +66,16 @@ public class FolwerCouponBo extends BaseEntity {
      * 已发放量
      */
     private Long total;
+
+    /**
+     * 满减金额
+     */
+    private Long price;
+
+    /**
+     * 优惠金额
+     */
+    private Long couponPrice;
 
     /**
      * 状态 默认是1，表示正常领取,0为关闭

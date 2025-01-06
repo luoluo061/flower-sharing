@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.dromara.flowerapplet.domain.FolwerBasket;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -20,7 +21,7 @@ import java.util.Date;
  * 小程序购物车视图对象 folwer_basket
  *
  * @author mlhxj
- * @date 2025-01-02
+ * @date 2025-01-06
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -42,11 +43,61 @@ public class FolwerBasketVo implements Serializable {
     @ExcelProperty(value = "商品ID")
     private Long prodId;
 
+    /***
+     * 商品名称
+     */
+    @ExcelProperty(value = "商品名称")
+    private String prodName;
+
+    /***
+     * 商品图片
+     */
+    @ExcelProperty(value = "商品图片")
+    private String prodPic;
+
+    /***
+     * 商品图片Url
+     */
+    @ExcelProperty(value = "商品图片Url")
+    private String prodPicUrl;
+
+    /***
+     * 产品价格
+     */
+    @ExcelProperty(value = "产品价格")
+    private Long price;
+
     /**
      * SkuID
      */
     @ExcelProperty(value = "SkuID")
     private Long skuId;
+
+    /***
+     * 规格名称
+     */
+    private String skuName;
+
+    /***
+     * 颜色
+     */
+    private String colour;
+
+    /***
+     * 重量
+     */
+    private String weight;
+
+    /***
+     * 尺寸
+     */
+    private String size;
+
+    /**
+     * 优惠券ID
+     */
+//    @ExcelProperty(value = "优惠券ID")
+//    private Long couponId;
 
     /**
      * 用户ID
@@ -66,5 +117,16 @@ public class FolwerBasketVo implements Serializable {
     @ExcelProperty(value = "购物时间")
     private Date basketDate;
 
+    /**
+     * 默认是1，表示正常状态,0为下架状态
+     */
+    @ExcelProperty(value = "默认是1，表示正常状态,0为下架状态")
+    private Long status;
+
+    /***
+     * 产品价格
+     */
+    @ExcelProperty(value = "产品价格")
+    private Long totalAmount;
 
 }
