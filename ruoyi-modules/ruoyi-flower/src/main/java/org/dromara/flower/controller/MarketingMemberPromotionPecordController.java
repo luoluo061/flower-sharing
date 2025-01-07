@@ -111,7 +111,7 @@ public class MarketingMemberPromotionPecordController extends BaseController {
      *
      */
 
-    @SaCheckPermission("flower:memberPromotionPecord:isPromoted")
+    @SaCheckPermission("flower:memberPromotionPecord:query")
     @GetMapping("/promoted/{id}")
     public R<MarketingMemberPromotionPecordVo> isPromoted(@NotNull(message = "主键不能为空") @PathVariable Long id){
 
