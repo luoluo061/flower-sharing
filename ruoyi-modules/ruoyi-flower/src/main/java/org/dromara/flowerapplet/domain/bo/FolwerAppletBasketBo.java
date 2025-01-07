@@ -1,18 +1,12 @@
 package org.dromara.flowerapplet.domain.bo;
 
-import org.dromara.flowerapplet.domain.FolwerBasket;
+import org.dromara.flowerapplet.domain.FolwerAppletBasket;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
-import org.dromara.common.core.validate.AddGroup;
-import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
-import org.dromara.flowerapplet.domain.FolwerShopCartItem;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 小程序购物车业务对象 folwer_basket
@@ -22,8 +16,8 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AutoMapper(target = FolwerBasket.class, reverseConvertGenerate = false)
-public class FolwerBasketBo extends BaseEntity {
+@AutoMapper(target = FolwerAppletBasket.class, reverseConvertGenerate = false)
+public class FolwerAppletBasketBo extends BaseEntity {
 
     /**
      * 主键
@@ -48,7 +42,7 @@ public class FolwerBasketBo extends BaseEntity {
     /**
      * 用户ID
      */
-    private String userId;
+    private Long userId;
 
     /**
      * 购物车产品个数

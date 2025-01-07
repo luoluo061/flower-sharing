@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flowerapplet.domain.FolwerShopCartItem;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -17,8 +20,6 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
-import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
-import org.dromara.flowerapplet.domain.bo.FolwerBasketBo;
 import org.dromara.flowerapplet.service.IFolwerBasketService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
@@ -33,7 +34,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/flowerapplet/basket")
-public class FolwerBasketController extends BaseController {
+public class FolwerAppletBasketController extends BaseController {
 
     private final IFolwerBasketService folwerBasketService;
 
@@ -42,7 +43,7 @@ public class FolwerBasketController extends BaseController {
      */
     @SaCheckPermission("flowerapplet:basket:list")
     @GetMapping("/list")
-    public TableDataInfo<FolwerBasketVo> list(FolwerBasketBo bo, PageQuery pageQuery) {
+    public TableDataInfo<FolwerAppletBasketVo> list(FolwerAppletBasketBo bo, PageQuery pageQuery) {
         return folwerBasketService.queryPageList(bo, pageQuery);
     }
 
@@ -52,9 +53,9 @@ public class FolwerBasketController extends BaseController {
     @SaCheckPermission("flowerapplet:basket:export")
     @Log(title = "小程序购物车", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(FolwerBasketBo bo, HttpServletResponse response) {
-        List<FolwerBasketVo> list = folwerBasketService.queryList(bo);
-        ExcelUtil.exportExcel(list, "小程序购物车", FolwerBasketVo.class, response);
+    public void export(FolwerAppletBasketBo bo, HttpServletResponse response) {
+        List<FolwerAppletBasketVo> list = folwerBasketService.queryList(bo);
+        ExcelUtil.exportExcel(list, "小程序购物车", FolwerAppletBasketVo.class, response);
     }
 
     /**
@@ -64,7 +65,7 @@ public class FolwerBasketController extends BaseController {
      */
     @SaCheckPermission("flowerapplet:basket:query")
     @GetMapping("/{basketId}")
-    public R<FolwerBasketVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<FolwerAppletBasketVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long basketId) {
         return R.ok(folwerBasketService.queryById(basketId));
     }
@@ -76,7 +77,7 @@ public class FolwerBasketController extends BaseController {
     @Log(title = "小程序购物车", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerBasketBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerAppletBasketBo bo) {
         return toAjax(folwerBasketService.insertByBo(bo));
     }
 
@@ -87,7 +88,7 @@ public class FolwerBasketController extends BaseController {
     @Log(title = "小程序购物车", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerBasketBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerAppletBasketBo bo) {
         return toAjax(folwerBasketService.updateByBo(bo));
     }
 
@@ -102,5 +103,17 @@ public class FolwerBasketController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] basketIds) {
         return toAjax(folwerBasketService.deleteWithValidByIds(List.of(basketIds), true));
+    }
+
+    /**
+     * 获取小程序购物车列表
+     *
+     * @param userId 主键
+     */
+    @SaCheckPermission("flowerapplet:basket:query")
+    @GetMapping("/CartItem/{userId}")
+    public R<FolwerShopCartItem> getFolwerShopCartItem(@NotNull(message = "主键不能为空")
+                                           @PathVariable Long userId) {
+        return R.ok(folwerBasketService.getShopCartItems(userId));
     }
 }

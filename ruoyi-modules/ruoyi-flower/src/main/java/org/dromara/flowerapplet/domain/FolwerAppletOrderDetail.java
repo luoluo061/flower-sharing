@@ -8,57 +8,57 @@ import lombok.EqualsAndHashCode;
 import java.io.Serial;
 
 /**
- * 小程序端产品类目对象 folwer_category
+ * 订单详细对象 folwer_order_detail
  *
- * @author Lion Li
- * @date 2025-01-02
+ * @author mlhxj
+ * @date 2025-01-07
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("folwer_category")
-public class FolwerAppletCategory extends TenantEntity {
+@TableName("folwer_order_detail")
+public class FolwerAppletOrderDetail extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * 订单ID
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 父节点
+     * 订单流水号
      */
-    private Long parentId;
+    private String orderId;
 
     /**
-     * 产品类目名称
+     * 商品名称
      */
-    private String categoryName;
+    private String productName;
 
     /**
-     * 类目图标
+     * 商品列表图
      */
-    private String icon;
+    private String productListPictureUrl;
 
     /**
-     * 排序
+     * 单价
      */
-    private Long seq;
+    private Long orderPrice;
 
     /**
-     * 默认是1，表示正常状态,0为下线状态
+     * 数量
      */
-    private Long status;
+    private Long number;
 
     /**
-     * 部门id
+     * 小计
      */
-//    private Long deptId;
+    private Long subtotal;
 
     /**
-     * 删除标志 0 否 1 是
+     * 删除标志 0 否 2 是
      */
     @TableLogic
     private Long delFlag;

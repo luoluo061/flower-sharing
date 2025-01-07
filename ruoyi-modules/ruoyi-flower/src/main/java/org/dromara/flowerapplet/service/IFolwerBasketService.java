@@ -1,8 +1,8 @@
 package org.dromara.flowerapplet.service;
 
 import org.dromara.flowerapplet.domain.FolwerShopCartItem;
-import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
-import org.dromara.flowerapplet.domain.bo.FolwerBasketBo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 
@@ -23,7 +23,7 @@ public interface IFolwerBasketService {
      * @param userId 用户id
      * @return 购物车商品列表
      */
-    FolwerShopCartItem getShopCartItems(String userId);
+    FolwerShopCartItem getShopCartItems(Long userId);
 
     /**
      * 查询小程序购物车
@@ -31,7 +31,7 @@ public interface IFolwerBasketService {
      * @param basketId 主键
      * @return 小程序购物车
      */
-    FolwerBasketVo queryById(Long basketId);
+    FolwerAppletBasketVo queryById(Long basketId);
 
     /**
      * 分页查询小程序购物车列表
@@ -40,7 +40,7 @@ public interface IFolwerBasketService {
      * @param pageQuery 分页参数
      * @return 小程序购物车分页列表
      */
-    TableDataInfo<FolwerBasketVo> queryPageList(FolwerBasketBo bo, PageQuery pageQuery);
+    TableDataInfo<FolwerAppletBasketVo> queryPageList(FolwerAppletBasketBo bo, PageQuery pageQuery);
 
     /**
      * 查询符合条件的小程序购物车列表
@@ -48,7 +48,7 @@ public interface IFolwerBasketService {
      * @param bo 查询条件
      * @return 小程序购物车列表
      */
-    List<FolwerBasketVo> queryList(FolwerBasketBo bo);
+    List<FolwerAppletBasketVo> queryList(FolwerAppletBasketBo bo);
 
     /**
      * 新增小程序购物车
@@ -56,7 +56,7 @@ public interface IFolwerBasketService {
      * @param bo 小程序购物车
      * @return 是否新增成功
      */
-    Boolean insertByBo(FolwerBasketBo bo);
+    Boolean insertByBo(FolwerAppletBasketBo bo);
 
     /**
      * 修改小程序购物车
@@ -64,7 +64,7 @@ public interface IFolwerBasketService {
      * @param bo 小程序购物车
      * @return 是否修改成功
      */
-    Boolean updateByBo(FolwerBasketBo bo);
+    Boolean updateByBo(FolwerAppletBasketBo bo);
 
     /**
      * 校验并批量删除小程序购物车信息

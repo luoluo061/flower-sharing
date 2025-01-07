@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -53,7 +54,7 @@ public class FolwerAppletCategoryVo implements Serializable {
     /**
      * 类目图标Url
      */
-    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "icon")
+    @ExcelProperty(value = "类目图标URL")
     private String iconUrl;
     /**
      * 排序
@@ -70,8 +71,14 @@ public class FolwerAppletCategoryVo implements Serializable {
     /**
      * 部门id
      */
-    @ExcelProperty(value = "部门id")
-    private Long deptId;
+//    @ExcelProperty(value = "部门id")
+//    private Long deptId;
+
+    /**
+     * 二级分类
+     */
+    @ExcelProperty(value = "二级分类")
+    private List<FolwerAppletCategoryVo> children;
 
 
 }

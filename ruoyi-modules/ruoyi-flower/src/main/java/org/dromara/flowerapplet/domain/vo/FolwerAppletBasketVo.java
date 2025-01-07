@@ -1,20 +1,17 @@
 package org.dromara.flowerapplet.domain.vo;
 
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.dromara.flowerapplet.domain.FolwerBasket;
+
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import org.dromara.flowerapplet.domain.FolwerAppletBasket;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import org.dromara.common.excel.annotation.ExcelDictFormat;
-import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-
 
 
 /**
@@ -25,8 +22,8 @@ import java.util.Date;
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = FolwerBasket.class)
-public class FolwerBasketVo implements Serializable {
+@AutoMapper(target = FolwerAppletBasket.class)
+public class FolwerAppletBasketVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -58,7 +55,7 @@ public class FolwerBasketVo implements Serializable {
     /***
      * 商品图片Url
      */
-    @ExcelProperty(value = "商品图片Url")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "prodPic")
     private String prodPicUrl;
 
     /***
@@ -103,7 +100,7 @@ public class FolwerBasketVo implements Serializable {
      * 用户ID
      */
     @ExcelProperty(value = "用户ID")
-    private String userId;
+    private Long userId;
 
     /**
      * 购物车产品个数

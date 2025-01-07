@@ -1,8 +1,8 @@
 package org.dromara.flowerapplet.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import org.dromara.flowerapplet.domain.FolwerBasket;
-import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
+import org.dromara.flowerapplet.domain.FolwerAppletBasket;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
  * @author mlhxj
  * @date 2025-01-02
  */
-public interface FolwerBasketMapper extends BaseMapperPlus<FolwerBasket, FolwerBasketVo> {
+public interface FolwerAppletBasketMapper extends BaseMapperPlus<FolwerAppletBasket, FolwerAppletBasketVo> {
 
     /**
      * 获取购物项
      * @param userId 用户id
      * @return 购物项列表
      */
-    List<FolwerBasketVo> getShopCartItems(@Param("userId") String userId);
+    List<FolwerAppletBasketVo> getShopCartItems(@Param("userId") Long userId);
 
 }

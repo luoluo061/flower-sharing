@@ -3,7 +3,7 @@ package org.dromara.flowerapplet.domain;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.dromara.flowerapplet.domain.vo.FolwerBasketVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -33,6 +33,6 @@ public class FolwerShopCartItem implements Serializable {
      * 购物车产品
      */
     @ExcelProperty(value = "购物车产品")
-    private List<FolwerBasketVo> folwerBasketVos;
+    private List<FolwerAppletBasketVo> folwerBasketVos;
 
 }

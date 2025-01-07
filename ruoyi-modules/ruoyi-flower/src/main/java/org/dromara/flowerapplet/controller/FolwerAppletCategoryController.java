@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.domain.bo.FolwerCategoryBo;
+import org.dromara.flower.domain.vo.FolwerCategoryVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCategoryBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCategoryVo;
 import org.dromara.flowerapplet.service.IFolwerAppletCategoryService;
@@ -43,6 +45,17 @@ public class FolwerAppletCategoryController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletCategoryVo> list(FolwerAppletCategoryBo bo, PageQuery pageQuery) {
         return folwerCategoryService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 查询产品所有类目列表
+     */
+    @SaCheckPermission("flowerapplet:category:alllist")
+    @GetMapping("/allList")
+    public R<List<FolwerAppletCategoryVo>> getAllList() {
+        FolwerAppletCategoryBo bo = new FolwerAppletCategoryBo();
+        bo.setParentId(0L);
+        return R.ok(folwerCategoryService.queryList(bo));
     }
 
     /**

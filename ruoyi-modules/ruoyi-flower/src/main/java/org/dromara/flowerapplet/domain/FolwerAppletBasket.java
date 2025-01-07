@@ -17,7 +17,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("folwer_basket")
-public class FolwerBasket extends TenantEntity {
+public class FolwerAppletBasket extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -46,7 +46,7 @@ public class FolwerBasket extends TenantEntity {
     /**
      * 用户ID
      */
-    private String userId;
+    private Long userId;
 
     /**
      * 购物车产品个数
