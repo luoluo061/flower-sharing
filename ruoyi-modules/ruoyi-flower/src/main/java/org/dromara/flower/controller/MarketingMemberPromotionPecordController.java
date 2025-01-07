@@ -97,13 +97,13 @@ public class MarketingMemberPromotionPecordController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("flower:memberPromotionPecord:remove")
+/*    @SaCheckPermission("flower:memberPromotionPecord:remove")
     @Log(title = "会员推广记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(marketingMemberPromotionPecordService.deleteWithValidByIds(List.of(ids), true));
-    }
+    }*/
 
 
     /**
@@ -124,6 +124,8 @@ public class MarketingMemberPromotionPecordController extends BaseController {
         }
         return  R.ok(null);
     }
+
+
 
 
 

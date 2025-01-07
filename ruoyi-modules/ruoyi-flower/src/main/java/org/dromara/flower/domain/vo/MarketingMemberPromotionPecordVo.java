@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.flower.domain.MarketingMemberPromotionPecord;
@@ -46,7 +47,7 @@ public class MarketingMemberPromotionPecordVo implements Serializable {
      * 推广编号
      */
     @ExcelProperty(value = "推广编号")
-    private Long promotionId;
+    private String promotionId;
 
     /**
      * 会员ID
@@ -60,11 +61,6 @@ public class MarketingMemberPromotionPecordVo implements Serializable {
     @ExcelProperty(value = "会员名称")
     private String memberName;
 
-    /**
-     * 用户ID
-     */
-    @ExcelProperty(value = "用户ID")
-    private Long appletUserInformationId;
 
     /**
      * 被推销人ID
@@ -94,19 +90,19 @@ public class MarketingMemberPromotionPecordVo implements Serializable {
      * 被推广人购买会员金额
      */
     @ExcelProperty(value = "被推广人购买会员金额")
-    private Long promoterAmount;
+    private BigDecimal  promoterAmount;
 
     /**
      * 被推广人消费金额
      */
     @ExcelProperty(value = "被推广人消费金额")
-    private Long consumptionAmount;
+    private BigDecimal  consumptionAmount;
 
     /**
      * 购物返点
      */
     @ExcelProperty(value = "购物返点")
-    private Long shoppingRebate;
+    private BigDecimal shoppingRebate;
 
     /**
      * 奖励设置 0 否 1 是
@@ -118,13 +114,19 @@ public class MarketingMemberPromotionPecordVo implements Serializable {
      * 推广返现小计
      */
     @ExcelProperty(value = "推广返现小计")
-    private Long promotionCashback;
+    private BigDecimal  promotionCashback;
 
     /**
      * 发布时间
      */
-    @ExcelProperty(value = "发布时间")
-    private Date createdAt;
+/*    @ExcelProperty(value = "发布时间")
+    private Date createdAt;*/
+
+    /**
+     * 推广时间
+     */
+    @ExcelProperty(value = "推广时间")
+    private Date createTime;
 
 
 }

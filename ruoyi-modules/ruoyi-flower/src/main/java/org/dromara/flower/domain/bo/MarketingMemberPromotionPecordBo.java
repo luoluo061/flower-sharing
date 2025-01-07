@@ -25,20 +25,20 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
      * 部门id
      */
-    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**
      * 推广编号
      */
-     @NotNull(message = "推广编号不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long promotionId;
+    //@NotNull(message = "推广编号不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String promotionId;
 
     /**
      * 会员ID
@@ -52,11 +52,7 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String memberName;
 
-    /**
-     * 用户ID
-     */
-    @NotNull(message = "用户ID不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long appletUserInformationId;
+
 
     /**
      * 被推销人ID
@@ -73,7 +69,7 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 被推销人会员状态 是否充值 0 否 1 是
      */
-    @NotNull(message = "被推销人会员状态 是否充值 0 否 1 是不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "被推销人会员状态 是否充值 0 否 1 是不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long promotedPersonStatus;
 
     /**
@@ -85,38 +81,39 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 被推广人购买会员金额
      */
-    @NotNull(message = "被推广人购买会员金额不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long promoterAmount;
+    //@NotNull(message = "被推广人购买会员金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    //private BigDecimal  promoterAmount;
 
     /**
      * 被推广人消费金额
      */
-    @NotNull(message = "被推广人消费金额不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long consumptionAmount;
+    // @NotNull(message = "被推广人消费金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    //private BigDecimal  consumptionAmount;
 
     /**
      * 购物返点
      */
-    @NotNull(message = "购物返点不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long shoppingRebate;
+    //@NotNull(message = "购物返点不能为空", groups = { AddGroup.class, EditGroup.class })
+    //private BigDecimal  shoppingRebate;
 
     /**
-     * 奖励设置 0 否 1 是
+     * 是否奖励  0 否 1 是
      */
-    @NotNull(message = "奖励设置 0 否 1 是不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "奖励设置 0 否 1 是不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long rewardSetting;
+
 
     /**
      * 推广返现小计
      */
-    @NotNull(message = "推广返现小计不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long promotionCashback;
+    //@NotNull(message = "推广返现小计不能为空", groups = { AddGroup.class, EditGroup.class })
+    //private BigDecimal  promotionCashback;
 
     /**
-     * 发布时间
+     * 推广时间
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotNull(message = "发布时间不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
+    //@NotNull(message = "推广时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date createdAt;
 
 

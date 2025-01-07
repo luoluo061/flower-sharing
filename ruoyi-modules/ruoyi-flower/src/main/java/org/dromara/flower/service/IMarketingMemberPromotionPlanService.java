@@ -67,4 +67,15 @@ public interface IMarketingMemberPromotionPlanService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     boolean updateStatus(Long id);
+
+
+    /**
+     *
+     * @param code
+     * @return
+     *
+     * 推广计划 实行了一次
+     */
+    boolean updateNumSurplusRewar(String code);
+
 }
