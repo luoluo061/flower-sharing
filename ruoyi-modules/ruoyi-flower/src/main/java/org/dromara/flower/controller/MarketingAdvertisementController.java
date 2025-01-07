@@ -119,7 +119,7 @@ public class MarketingAdvertisementController extends BaseController {
      * @param type
      * @return
      */
-    @SaCheckPermission("flower:advertisement:getInfoByType")
+    //@SaCheckPermission("flower:advertisement:query")
     @GetMapping("/listByType")
     public R<List<MarketingAdvertisementVo>> getInfoByType(@NotBlank(message = "类型名不能为空") String type){
         return R.ok(marketingAdvertisementService.selectByType(type));

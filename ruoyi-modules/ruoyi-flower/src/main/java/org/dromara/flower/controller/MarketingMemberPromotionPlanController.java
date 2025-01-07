@@ -104,7 +104,7 @@ public class MarketingMemberPromotionPlanController extends BaseController {
     }
 
 
-    @SaCheckPermission("flower:memberPromotionPlan:editStatus")
+    @SaCheckPermission("flower:memberPromotionPlan:edit")
     @Log(title = "营销推广-会员推广计划",businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
     public R<Void> editStatus(@NotBlank(message = "id不能为空") @PathVariable Long id){

@@ -79,4 +79,14 @@ public class MarketingAdvertisementVo implements Serializable {
     @ExcelProperty(value = "缩影图url")
     private String thumbnailUrl;
 
+
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
+
+
+
+
 }

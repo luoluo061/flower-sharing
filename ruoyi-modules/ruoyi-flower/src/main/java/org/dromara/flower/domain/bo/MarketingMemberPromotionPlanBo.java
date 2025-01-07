@@ -25,19 +25,19 @@ public class MarketingMemberPromotionPlanBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
      * 部门id
      */
-    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**
      * 推广计划编号
      */
-    @NotBlank(message = "推广计划编号不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotBlank(message = "推广计划编号不能为空", groups = { AddGroup.class, EditGroup.class })
     private String code;
 
     /**
@@ -75,13 +75,13 @@ public class MarketingMemberPromotionPlanBo extends BaseEntity {
     /**
      * 剩余数量
      */
-    @NotNull(message = "剩余数量不能为空", groups = { AddGroup.class, EditGroup.class })
+    // @NotNull(message = "剩余数量不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long residue;
 
     /**
      * 奖励设置 0 现金 1 花券 2 销售比例 3 积分
      */
-    @NotNull(message = "奖励设置 0 现金 1 花券 2 销售比例 3 积分 不能为空", groups = { AddGroup.class, EditGroup.class })
+    // @NotNull(message = "奖励设置 0 现金 1 花券 2 销售比例 3 积分 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long award;
 
     /**
@@ -112,7 +112,26 @@ public class MarketingMemberPromotionPlanBo extends BaseEntity {
      * 推广计划说明
      */
     //@NotBlank(message = "推广计划说明不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String declare;
+    private String declareText;
+
+
+    /**
+     * 推广类别
+     */
+    @NotBlank(message = "推广类别不能为空",groups = { AddGroup.class, EditGroup.class })
+    private  String category;
+
+    /**
+     * 推广类别细项（会员规则id）
+     */
+    @NotBlank(message = "推广类别细项不能为空",groups = { AddGroup.class, EditGroup.class })
+    private String categoryDetailsId;
+
+    /**
+     * 推广类别细项（会员规则名称）
+     */
+    @NotBlank(message = "推广类别细项名称不能为空",groups = { AddGroup.class, EditGroup.class })
+    private String categoryDetailsName;
 
 
 }
