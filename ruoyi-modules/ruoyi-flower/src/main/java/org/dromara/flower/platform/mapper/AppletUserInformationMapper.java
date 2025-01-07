@@ -24,4 +24,10 @@ public interface AppletUserInformationMapper extends BaseMapperPlus<AppletUserIn
     void getParentNameByIds(@Param("resultHandler") MapResultHandler resultHandler, @Param("ids") List<Long> parentIds);
 
     String getUserAvatarUrlByMemberId(@Param("memberId") String memberId);
+
+    List<AppletUserInformationVo> selectUserInfoByIds(@Param("createByIds") List<Long> createByIds);
+
+    AppletUserInformationVo getNameAndAvatarUrlVoById(@Param("userId")Long createBy);
+
+    String getMemberLevelInfoById(@Param("id") Long userId);
 }

@@ -5,9 +5,6 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
-import org.dromara.flowerapplet.domain.bo.FlowerAppletFriendsCommunityBo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityCommentVo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +23,7 @@ public interface IFlowerAppletFriendsCommunityService {
      * @param id 主键
      * @return 花友圈
      */
-    FlowerAppletFriendsCommunityVo queryById(Long id);
+    FlowerFriendsCommunityVo queryById(Long id);
 
     /**
      * 分页查询花友圈列表
@@ -35,7 +32,7 @@ public interface IFlowerAppletFriendsCommunityService {
      * @param pageQuery 分页参数
      * @return 花友圈分页列表
      */
-    TableDataInfo<FlowerAppletFriendsCommunityVo> queryPageList(FlowerAppletFriendsCommunityBo bo, PageQuery pageQuery);
+    TableDataInfo<FlowerFriendsCommunityVo> queryPageList(FlowerFriendsCommunityBo bo, PageQuery pageQuery);
 
     /**
      * 查询符合条件的花友圈列表
@@ -43,7 +40,7 @@ public interface IFlowerAppletFriendsCommunityService {
      * @param bo 查询条件
      * @return 花友圈列表
      */
-    List<FlowerAppletFriendsCommunityVo> queryList(FlowerAppletFriendsCommunityBo bo);
+    List<FlowerFriendsCommunityVo> queryList(FlowerFriendsCommunityBo bo);
 
     /**
      * 新增花友圈
@@ -51,7 +48,7 @@ public interface IFlowerAppletFriendsCommunityService {
      * @param bo 花友圈
      * @return 是否新增成功
      */
-    Boolean insertByBo(FlowerAppletFriendsCommunityBo bo);
+    Boolean insertByBo(FlowerFriendsCommunityBo bo);
 
     /**
      * 修改花友圈
@@ -59,7 +56,7 @@ public interface IFlowerAppletFriendsCommunityService {
      * @param bo 花友圈
      * @return 是否修改成功
      */
-    Boolean updateByBo(FlowerAppletFriendsCommunityBo bo);
+    Boolean updateByBo(FlowerFriendsCommunityBo bo);
 
     /**
      * 校验并批量删除花友圈信息
@@ -70,5 +67,5 @@ public interface IFlowerAppletFriendsCommunityService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    List<FlowerAppletFriendsCommunityCommentVo> getCommentById(Long communityId);
+    List<FlowerFriendsCommunityCommentVo> getCommentById(Long communityId);
 }

@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -68,9 +69,12 @@ public class CoursesPurchaseRecords extends TenantEntity {
     private Long price;
 
     /**
-     * 订单状态
+     * 订单状态 0 待支付 1 已支付
      */
     private Long status;
 
-
+    /**
+     * 课程ID
+     */
+    private Long coursesManagerId;
 }

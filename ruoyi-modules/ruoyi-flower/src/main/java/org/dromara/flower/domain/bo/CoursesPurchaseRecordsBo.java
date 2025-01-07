@@ -23,19 +23,19 @@ public class CoursesPurchaseRecordsBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
      * 部门id
      */
-    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**
      * 订单号
      */
-    @NotBlank(message = "订单号不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "订单号不能为空", groups = { AddGroup.class, EditGroup.class })
     private String code;
 
     /**
@@ -59,7 +59,7 @@ public class CoursesPurchaseRecordsBo extends BaseEntity {
     /**
      * 会员名称
      */
-    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String name;
 
     /**
@@ -69,10 +69,14 @@ public class CoursesPurchaseRecordsBo extends BaseEntity {
     private Long price;
 
     /**
-     * 订单状态
+     * 订单状态 0 待支付 1 已支付
      */
-    @NotNull(message = "订单状态不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "订单状态不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
-
+    /**
+     * 课程ID
+     */
+    @NotNull(message = "课程ID", groups = { AddGroup.class, EditGroup.class })
+    private Long coursesManagerId;
 }

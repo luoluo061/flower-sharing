@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -92,6 +93,8 @@ public class CoursesPurchaseRecordsServiceImpl implements ICoursesPurchaseRecord
     public Boolean insertByBo(CoursesPurchaseRecordsBo bo) {
         CoursesPurchaseRecords add = MapstructUtils.convert(bo, CoursesPurchaseRecords.class);
         validEntityBeforeSave(add);
+        // TODO 后期有必要在生成有意义编号 生成课程购买记录code
+        add.setCode(IdUtil.fastSimpleUUID());
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -116,6 +119,9 @@ public class CoursesPurchaseRecordsServiceImpl implements ICoursesPurchaseRecord
      * 保存前的数据校验
      */
     private void validEntityBeforeSave(CoursesPurchaseRecords entity){
+        if (entity == null){
+            throw new RuntimeException("购买课程失败");
+        }
         //TODO 做一些数据校验,如唯一约束
     }
 

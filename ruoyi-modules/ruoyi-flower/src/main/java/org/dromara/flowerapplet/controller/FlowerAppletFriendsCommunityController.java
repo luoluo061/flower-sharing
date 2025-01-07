@@ -16,9 +16,9 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
-import org.dromara.flowerapplet.domain.bo.FlowerAppletFriendsCommunityBo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityCommentVo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityVo;
+import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +44,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
-    public TableDataInfo<FlowerAppletFriendsCommunityVo> list(FlowerAppletFriendsCommunityBo bo, PageQuery pageQuery) {
+    public TableDataInfo<FlowerFriendsCommunityVo> list(FlowerFriendsCommunityBo bo, PageQuery pageQuery) {
         return flowerAppletFriendsCommunityService.queryPageList(bo, pageQuery);
     }
 
@@ -54,9 +54,9 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @SaCheckPermission("flower:friendsCommunity:export")
     @Log(title = "花友圈", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(FlowerAppletFriendsCommunityBo bo, HttpServletResponse response) {
-        List<FlowerAppletFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
-        ExcelUtil.exportExcel(list, "花友圈", FlowerAppletFriendsCommunityVo.class, response);
+    public void export(FlowerFriendsCommunityBo bo, HttpServletResponse response) {
+        List<FlowerFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
+        ExcelUtil.exportExcel(list, "花友圈", FlowerFriendsCommunityVo.class, response);
     }
 
     /**
@@ -66,7 +66,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:query")
     @GetMapping("/{id}")
-    public R<FlowerAppletFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<FlowerFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(flowerAppletFriendsCommunityService.queryById(id));
     }
@@ -78,7 +78,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
         return toAjax(flowerAppletFriendsCommunityService.insertByBo(bo));
     }
 
@@ -89,7 +89,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
         return toAjax(flowerAppletFriendsCommunityService.updateByBo(bo));
     }
 
@@ -114,7 +114,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.DELETE)
     @GetMapping("/comment/{communityId}")
     @SaIgnore
-    public List<FlowerAppletFriendsCommunityCommentVo> getComment(@NotNull(message = "主键不能为空")
+    public List<FlowerFriendsCommunityCommentVo> getComment(@NotNull(message = "主键不能为空")
                           @PathVariable Long communityId) {
         return flowerAppletFriendsCommunityService.getCommentById(communityId);
     }

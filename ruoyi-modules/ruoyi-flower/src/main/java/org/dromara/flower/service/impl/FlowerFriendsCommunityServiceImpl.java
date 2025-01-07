@@ -1,8 +1,5 @@
 package org.dromara.flower.service.impl;
 
-import org.apache.ibatis.javassist.expr.NewArray;
-import org.apache.ibatis.javassist.expr.NewExpr;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -12,15 +9,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
-import org.dromara.flower.domain.FlowerFriendsCommunityComment;
-import org.dromara.flower.domain.vo.CoursesTypeVo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
-import org.dromara.flower.service.IFlowerFriendsCommunityCommentService;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityVo;
-import org.dromara.flowerapplet.mapper.FlowerAppletFriendsCommunityMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;

@@ -72,13 +72,13 @@ public class CoursesManagerBo extends BaseEntity {
     private Long number;
 
     /**
-     * 查看权限会员等级标识,多个权益之间逗号分隔,(无限制为super)
+     * 查看权限会员等级标识,多个权益之间逗号分隔, all 表示全部
      */
 //    @NotBlank(message = "查看权限会员等级标识,多个权益之间逗号分隔,(无限制为super)不能为空", groups = { AddGroup.class, EditGroup.class })
     private String accessLevel;
 
     /**
-     * 会员查看权限对应ID,多个权益之间逗号分隔
+     * 会员查看权限对应ID,多个权益之间逗号分隔 , all 表示全部
      */
     private String accessIds;
 

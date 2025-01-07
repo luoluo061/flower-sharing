@@ -1,5 +1,6 @@
 package org.dromara.flower.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flower.domain.CoursesPurchaseRecords;
 import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
@@ -12,4 +13,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface CoursesPurchaseRecordsMapper extends BaseMapperPlus<CoursesPurchaseRecords, CoursesPurchaseRecordsVo> {
 
+    CoursesPurchaseRecordsVo getPurchaseRecordsByUserIdAndCoursesId(@Param("coursesManagerId") Long id, @Param("userId") Long userId);
 }

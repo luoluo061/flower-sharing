@@ -2,8 +2,8 @@ package org.dromara.flowerapplet.service;
 
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.flowerapplet.domain.bo.FlowerAppletFriendsCommunityCommentBo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityCommentVo;
+import org.dromara.flower.domain.bo.FlowerFriendsCommunityCommentBo;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public interface IFlowerAppletFriendsCommunityCommentService {
      * @param id 主键
      * @return 花友圈--评论详情
      */
-    FlowerAppletFriendsCommunityCommentVo queryById(Long id);
+    FlowerFriendsCommunityCommentVo queryById(Long id);
 
     /**
      * 分页查询花友圈--评论详情列表
@@ -32,7 +32,7 @@ public interface IFlowerAppletFriendsCommunityCommentService {
      * @param pageQuery 分页参数
      * @return 花友圈--评论详情分页列表
      */
-    TableDataInfo<FlowerAppletFriendsCommunityCommentVo> queryPageList(FlowerAppletFriendsCommunityCommentBo bo, PageQuery pageQuery);
+    TableDataInfo<FlowerFriendsCommunityCommentVo> queryPageList(FlowerFriendsCommunityCommentBo bo, PageQuery pageQuery);
 
     /**
      * 查询符合条件的花友圈--评论详情列表
@@ -40,7 +40,7 @@ public interface IFlowerAppletFriendsCommunityCommentService {
      * @param bo 查询条件
      * @return 花友圈--评论详情列表
      */
-    List<FlowerAppletFriendsCommunityCommentVo> queryList(FlowerAppletFriendsCommunityCommentBo bo);
+    List<FlowerFriendsCommunityCommentVo> queryList(FlowerFriendsCommunityCommentBo bo);
 
     /**
      * 新增花友圈--评论详情
@@ -48,7 +48,7 @@ public interface IFlowerAppletFriendsCommunityCommentService {
      * @param bo 花友圈--评论详情
      * @return 是否新增成功
      */
-    Boolean insertByBo(FlowerAppletFriendsCommunityCommentBo bo);
+    Boolean insertByBo(FlowerFriendsCommunityCommentBo bo);
 
     /**
      * 修改花友圈--评论详情
@@ -56,7 +56,7 @@ public interface IFlowerAppletFriendsCommunityCommentService {
      * @param bo 花友圈--评论详情
      * @return 是否修改成功
      */
-    Boolean updateByBo(FlowerAppletFriendsCommunityCommentBo bo);
+    Boolean updateByBo(FlowerFriendsCommunityCommentBo bo);
 
     /**
      * 校验并批量删除花友圈--评论详情信息

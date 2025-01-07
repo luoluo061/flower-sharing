@@ -49,5 +49,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 LEFT JOIN sys_oss AS b ON a.avatar_url = b.oss_id
         WHERE a.member_id = #{memberId}
     </select>
+    <select id="selectUserInfoByIds"
+            resultType="org.dromara.flower.platform.domain.vo.AppletUserInformationVo">
+        SELECT
+            a.user_id,
+            a.`name`,
+            a.nick_name,
+            b.url AS avatar_url
+        FROM
+            applet_user_information AS a
+                LEFT JOIN sys_oss AS b ON a.avatar_url = b.oss_id
+        WHERE a.user_id IN
+        <foreach collection="createByIds" item="id" separator="," open="(" close=")" >
+            #{id}
+        </foreach>
+    </select>
+    <select id="getNameAndAvatarUrlVoById"
+            resultType="org.dromara.flower.platform.domain.vo.AppletUserInformationVo">
+        SELECT
+            a.user_id,
+            a.`name`,
+            a.nick_name,
+            b.url AS avatar_url
+        FROM
+            applet_user_information AS a
+                LEFT JOIN sys_oss AS b ON a.avatar_url = b.oss_id
+        WHERE a.user_id = #{userId}
+    </select>
+    <select id="getMemberLevelInfoById" resultType="java.lang.String">
+        SELECT
+            b.id
+        FROM
+            applet_user_information AS a
+                LEFT JOIN member_level AS b ON a.member_level_id = b.id
+        WHERE a.user_id = #{id}
+    </select>
 
 </mapper>

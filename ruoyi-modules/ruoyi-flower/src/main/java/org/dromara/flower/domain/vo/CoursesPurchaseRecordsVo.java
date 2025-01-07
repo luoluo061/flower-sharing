@@ -77,10 +77,14 @@ public class CoursesPurchaseRecordsVo implements Serializable {
     private Long price;
 
     /**
-     * 订单状态
+     * 订单状态 0 待支付 1 已支付
      */
-    @ExcelProperty(value = "订单状态")
+    @ExcelProperty(value = "订单状态 0 待支付 1 已支付")
     private Long status;
 
-
+    /**
+     * 课程ID
+     */
+    @ExcelProperty(value = "课程ID")
+    private Long coursesManagerId;
 }

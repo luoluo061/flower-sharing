@@ -16,7 +16,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -100,7 +100,13 @@ public class CoursesManagerVo implements Serializable {
     private String accessLevel;
 
     /**
-     * 会员查看权限对应ID,多个权益之间逗号分隔
+     * 当前用户查看权限
+     */
+    @ExcelProperty(value = "当前用户查看权限")
+    private Integer accessStatus;
+
+    /**
+     * 会员查看权限对应ID,多个权益之间逗号分隔 , all 表示全部
      */
     @ExcelProperty(value = "会员查看权限对应ID,多个权益之间逗号分隔")
     private String accessIds;
@@ -129,5 +135,28 @@ public class CoursesManagerVo implements Serializable {
     @ExcelProperty(value = "封面URL的id")
     private Long coverUrlId;
 
+    /**
+     * 封面URL
+     */
+    @ExcelProperty(value = "封面URL")
+    private String coverUrl;
+
+    /**
+     * 课程相关的视频集合
+     */
+    @ExcelProperty(value = "课程相关的视频集合")
+    private List<CoursesManagerVideoVo> videoVoList;
+
+    /**
+     * 课程购买记录
+     */
+    @ExcelProperty(value = "课程购买记录")
+    private CoursesPurchaseRecordsVo purchaseRecordsVo;
+
+    /**
+     * 课程详情 富文本
+     */
+    @ExcelProperty(value = "课程详情 富文本")
+    private CoursesManagerDetailVo detailVo;
 
 }

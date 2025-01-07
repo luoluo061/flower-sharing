@@ -5,7 +5,9 @@ import com.baomidou.lock.LockInfo;
 import com.baomidou.lock.LockTemplate;
 import com.baomidou.lock.executor.RedissonLockExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.CodeUtils;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -18,9 +20,16 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.constant.LockKeyString;
 import org.dromara.flower.domain.CoursesManagerDetail;
+import org.dromara.flower.domain.vo.CoursesManagerVideoVo;
+import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
 import org.dromara.flower.mapper.CoursesManagerDetailMapper;
+import org.dromara.flower.mapper.CoursesManagerVideoMapper;
+import org.dromara.flower.mapper.CoursesPurchaseRecordsMapper;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.system.mapper.SysOssMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.CoursesManagerBo;
 import org.dromara.flower.domain.vo.CoursesManagerVo;
@@ -41,13 +50,29 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CoursesManagerServiceImpl implements ICoursesManagerService {
 
     private final CoursesManagerMapper baseMapper;
     private final LockTemplate lockTemplate;
     private final CoursesManagerDetailMapper coursesManagerDetailMapper;
+    private final SysOssMapper sysOssMapper;
+    private final CoursesManagerVideoMapper coursesManagerVideoMapper;
+    private final CoursesPurchaseRecordsMapper coursesPurchaseRecordsMapper;
+    private final AppletUserInformationMapper appletUserInformationMapper;
 
+    /**
+     * 超时时间
+     */
     private static final long TIMEOUT = 86400;
+    /**
+     * 观看状态 0 关 1 开
+     */
+    private static final long STATUS_OPEN = 1L;
+    private static final long STATUS_CLOSE = 0L;
+
+    // 全部观看权限字符串
+    private static final String ALL = "ALL";
 
     /**
      * 查询视频管理
@@ -57,7 +82,31 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
      */
     @Override
     public CoursesManagerVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        LoginUser loginUser = getLoginUser();
+        CoursesManagerVo vo = baseMapper.selectVoById(id);
+        if (vo == null) {
+            return new CoursesManagerVo();
+        }
+        // 查询所有的集数信息
+        List<CoursesManagerVideoVo> videoVoList = coursesManagerVideoMapper.getVideoByCoursesManagerId(id);
+        vo.setVideoVoList(videoVoList);
+        vo.setStatus(STATUS_CLOSE);
+        // 查看当前用户是否购买
+        if (loginUser != null) {
+            CoursesPurchaseRecordsVo purchaseRecordsVo = coursesPurchaseRecordsMapper.getPurchaseRecordsByUserIdAndCoursesId(id, loginUser.getUserId());
+            if (purchaseRecordsVo != null) {
+                vo.setStatus(STATUS_OPEN);
+            }
+            // 会员等级是否达到要求
+            String level = appletUserInformationMapper.getMemberLevelInfoById(loginUser.getUserId());
+            if (level != null && vo.getAccessIds().contains(level)) {
+                vo.setStatus(STATUS_OPEN);
+            }
+        }
+        if (ALL.equals(vo.getAccessIds())){
+            vo.setStatus(STATUS_OPEN);
+        }
+        return vo;
     }
 
     /**
@@ -95,6 +144,22 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                     vo.setCourseTypeName(reversedResults.get(vo.getCourseTypeId()));
                 });
             }
+            // 课程封面URL
+            MapResultHandler<Long, String> resultHandler = new MapResultHandler<>();
+            List<Long> cover = result.getRecords().stream()
+                .map(CoursesManagerVo::getCoverUrlId)
+                .filter(Objects::nonNull)
+                .toList();
+            if (!cover.isEmpty()) {
+                sysOssMapper.getIdMapUrlByIds(resultHandler, cover);
+            }
+            if (!resultHandler.getMappedResults().isEmpty()) {
+                Map<Long, String> resultMap = resultHandler.getMappedResults();
+                result.getRecords().forEach(vo -> {
+                    vo.setCoverUrl(resultMap.get(vo.getCoverUrlId()));
+                });
+            }
+
         }
         return TableDataInfo.build(result);
     }
@@ -140,7 +205,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
     public Boolean insertByBo(CoursesManagerBo bo) {
         CoursesManager add = MapstructUtils.convert(bo, CoursesManager.class);
         validEntityBeforeSave(add);
-        if (add == null){
+        if (add == null) {
             return false;
         }
         // 生成课程编号
@@ -202,11 +267,11 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
      */
     @Override
     public Boolean editCoursesStatus(Long[] ids) {
-        if (ids.length == 0){
+        if (ids.length == 0) {
             return false;
         }
         boolean flag = baseMapper.updateCoursesById(ids) > 0;
-        if (flag){
+        if (flag) {
             return true;
         }
         return false;
@@ -271,5 +336,22 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                 }
             ));
     }
+
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 当前登录用户的信息，如果用户未登录则返回 null
+     */
+    private LoginUser getLoginUser() {
+        LoginUser loginUser;
+        try {
+            loginUser = LoginHelper.getLoginUser();
+        } catch (Exception e) {
+            log.warn("自动注入警告 => 用户未登录");
+            return new LoginUser();
+        }
+        return loginUser;
+    }
+
 
 }

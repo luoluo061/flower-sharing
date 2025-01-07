@@ -4,4 +4,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.CoursesPurchaseRecordsMapper">
 
+    <select id="getPurchaseRecordsByUserIdAndCoursesId"
+            resultType="org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo">
+        SELECT
+            *
+        FROM
+            courses_purchase_records
+        WHERE applet_user_information_id = #{userId} AND courses_manager_id = #{coursesManagerId} AND `status` = 1
+    </select>
 </mapper>

@@ -8,10 +8,10 @@ import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.flowerapplet.domain.FlowerAppletFriendsCommunityComment;
-import org.dromara.flowerapplet.domain.bo.FlowerAppletFriendsCommunityCommentBo;
-import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityCommentVo;
-import org.dromara.flowerapplet.mapper.FlowerAppletFriendsCommunityCommentMapper;
+import org.dromara.flower.domain.FlowerFriendsCommunityComment;
+import org.dromara.flower.domain.bo.FlowerFriendsCommunityCommentBo;
+import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
+import org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityCommentService;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAppletFriendsCommunityCommentService {
 
-    private final FlowerAppletFriendsCommunityCommentMapper baseMapper;
+    private final FlowerFriendsCommunityCommentMapper baseMapper;
 
     /**
      * 查询花友圈--评论详情
@@ -38,7 +38,7 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
      * @return 花友圈--评论详情
      */
     @Override
-    public FlowerAppletFriendsCommunityCommentVo queryById(Long id){
+    public FlowerFriendsCommunityCommentVo queryById(Long id){
         return baseMapper.selectVoById(id);
     }
 
@@ -50,9 +50,9 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
      * @return 花友圈--评论详情分页列表
      */
     @Override
-    public TableDataInfo<FlowerAppletFriendsCommunityCommentVo> queryPageList(FlowerAppletFriendsCommunityCommentBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<FlowerAppletFriendsCommunityComment> lqw = buildQueryWrapper(bo);
-        Page<FlowerAppletFriendsCommunityCommentVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+    public TableDataInfo<FlowerFriendsCommunityCommentVo> queryPageList(FlowerFriendsCommunityCommentBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<FlowerFriendsCommunityComment> lqw = buildQueryWrapper(bo);
+        Page<FlowerFriendsCommunityCommentVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
 
@@ -63,19 +63,19 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
      * @return 花友圈--评论详情列表
      */
     @Override
-    public List<FlowerAppletFriendsCommunityCommentVo> queryList(FlowerAppletFriendsCommunityCommentBo bo) {
-        LambdaQueryWrapper<FlowerAppletFriendsCommunityComment> lqw = buildQueryWrapper(bo);
+    public List<FlowerFriendsCommunityCommentVo> queryList(FlowerFriendsCommunityCommentBo bo) {
+        LambdaQueryWrapper<FlowerFriendsCommunityComment> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<FlowerAppletFriendsCommunityComment> buildQueryWrapper(FlowerAppletFriendsCommunityCommentBo bo) {
+    private LambdaQueryWrapper<FlowerFriendsCommunityComment> buildQueryWrapper(FlowerFriendsCommunityCommentBo bo) {
         Map<String, Object> params = bo.getParams();
-        LambdaQueryWrapper<FlowerAppletFriendsCommunityComment> lqw = Wrappers.lambdaQuery();
-        lqw.eq(bo.getDeptId() != null, FlowerAppletFriendsCommunityComment::getDeptId, bo.getDeptId());
-        lqw.eq(bo.getFlowerFriendsCommunityId() != null, FlowerAppletFriendsCommunityComment::getFlowerFriendsCommunityId, bo.getFlowerFriendsCommunityId());
-        lqw.eq(bo.getCommentTime() != null, FlowerAppletFriendsCommunityComment::getCommentTime, bo.getCommentTime());
-        lqw.eq(StringUtils.isNotBlank(bo.getCommentContent()), FlowerAppletFriendsCommunityComment::getCommentContent, bo.getCommentContent());
-        lqw.eq(bo.getParentId() != null, FlowerAppletFriendsCommunityComment::getParentId, bo.getParentId());
+        LambdaQueryWrapper<FlowerFriendsCommunityComment> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getDeptId() != null, FlowerFriendsCommunityComment::getDeptId, bo.getDeptId());
+        lqw.eq(bo.getFlowerFriendsCommunityId() != null, FlowerFriendsCommunityComment::getFlowerFriendsCommunityId, bo.getFlowerFriendsCommunityId());
+        lqw.eq(bo.getCommentTime() != null, FlowerFriendsCommunityComment::getCommentTime, bo.getCommentTime());
+        lqw.eq(StringUtils.isNotBlank(bo.getCommentContent()), FlowerFriendsCommunityComment::getCommentContent, bo.getCommentContent());
+        lqw.eq(bo.getParentId() != null, FlowerFriendsCommunityComment::getParentId, bo.getParentId());
         return lqw;
     }
 
@@ -86,8 +86,8 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(FlowerAppletFriendsCommunityCommentBo bo) {
-        FlowerAppletFriendsCommunityComment add = MapstructUtils.convert(bo, FlowerAppletFriendsCommunityComment.class);
+    public Boolean insertByBo(FlowerFriendsCommunityCommentBo bo) {
+        FlowerFriendsCommunityComment add = MapstructUtils.convert(bo, FlowerFriendsCommunityComment.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -103,8 +103,8 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
      * @return 是否修改成功
      */
     @Override
-    public Boolean updateByBo(FlowerAppletFriendsCommunityCommentBo bo) {
-        FlowerAppletFriendsCommunityComment update = MapstructUtils.convert(bo, FlowerAppletFriendsCommunityComment.class);
+    public Boolean updateByBo(FlowerFriendsCommunityCommentBo bo) {
+        FlowerFriendsCommunityComment update = MapstructUtils.convert(bo, FlowerFriendsCommunityComment.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
@@ -112,7 +112,7 @@ public class FlowerAppletFriendsCommunityCommentServiceImpl implements IFlowerAp
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(FlowerAppletFriendsCommunityComment entity){
+    private void validEntityBeforeSave(FlowerFriendsCommunityComment entity){
         //TODO 做一些数据校验,如唯一约束
     }
 

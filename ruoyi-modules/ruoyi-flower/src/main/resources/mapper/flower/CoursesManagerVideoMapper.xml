@@ -4,4 +4,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.CoursesManagerVideoMapper">
 
+    <select id="getVideoByCoursesManagerId" resultType="org.dromara.flower.domain.vo.CoursesManagerVideoVo">
+        SELECT
+            a.*,
+            b.url AS address_url
+        FROM
+            courses_manager_video AS a
+                LEFT JOIN sys_oss AS b ON a.url = b.oss_id
+        WHERE a.courses_manager_id = #{id}
+        ORDER BY a.sort
+    </select>
 </mapper>
