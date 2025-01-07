@@ -59,7 +59,7 @@ public class MarketingAdvertisementBo extends BaseEntity {
     /**
      * 链接地址
      */
-    @NotBlank(message = "链接地址不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotBlank(message = "链接地址不能为空", groups = { AddGroup.class, EditGroup.class })
     private String link;
 
     /**

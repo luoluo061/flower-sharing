@@ -109,6 +109,9 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
             bo.setId(add.getId());
         }
         return flag;
+
+
+
     }
 
     /**
