@@ -1,6 +1,7 @@
 package org.dromara.flower.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.dromara.common.core.exception.ServiceException;
@@ -226,8 +227,38 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
 
 
     /**
-     * 活动状态自动更新
+     *
+     * 推广计划 实行了一次
      */
+    @Override
+    @Transactional
+    public boolean updateNumSurplusRewar(String code){
+        //1. 判空
+        if (StringUtils.isEmpty(code)) throw new ServiceException("推广编号为空");
+
+        //2. 数据是否存在
+        QueryWrapper<MarketingMemberPromotionPlan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("code",code);
+        MarketingMemberPromotionPlan memberPromotionPlan = baseMapper.selectOne(queryWrapper);
+        if (ObjectUtils.isEmpty(memberPromotionPlan)) throw new ServiceException("该计划不存在");
+        if (memberPromotionPlan.getStatus() ==0L) throw new ServiceException("该计划已经失效了");
+
+
+        //3.修改表数据
+        UpdateWrapper<MarketingMemberPromotionPlan> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("code",code);
+        Long surplusRewar = memberPromotionPlan.getSurplusRewar()-memberPromotionPlan.getRewardAmount();
+
+        //剩余奖励额度-奖励额度
+        updateWrapper.set("surplus_rewar",surplusRewar);
+        //剩余数量-1
+        updateWrapper.set("residue",memberPromotionPlan.getResidue()-1);
+
+
+
+
+        return baseMapper.update(updateWrapper) > 0;
+    }
 
 
 

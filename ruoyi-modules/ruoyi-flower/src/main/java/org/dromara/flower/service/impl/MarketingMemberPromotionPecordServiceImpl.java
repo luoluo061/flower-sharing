@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -17,7 +18,9 @@ import org.dromara.flower.domain.vo.MarketingMemberPromotionPecordVo;
 import org.dromara.flower.domain.MarketingMemberPromotionPecord;
 import org.dromara.flower.mapper.MarketingMemberPromotionPecordMapper;
 import org.dromara.flower.service.IMarketingMemberPromotionPecordService;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -80,16 +83,11 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
         lqw.eq(bo.getPromotionId() != null, MarketingMemberPromotionPecord::getPromotionId, bo.getPromotionId());
         lqw.eq(StringUtils.isNotBlank(bo.getMemberId()), MarketingMemberPromotionPecord::getMemberId, bo.getMemberId());
         lqw.like(StringUtils.isNotBlank(bo.getMemberName()), MarketingMemberPromotionPecord::getMemberName, bo.getMemberName());
-        lqw.eq(bo.getAppletUserInformationId() != null, MarketingMemberPromotionPecord::getAppletUserInformationId, bo.getAppletUserInformationId());
         lqw.eq(bo.getPromotedPersonId() != null, MarketingMemberPromotionPecord::getPromotedPersonId, bo.getPromotedPersonId());
         lqw.like(StringUtils.isNotBlank(bo.getPromotedPersonName()), MarketingMemberPromotionPecord::getPromotedPersonName, bo.getPromotedPersonName());
         lqw.eq(bo.getPromotedPersonStatus() != null, MarketingMemberPromotionPecord::getPromotedPersonStatus, bo.getPromotedPersonStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getPromotedPersonLevel()), MarketingMemberPromotionPecord::getPromotedPersonLevel, bo.getPromotedPersonLevel());
-        lqw.eq(bo.getPromoterAmount() != null, MarketingMemberPromotionPecord::getPromoterAmount, bo.getPromoterAmount());
-        lqw.eq(bo.getConsumptionAmount() != null, MarketingMemberPromotionPecord::getConsumptionAmount, bo.getConsumptionAmount());
-        lqw.eq(bo.getShoppingRebate() != null, MarketingMemberPromotionPecord::getShoppingRebate, bo.getShoppingRebate());
         lqw.eq(bo.getRewardSetting() != null, MarketingMemberPromotionPecord::getRewardSetting, bo.getRewardSetting());
-        lqw.eq(bo.getPromotionCashback() != null, MarketingMemberPromotionPecord::getPromotionCashback, bo.getPromotionCashback());
         lqw.eq(bo.getCreatedAt() != null, MarketingMemberPromotionPecord::getCreatedAt, bo.getCreatedAt());
         return lqw;
     }
@@ -101,9 +99,37 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
      * @return 是否新增成功
      */
     @Override
+    @Transactional
     public Boolean insertByBo(MarketingMemberPromotionPecordBo bo) {
         MarketingMemberPromotionPecord add = MapstructUtils.convert(bo, MarketingMemberPromotionPecord.class);
         validEntityBeforeSave(add);
+        //1. 设置推广记录编号
+        add.setPromotionId(String.valueOf(IdUtil.getSnowflakeNextId()));
+
+        // 设置默认值
+        // 2. 设置  “被推销人” 是否充值会员默认状态
+        add.setPromotedPersonStatus(0L);
+        // 设置 “被推广人” 默认等级
+        /*add.setPromotedPersonLevel("v1");*/
+
+        //3. 设置被 推广人默认购买会员金额
+        add.setPromoterAmount(new BigDecimal(0.0));
+        //4. 设置被 推广人默认消费金额
+        add.setConsumptionAmount(new BigDecimal(0.0));
+        //5. 设置 默认购物返点
+        add.setShoppingRebate(new BigDecimal(0.0));
+        //6. 设置 默认 推广返现小计
+        add.setPromotionCashback(new BigDecimal(0.0));
+        //7. 设置默认的 是否奖励
+        add.setRewardSetting(0L);
+
+
+
+
+
+
+
+
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -121,6 +147,7 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
      * @return 是否修改成功
      */
     @Override
+    @Transactional
     public Boolean updateByBo(MarketingMemberPromotionPecordBo bo) {
         MarketingMemberPromotionPecord update = MapstructUtils.convert(bo, MarketingMemberPromotionPecord.class);
         validEntityBeforeSave(update);
@@ -142,6 +169,7 @@ public class MarketingMemberPromotionPecordServiceImpl implements IMarketingMemb
      * @return 是否删除成功
      */
     @Override
+    @Transactional
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验

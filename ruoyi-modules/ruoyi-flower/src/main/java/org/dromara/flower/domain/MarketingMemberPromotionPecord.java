@@ -4,6 +4,8 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -26,6 +28,7 @@ public class MarketingMemberPromotionPecord extends TenantEntity {
     /**
      * 主键
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -42,7 +45,7 @@ public class MarketingMemberPromotionPecord extends TenantEntity {
     /**
      * 推广编号
      */
-    private Long promotionId;
+    private String promotionId;
 
     /**
      * 会员ID
@@ -54,10 +57,7 @@ public class MarketingMemberPromotionPecord extends TenantEntity {
      */
     private String memberName;
 
-    /**
-     * 用户ID
-     */
-    private Long appletUserInformationId;
+
 
     /**
      * 被推销人ID
@@ -82,17 +82,17 @@ public class MarketingMemberPromotionPecord extends TenantEntity {
     /**
      * 被推广人购买会员金额
      */
-    private Long promoterAmount;
+    private BigDecimal promoterAmount;
 
     /**
      * 被推广人消费金额
      */
-    private Long consumptionAmount;
+    private BigDecimal  consumptionAmount;
 
     /**
      * 购物返点
      */
-    private Long shoppingRebate;
+    private BigDecimal  shoppingRebate;
 
     /**
      * 奖励设置 0 否 1 是
@@ -102,7 +102,7 @@ public class MarketingMemberPromotionPecord extends TenantEntity {
     /**
      * 推广返现小计
      */
-    private Long promotionCashback;
+    private BigDecimal  promotionCashback;
 
     /**
      * 发布时间
