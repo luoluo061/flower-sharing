@@ -124,16 +124,6 @@ public class AppletUserInformationBo extends BaseEntity {
     private Long parentId;
 
     /**
-     * 行政区域(如云南省昆明市盘龙区拓东街道)
-     */
-    private String district;
-
-    /**
-     * 地址详细位置
-     */
-    private String addDetail;
-
-    /**
      * 生日 例子:1999-10-10
      */
     private String birthday;

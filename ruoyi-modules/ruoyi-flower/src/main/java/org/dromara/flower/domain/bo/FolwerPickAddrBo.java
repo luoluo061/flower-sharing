@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.FolwerPickAddr;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -80,5 +81,8 @@ public class FolwerPickAddrBo extends BaseEntity {
      */
     private String endTime;
 
-
+    /**
+     * 默认地址状态 0 否 1 是
+     */
+    private Long status;
 }

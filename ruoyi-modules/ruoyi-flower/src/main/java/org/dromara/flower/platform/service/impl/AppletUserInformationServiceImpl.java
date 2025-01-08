@@ -1,7 +1,12 @@
 package org.dromara.flower.platform.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -12,6 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.platform.constant.AddAndSubtract;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
@@ -32,6 +38,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AppletUserInformationServiceImpl implements IAppletUserInformationService {
 
     private final AppletUserInformationMapper baseMapper;
@@ -149,8 +156,6 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         lqw.eq(bo.getPromotion() != null, AppletUserInformation::getPromotion, bo.getPromotion());
         lqw.eq(bo.getGold() != null, AppletUserInformation::getGold, bo.getGold());
         lqw.eq(bo.getParentId() != null, AppletUserInformation::getParentId, bo.getParentId());
-        lqw.eq(StringUtils.isNotBlank(bo.getDistrict()), AppletUserInformation::getDistrict, bo.getDistrict());
-        lqw.eq(StringUtils.isNotBlank(bo.getAddDetail()), AppletUserInformation::getAddDetail, bo.getAddDetail());
         return lqw;
     }
 
@@ -281,6 +286,29 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     }
 
     /**
+     * 生成图片二维码
+     * @return 二维码字符串
+     */
+    @Override
+    public R<String> generateQrCode() {
+        // 生成图片二维码大小 376 * 376
+        QrConfig config = new QrConfig(376,376);
+        // 设置边距 , 既二维码和背景之间的边距
+        config.setMargin(1);
+        // 设置容错级别
+        config.setErrorCorrection(ErrorCorrectionLevel.H);
+        // 获取当前人员的用户ID
+        LoginUser loginUser = getLoginUser();
+        if (loginUser == null){
+            throw new RuntimeException("请先登陆!");
+        }
+        // 生成二维码
+        String qrCode = QrCodeUtil.generateAsBase64(loginUser.getUserId().toString(), config, "png");
+
+        return R.ok(qrCode);
+    }
+
+    /**
      * 减金币
      *
      * @param app
@@ -345,6 +373,22 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         } else {
             update.setPoints(app.getPoints());
         }
+    }
+
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 当前登录用户的信息，如果用户未登录则返回 null
+     */
+    private LoginUser getLoginUser() {
+        LoginUser loginUser;
+        try {
+            loginUser = LoginHelper.getLoginUser();
+        } catch (Exception e) {
+            log.warn("自动注入警告 => 用户未登录");
+            return new LoginUser();
+        }
+        return loginUser;
     }
 
 }

@@ -98,4 +98,10 @@ public interface IAppletUserInformationService {
      * @return
      */
     R<List<AppletUserInformationVo>> queryMemberInfoList();
+
+    /**
+     * 生成二维码图片
+     * @return
+     */
+    R<String> generateQrCode();
 }

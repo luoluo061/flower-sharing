@@ -88,5 +88,10 @@ public class FolwerPickAddrVo implements Serializable {
     @ExcelProperty(value = "区/县")
     private String area;
 
+    /**
+     * 默认地址状态 0 否 1 是
+     */
+    @ExcelProperty(value = "默认地址状态 0 否 1 是")
+    private Long status;
 
 }

@@ -123,4 +123,12 @@ public class AppletUserInformationController extends BaseController {
         return appletUserInformationService.queryMemberInfoList();
     }
 
+    /**
+     * 生成图片二维码
+     */
+    @GetMapping("/qrCode")
+    public R<String> generateQrCode() {
+        return appletUserInformationService.generateQrCode();
+    }
+
 }

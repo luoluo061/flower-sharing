@@ -78,5 +78,8 @@ public class FolwerPickAddr extends BaseEntity {
     @TableLogic
     private Long delFlag;
 
-
+    /**
+     * 默认地址状态 0 否 1 是
+     */
+    private Long status;
 }
