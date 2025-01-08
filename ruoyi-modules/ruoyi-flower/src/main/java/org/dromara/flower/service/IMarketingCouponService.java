@@ -69,4 +69,6 @@ public interface IMarketingCouponService {
     boolean deleteOneById(Long id);
 
     boolean updateState(Long id);
+
+    List<MarketingCouponVo> queryPageUserList(Long id, PageQuery pageQuery);
 }

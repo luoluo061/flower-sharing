@@ -1,5 +1,7 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -133,5 +135,21 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    /**
+     * 根据优惠券id显示领取记录
+     * @param id
+     * @param pageQuery
+     * @return
+     */
+
+    @Override
+    public TableDataInfo<MarketingCouponReceiveVo> queryPageListByCouponId(Long id, PageQuery pageQuery) {
+        QueryWrapper<MarketingCouponReceive> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("coupon_id",id);
+        Page<MarketingCouponReceiveVo> result = baseMapper.selectVoPage(pageQuery.build(), queryWrapper);
+
+        return TableDataInfo.build(result);
     }
 }

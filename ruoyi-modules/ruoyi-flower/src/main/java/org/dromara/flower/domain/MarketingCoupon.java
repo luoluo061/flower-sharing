@@ -112,7 +112,7 @@ public class MarketingCoupon extends TenantEntity {
     /**
      * 排序
      */
-    private Long sort;
+    private Long sorting;
 
     /**
      * 优惠券状态（0关闭，1开启）

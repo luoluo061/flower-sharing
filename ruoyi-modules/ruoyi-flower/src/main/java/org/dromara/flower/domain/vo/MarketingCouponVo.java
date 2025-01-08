@@ -132,7 +132,7 @@ public class MarketingCouponVo implements Serializable {
      * 排序
      */
     @ExcelProperty(value = "排序")
-    private Long sort;
+    private Long sorting;
 
     /**
      * 优惠券状态（0关闭，1开启）

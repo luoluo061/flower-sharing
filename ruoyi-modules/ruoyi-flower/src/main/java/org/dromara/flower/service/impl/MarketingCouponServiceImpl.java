@@ -1,6 +1,8 @@
 package org.dromara.flower.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -11,17 +13,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.platform.domain.AppletUserInformation;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.flower.service.IFolwerCouponService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponBo;
 import org.dromara.flower.domain.vo.MarketingCouponVo;
 import org.dromara.flower.domain.MarketingCoupon;
 import org.dromara.flower.mapper.MarketingCouponMapper;
 import org.dromara.flower.service.IMarketingCouponService;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 优惠卷管理Service业务层处理
@@ -34,6 +38,9 @@ import java.util.Collection;
 public class MarketingCouponServiceImpl implements IMarketingCouponService {
 
     private final MarketingCouponMapper baseMapper;
+
+    private final AppletUserInformationMapper appletUserInformationMapper;
+
 
     /**
      * 查询优惠卷管理
@@ -56,7 +63,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     @Override
     public TableDataInfo<MarketingCouponVo> queryPageList(MarketingCouponBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MarketingCoupon> lqw = buildQueryWrapper(bo);
-        lqw.orderByAsc(MarketingCoupon::getSort);
+        lqw.orderByAsc(MarketingCoupon::getSorting);
 
         Page<MarketingCouponVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
 
@@ -92,8 +99,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         lqw.eq(bo.getFullReductionAmount() != null, MarketingCoupon::getFullReductionAmount, bo.getFullReductionAmount());
         lqw.eq(bo.getCouponSum() != null, MarketingCoupon::getCouponSum, bo.getCouponSum());
         lqw.eq(bo.getCouponNumber() != null, MarketingCoupon::getCouponNumber, bo.getCouponNumber());
-        lqw.eq(bo.getSurplusNumber() != null, MarketingCoupon::getSurplusNumber, bo.getSurplusNumber());
-        lqw.eq(bo.getSort() != null, MarketingCoupon::getSort, bo.getSort());
+        lqw.eq(bo.getSorting() != null, MarketingCoupon::getSorting, bo.getSorting());
         lqw.eq(bo.getState() != null, MarketingCoupon::getState, bo.getState());
         lqw.eq(StringUtils.isNotBlank(bo.getSpecificMembershipLevel()), MarketingCoupon::getSpecificMembershipLevel, bo.getSpecificMembershipLevel());
         lqw.eq(StringUtils.isNotBlank(bo.getSpecificUsersId()), MarketingCoupon::getSpecificUsersId, bo.getSpecificUsersId());
@@ -114,6 +120,8 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         // 设置剩余数量
         add.setSurplusNumber(add.getCouponNumber());
         boolean flag = baseMapper.insert(add) > 0;
+        // 设置状态的默认值为0
+        add.setState(0L);
 
 
         if (flag) {
@@ -132,6 +140,27 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     public Boolean updateByBo(MarketingCouponBo bo) {
         MarketingCoupon update = MapstructUtils.convert(bo, MarketingCoupon.class);
         validEntityBeforeSave(update);
+
+        Long difference = 0L;
+
+
+        // 修改剩余优惠卷数量
+        if (update.getCouponNumber() !=null){
+            MarketingCoupon marketingCoupon = baseMapper.selectById(bo.getId());
+            //1.增加了优惠券数量
+            if (update.getCouponNumber()>marketingCoupon.getCouponNumber()){
+                difference= update.getCouponNumber()-marketingCoupon.getCouponNumber();
+                update.setSurplusNumber(marketingCoupon.getSurplusNumber()+difference);
+            }
+            //2.减少了优惠券数量
+            else {
+                difference=marketingCoupon.getCouponNumber()-update.getCouponNumber();
+                Long newSurplus=marketingCoupon.getSurplusNumber()- difference;
+                if (newSurplus<0L) throw new ServiceException("优惠卷数量过少，请重新设置");
+                update.setSurplusNumber(newSurplus);
+
+            }
+        }
         return baseMapper.updateById(update) > 0;
     }
 
@@ -140,6 +169,13 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
      */
     private void validEntityBeforeSave(MarketingCoupon entity){
         //TODO 做一些数据校验,如唯一约束
+
+        if (entity.getEndTime().before(entity.getStartTime()))
+            throw new ServiceException("请重新输入优惠券使用时间！");
+
+
+
+
     }
 
     /**
@@ -164,6 +200,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
      */
 
     @Override
+    @Transactional
     public boolean deleteOneById(Long id) {
         MarketingCouponVo marketingCouponVo = baseMapper.selectVoById(id);
         if (ObjectUtils.isEmpty(marketingCouponVo)) throw new ServiceException("该数据不存在");
@@ -176,13 +213,15 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
      * 切换优惠卷状态
      * @param id
      * @return
+     * 优惠券状态（0关闭，1开启）
      */
     @Override
     public boolean updateState(Long id) {
         MarketingCoupon marketingCoupon = baseMapper.selectById(id);
         if (ObjectUtils.isEmpty(marketingCoupon)) throw new ServiceException("优惠券不存在，删除失败");
 
-        // 设置优惠券为开放领取中
+
+        // 设置 优惠券为开放领取中
         if (marketingCoupon.getState()==0) {
             // 剩余数量已经用完，用户重新修改优惠券数量
             if (marketingCoupon.getSurplusNumber() == 0L)
@@ -194,15 +233,57 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
             Date currentTime = new Date();
             if (endTime.before(currentTime)) throw new ServiceException("优惠券时间已过期，请重新修改优惠券使用时间");
 
-
-
-
         }
+        UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+        Long state = marketingCoupon.getState();
+        updateWrapper.eq("id",id);
+        state=((state == 0)?1L:0);
+        updateWrapper.set("state",1);
 
-
-        return false;
+        return baseMapper.update(updateWrapper)>0;
     }
 
 
+    /**
+     * 根据会员用户id，显示待领取的优惠券
+     * @param id
+     * @param pageQuery
+     * @return
+     * 优惠券种类（0普通优惠卷，1定向优惠卷）
+     */
+    @Override
+    public List<MarketingCouponVo> queryPageUserList(Long id, PageQuery pageQuery) {
+        //查询当前用户信息
+        QueryWrapper queryUserWrapper = new QueryWrapper<AppletUserInformation>();
+        queryUserWrapper.eq("member_id",id);
+        AppletUserInformation appletUserInformation = appletUserInformationMapper.selectOne(queryUserWrapper);
+        //会员等级id
+        Long memberLevelId = appletUserInformation.getMemberLevelId();
 
+        //返回的数据
+        ArrayList<MarketingCouponVo> result = new ArrayList<>();
+
+        List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList();
+        for (MarketingCouponVo marketingCouponVo:marketingCouponsAll){
+            //1. 普通优惠券
+            if (marketingCouponVo.getCouponKind()==0L){
+                result.add(marketingCouponVo);
+            }
+            //2. 定向优惠券
+            //2.1 定向会员等级
+            if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificMembershipLevel())){
+              if(marketingCouponVo.getSpecificMembershipLevel().contains(memberLevelId.toString()))
+                  result.add(marketingCouponVo);
+            }
+
+            //2.2 定向用户
+            if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificUsersId())){
+                if (marketingCouponVo.getSpecificUsersId().contains(id.toString()))
+                    result.add(marketingCouponVo);
+            }
+        }
+
+
+        return result;
+    }
 }

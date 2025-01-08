@@ -102,4 +102,23 @@ public class MarketingCouponReceiveController extends BaseController {
                           @PathVariable Long[] ids) {
         return toAjax(marketingCouponReceiveService.deleteWithValidByIds(List.of(ids), true));
     }
+
+
+    /**
+     * 查询优惠卷领取记录列表,根据优惠券id
+     */
+    @SaCheckPermission("flower:couponReceive:list")
+    @GetMapping("/list/{id}")
+    public TableDataInfo<MarketingCouponReceiveVo> listByCouponId(@NotNull(message = "优惠券ID不能为空")
+                                                                      @PathVariable Long id, PageQuery pageQuery) {
+        return marketingCouponReceiveService.queryPageListByCouponId(id, pageQuery);
+    }
+
+
+
+
+
+
+
+
 }
