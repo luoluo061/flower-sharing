@@ -184,7 +184,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         lqw.eq(StringUtils.isNotBlank(bo.getSubtitle()), CoursesManager::getSubtitle, bo.getSubtitle());
         lqw.like(StringUtils.isNotBlank(bo.getCode()), CoursesManager::getCode, bo.getCode());
         lqw.eq(bo.getCourseTypeId() != null, CoursesManager::getCourseTypeId, bo.getCourseTypeId());
-        lqw.between(bo.getBeginDate() != null && bo.getEndDate() != null, CoursesManager::getPublishDate, bo.getBeginDate(), bo.getEndDate());
+        lqw.between(bo.getBeginDate() != null && bo.getEndDate() != null, CoursesManager::getCreateTime, bo.getBeginDate(), bo.getEndDate());
         lqw.eq(bo.getNumber() != null, CoursesManager::getNumber, bo.getNumber());
         lqw.eq(StringUtils.isNotBlank(bo.getAccessLevel()), CoursesManager::getAccessLevel, bo.getAccessLevel());
         lqw.eq(bo.getPrice() != null, CoursesManager::getPrice, bo.getPrice());
@@ -210,6 +210,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         }
         // 生成课程编号
         String coursesCode = createCourses();
+        add.setPublishDate(new Date());
         add.setCode(coursesCode);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

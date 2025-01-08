@@ -1,6 +1,7 @@
 package org.dromara.flower.domain.bo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.flower.domain.CoursesManager;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -9,8 +10,10 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 /**
  * 视频管理业务对象 courses_manager
@@ -114,11 +117,11 @@ public class CoursesManagerBo extends BaseEntity {
     /**
      * 查询条件开始时间
      */
-    private Date beginDate;
+    private String  beginDate;
 
     /**
      * 查询条件结束时间
      */
-    private Date endDate;
+    private String endDate;
 
 }

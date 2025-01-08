@@ -49,6 +49,7 @@ import org.dromara.web.properties.InitialMemberLevelProperties;
 import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
     private final static Long ZERO = 0L;
 
     @Override
+    @Transactional
     public LoginVo login(String body, SysClientVo client) {
         XcxLoginBody loginBody = JsonUtils.parseObject(body, XcxLoginBody.class);
         ValidatorUtils.validate(loginBody);
@@ -168,6 +170,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
      * @param phone
      * @return
      */
+
     private XcxLoginUser loadUserByPhone(String phone, XcxLoginBody loginBody) {
         // 通过手机号登录使用手机号作为唯一标识
         //先查询是否有该用户
@@ -192,6 +195,9 @@ public class XcxAuthStrategy implements IAuthStrategy {
             }
             // 设置小程序用户 新增用户角色信息
             insertUserRole(aib.getUserId(),new Long[]{1871386666300637186L},true);
+            if (loginBody.getParentId() != null && !ZERO.equals(loginBody.getParentId())){
+
+            }
         } else if (Status.DISABLE.equals(user.getStatus())) {
             throw new ServiceException("登录用户：" + phone + "已被停用");
         } else {
