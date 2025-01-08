@@ -31,7 +31,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/couponReceive")
+//@RequestMapping("/flower/couponReceive")
 public class FolwerCouponReceiveController extends BaseController {
 
     private final IFolwerCouponReceiveService folwerCouponReceiveService;
@@ -40,7 +40,7 @@ public class FolwerCouponReceiveController extends BaseController {
      * 查询优惠券领取记录列表
      */
     @SaCheckPermission("flower:couponReceive:list")
-    @GetMapping("/list")
+    //@GetMapping("/list")
     public TableDataInfo<FolwerCouponReceiveVo> list(FolwerCouponReceiveBo bo, PageQuery pageQuery) {
         return folwerCouponReceiveService.queryPageList(bo, pageQuery);
     }
@@ -50,7 +50,7 @@ public class FolwerCouponReceiveController extends BaseController {
      */
     @SaCheckPermission("flower:couponReceive:export")
     @Log(title = "优惠券领取记录", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
+    //@PostMapping("/export")
     public void export(FolwerCouponReceiveBo bo, HttpServletResponse response) {
         List<FolwerCouponReceiveVo> list = folwerCouponReceiveService.queryList(bo);
         ExcelUtil.exportExcel(list, "优惠券领取记录", FolwerCouponReceiveVo.class, response);
@@ -62,7 +62,7 @@ public class FolwerCouponReceiveController extends BaseController {
      * @param id 主键
      */
     @SaCheckPermission("flower:couponReceive:query")
-    @GetMapping("/{id}")
+    //@GetMapping("/{id}")
     public R<FolwerCouponReceiveVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(folwerCouponReceiveService.queryById(id));
@@ -74,7 +74,7 @@ public class FolwerCouponReceiveController extends BaseController {
     @SaCheckPermission("flower:couponReceive:add")
     @Log(title = "优惠券领取记录", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
+    //@PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerCouponReceiveBo bo) {
         return toAjax(folwerCouponReceiveService.insertByBo(bo));
     }
@@ -85,7 +85,7 @@ public class FolwerCouponReceiveController extends BaseController {
     @SaCheckPermission("flower:couponReceive:edit")
     @Log(title = "优惠券领取记录", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping()
+    //@PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerCouponReceiveBo bo) {
         return toAjax(folwerCouponReceiveService.updateByBo(bo));
     }
@@ -97,7 +97,7 @@ public class FolwerCouponReceiveController extends BaseController {
      */
     @SaCheckPermission("flower:couponReceive:remove")
     @Log(title = "优惠券领取记录", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
+    //@DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(folwerCouponReceiveService.deleteWithValidByIds(List.of(ids), true));

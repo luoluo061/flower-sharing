@@ -31,7 +31,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/coupon")
+//@RequestMapping("/flower/coupon")
 public class FolwerCouponController extends BaseController {
 
     private final IFolwerCouponService folwerCouponService;
@@ -40,7 +40,7 @@ public class FolwerCouponController extends BaseController {
      * 查询优惠券管理列表
      */
     @SaCheckPermission("flower:coupon:list")
-    @GetMapping("/list")
+    //@GetMapping("/list")
     public TableDataInfo<FolwerCouponVo> list(FolwerCouponBo bo, PageQuery pageQuery) {
         return folwerCouponService.queryPageList(bo, pageQuery);
     }
@@ -50,7 +50,7 @@ public class FolwerCouponController extends BaseController {
      */
     @SaCheckPermission("flower:coupon:export")
     @Log(title = "优惠券管理", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
+    //@PostMapping("/export")
     public void export(FolwerCouponBo bo, HttpServletResponse response) {
         List<FolwerCouponVo> list = folwerCouponService.queryList(bo);
         ExcelUtil.exportExcel(list, "优惠券管理", FolwerCouponVo.class, response);
@@ -62,7 +62,7 @@ public class FolwerCouponController extends BaseController {
      * @param couponId 主键
      */
     @SaCheckPermission("flower:coupon:query")
-    @GetMapping("/{couponId}")
+    //@GetMapping("/{couponId}")
     public R<FolwerCouponVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long couponId) {
         return R.ok(folwerCouponService.queryById(couponId));
@@ -74,7 +74,7 @@ public class FolwerCouponController extends BaseController {
     @SaCheckPermission("flower:coupon:add")
     @Log(title = "优惠券管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
+    //@PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerCouponBo bo) {
         return toAjax(folwerCouponService.insertByBo(bo));
     }
@@ -85,7 +85,7 @@ public class FolwerCouponController extends BaseController {
     @SaCheckPermission("flower:coupon:edit")
     @Log(title = "优惠券管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping()
+    //@PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerCouponBo bo) {
         return toAjax(folwerCouponService.updateByBo(bo));
     }
@@ -97,7 +97,7 @@ public class FolwerCouponController extends BaseController {
      */
     @SaCheckPermission("flower:coupon:remove")
     @Log(title = "优惠券管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{couponIds}")
+    //@DeleteMapping("/{couponIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] couponIds) {
         return toAjax(folwerCouponService.deleteWithValidByIds(List.of(couponIds), true));
