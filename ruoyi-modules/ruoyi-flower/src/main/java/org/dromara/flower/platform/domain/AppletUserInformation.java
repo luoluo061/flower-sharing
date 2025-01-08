@@ -141,4 +141,14 @@ public class AppletUserInformation extends TenantEntity {
      */
     private String birthday;
 
+    /**
+     * 行政区域(如云南省昆明市盘龙区拓东街道)
+     */
+    private String district;
+
+    /**
+     * 地址详细位置
+     */
+    private String addDetail;
+
 }

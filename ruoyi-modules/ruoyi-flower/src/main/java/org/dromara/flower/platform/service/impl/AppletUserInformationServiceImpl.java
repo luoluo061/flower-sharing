@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.mapper.FolwerPickAddrMapper;
 import org.dromara.flower.platform.constant.AddAndSubtract;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 public class AppletUserInformationServiceImpl implements IAppletUserInformationService {
 
     private final AppletUserInformationMapper baseMapper;
+    private final FolwerPickAddrMapper folwerPickAddrMapper;
 
     private static Long ZERO = 0L;
 
@@ -67,6 +69,8 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
                 vo.setMemberLevelName(grade);
             }
         }
+        // 查询地址信息
+
         return vo;
     }
 

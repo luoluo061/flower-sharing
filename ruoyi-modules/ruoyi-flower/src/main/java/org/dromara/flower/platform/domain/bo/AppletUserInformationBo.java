@@ -1,6 +1,7 @@
 package org.dromara.flower.platform.domain.bo;
 
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -142,5 +143,15 @@ public class AppletUserInformationBo extends BaseEntity {
      * 修改会员积分,金币 值, 兑换金币,金币兑现都传这里
      */
     private Long modifiedValue;
+
+    /**
+     * 行政区域(如云南省昆明市盘龙区拓东街道)
+     */
+    private String district;
+
+    /**
+     * 地址详细位置
+     */
+    private String addDetail;
 
 }
