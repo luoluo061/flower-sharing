@@ -39,6 +39,7 @@
             <!--总数量-->
             <result column="amount" property="amount"/>
         </collection>
+
     </resultMap>
 
 
