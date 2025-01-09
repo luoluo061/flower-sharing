@@ -101,7 +101,7 @@ public class MarketingCouponBo extends BaseEntity {
     /**
      * 优惠券金额
      */
-    @NotNull(message = "优惠券金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "优惠券金额不能为空", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal couponSum;
 
     /**
@@ -114,13 +114,13 @@ public class MarketingCouponBo extends BaseEntity {
      * 优惠券剩余数量
      */
     //@NotNull(message = "优惠券剩余数量不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long surplusNumber;
+    //private Long surplusNumber;
 
     /**
      * 排序
      */
     @NotNull(message = "排序不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long sort;
+    private Long sorting;
 
     /**
      * 优惠券状态（0关闭，1开启）
@@ -133,6 +133,8 @@ public class MarketingCouponBo extends BaseEntity {
      */
     //@NotBlank(message = "特定会员等级（定向优惠卷）不能为空", groups = { AddGroup.class, EditGroup.class })
     private String specificMembershipLevel;
+
+
 
     /**
      * 特定会员用户id（定向优惠卷）

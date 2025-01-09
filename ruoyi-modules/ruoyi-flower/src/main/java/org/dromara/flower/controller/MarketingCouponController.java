@@ -131,6 +131,20 @@ public class MarketingCouponController extends BaseController {
     }
 
 
+    /**
+     * id是用户id
+     * 用户显示待领取的优惠券
+     * @param
+     * @param pageQuery
+     * @return
+     */
+    @SaCheckPermission("flower:coupon:list")
+    @GetMapping("/userlist/{id}")
+    public List<MarketingCouponVo> userList(@NotNull(message ="主键不能为空") @PathVariable Long id, PageQuery pageQuery) {
+        return marketingCouponService.queryPageUserList(id, pageQuery);
+    }
+
+
 
 
 
