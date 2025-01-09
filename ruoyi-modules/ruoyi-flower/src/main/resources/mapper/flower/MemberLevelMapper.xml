@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.MemberLevelMapper">
 
     <resultMap id="mapResult" type="map">
@@ -9,26 +9,77 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="value" column="grade"/>
     </resultMap>
 
+    <!--实体映射-->
+    <resultMap id="level_privilege_result_map" type="org.dromara.flower.domain.vo.MemberLevelVo">
+        <!--主键-->
+        <result column="id" property="id"/>
+        <!--等级-->
+        <result column="grade" property="grade"/>
+        <!--等级中文名称-->
+        <result column="grade_name" property="gradeName"/>
+        <!--会员图标-->
+        <result column="grade_icon" property="gradeIcon"/>
+        <!--会员图标URL-->
+        <result column="grade_icon_url" property="gradeIconUrl"/>
+        <!--折扣比率数值(无百分号)-->
+        <result column="discount_ratio" property="discountRatio"/>
+        <!--价格-->
+        <result column="price" property="price"/>
+        <!--可用花券/张-->
+        <result column="coupon" property="coupon"/>
+        <!--是否显示 0 否 1 是-->
+        <result column="display" property="display"/>
+        <!--会员权益说明-->
+        <result column="privilege" property="privilege"/>
+        <collection property="privilegeVos" ofType="org.dromara.flower.domain.vo.MemberLevelPrivilegeVo">
+            <!--主键-->
+            <result column="ids" property="id"/>
+            <!--会员权益名称-->
+            <result column="name" property="name"/>
+            <!--总数量-->
+            <result column="amount" property="amount"/>
+        </collection>
+    </resultMap>
+
+
     <select id="selectMapByIds" resultMap="mapResult">
         SELECT
         DISTINCT id,
         grade
         FROM member_level WHERE id IN
-        <foreach collection="ids" item="id" separator="," open="(" close=")" >
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
     </select>
     <select id="selectIdMapGrade" resultMap="mapResult">
+        SELECT id,
+               grade
+        FROM (SELECT DISTINCT id,
+                              grade,
+                              create_time
+              FROM member_level
+              WHERE del_flag = 0
+              ORDER BY create_time) AS a
+    </select>
+    <select id="selectMemberLevel" resultMap="level_privilege_result_map">
         SELECT
-            id,
-            grade
-        FROM(
-                SELECT
-                    DISTINCT id,
-                             grade,
-                             create_time
-                FROM member_level WHERE del_flag = 0
-                ORDER BY create_time
-            ) AS a
+            a.id,
+            a.grade,
+            a.grade_name,
+            a.grade_icon,
+            a.discount_ratio,
+            a.price,
+            a.coupon,
+            a.display,
+            a.privilege,
+            b.id AS ids,
+            b.`name`,
+            b.amount,
+            c.url AS grade_icon_url
+        FROM
+            member_level AS a
+                LEFT JOIN member_level_privilege AS b ON a.id = b.member_level_id
+                LEFT JOIN sys_oss AS c ON a.grade_icon = c.oss_id
+        WHERE a.id = #{memberLevelId} AND b.del_flag = 0;
     </select>
 </mapper>

@@ -1,21 +1,26 @@
-package org.dromara.flower.service.impl;
+package org.dromara.flowerapplet.service.impl;
 
-import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.mybatis.core.page.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.dromara.common.core.domain.model.LoginUser;
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MemberPurchaseRecord;
 import org.dromara.flower.domain.bo.MemberPurchaseRecordBo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
-import org.dromara.flower.domain.MemberPurchaseRecord;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
+import org.dromara.flower.platform.domain.AppletUserInformation;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.service.IMemberPurchaseRecordService;
+import org.dromara.flowerapplet.service.IMemberAppletPurchaseRecordService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -26,10 +31,12 @@ import java.util.*;
  */
 @RequiredArgsConstructor
 @Service
-public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordService {
+public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurchaseRecordService {
 
     private final MemberPurchaseRecordMapper baseMapper;
-
+    private final AppletUserInformationMapper userInformationMapper;
+    private final static Long ZERO = 0L;
+    private final static Long ONE = 1L;
     /**
      * 查询会员购买记录
      *
@@ -89,17 +96,18 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(MemberPurchaseRecordBo bo) {
+    public MemberPurchaseRecordVo insertByBo(MemberPurchaseRecordBo bo) {
         MemberPurchaseRecord add = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
         if (add == null){
-            return false;
+            return new MemberPurchaseRecordVo();
         }
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
+
         }
-        return flag;
+        return MapstructUtils.convert(add, MemberPurchaseRecordVo.class);
     }
 
     /**
@@ -119,6 +127,17 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
      * 保存前的数据校验
      */
     private void validEntityBeforeSave(MemberPurchaseRecord entity){
+        Date date = new Date();
+        entity.setCreateTime(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, 1);
+
+        // 获取增加一年后的日期
+        Date nextYearDate = calendar.getTime();
+        entity.setEndTime(nextYearDate);
+        entity.setStatus(ZERO);
+        entity.setPayStatus(ZERO);
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -135,5 +154,32 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean payLaterUpdateByBo(MemberPurchaseRecordBo bo) {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null){
+            return false;
+        }
+        if (bo.getPayInfo() == null){
+            return false;
+        }
+        if (!ONE.equals(bo.getPayStatus())){
+            return false;
+        }
+        MemberPurchaseRecord update = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
+        update.setStatus(ONE);
+        update.setPayStatus(ONE);
+        baseMapper.updateById(update);
+        // 修改其余会员购买记录状态为  0 关闭
+        baseMapper.updateOtherMemberInfoByUserID(loginUser.getUserId(),update.getId());
+        // 修改会员基础信息中的会员等级
+        AppletUserInformation auf = new AppletUserInformation();
+        auf.setUserId(loginUser.getUserId());
+        auf.setMemberLevelId(update.getMemberLevelId());
+        userInformationMapper.updateById(auf);
+        return true;
     }
 }

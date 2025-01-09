@@ -28,6 +28,8 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.constant.LockKeyString;
 import org.dromara.flower.domain.CoursesManager;
+import org.dromara.flower.domain.MarketingMemberPromotionPecord;
+import org.dromara.flower.mapper.MarketingMemberPromotionPecordMapper;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
@@ -52,6 +54,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -75,6 +78,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
     private final SysRoleMapper roleMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final LockTemplate lockTemplate;
+    private final MarketingMemberPromotionPecordMapper memberPromotionPecordMapper;
 
     private final static Long ZERO = 0L;
 
@@ -196,7 +200,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
             // 设置小程序用户 新增用户角色信息
             insertUserRole(aib.getUserId(),new Long[]{1871386666300637186L},true);
             if (loginBody.getParentId() != null && !ZERO.equals(loginBody.getParentId())){
-
+                insertMarketingMemberPromotionPecord(aib,loginBody);
             }
         } else if (Status.DISABLE.equals(user.getStatus())) {
             throw new ServiceException("登录用户：" + phone + "已被停用");
@@ -209,6 +213,31 @@ public class XcxAuthStrategy implements IAuthStrategy {
             loginUser.setPhone(phone);
         }
         return loginUser;
+    }
+
+    /**
+     * 保存推广攻记录
+     * @param aib 新增小程序用户
+     * @param loginBody 用户登陆信息
+     */
+    private void insertMarketingMemberPromotionPecord(AppletUserInformationBo aib, XcxLoginBody loginBody) {
+        MarketingMemberPromotionPecord mmpp = new MarketingMemberPromotionPecord();
+        AppletUserInformationVo app = appletUserInformationMapper.selectVoById(loginBody.getParentId());
+        mmpp.setMemberId(app.getMemberId());
+        // TODO 后期看如何生成编号
+        mmpp.setPromotionId(IdUtil.fastSimpleUUID());
+        mmpp.setMemberName(app.getName());
+        mmpp.setPromotedPersonId(aib.getUserId());
+        mmpp.setPromotedPersonName(aib.getName());
+        mmpp.setPromotedPersonStatus(0L);
+        mmpp.setPromotedPersonLevel(initialMemberLevelProperties.getInitialId());
+        Date date =new Date();
+        mmpp.setCreatedAt(date);
+        mmpp.setCreateTime(date);
+        boolean flag = memberPromotionPecordMapper.insert(mmpp)>0;
+        if (!flag){
+            throw new RuntimeException("请重新识别推广二维码!");
+        }
     }
 
     /**
@@ -266,7 +295,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
      */
     private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
         // 小程序角色组 ID 目前写死 1871386666300637186
-        roleIds = new Long[]{1871386666300637186L};
+        roleIds = new Long[]{Long.parseLong(initialMemberLevelProperties.getAppletRoleId())};
         if (ArrayUtil.isNotEmpty(roleIds)) {
             List<Long> roleList = new ArrayList<>(List.of(roleIds));
             if (!LoginHelper.isSuperAdmin(userId)) {

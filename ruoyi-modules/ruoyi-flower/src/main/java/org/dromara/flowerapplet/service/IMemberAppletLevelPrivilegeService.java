@@ -1,9 +1,9 @@
-package org.dromara.flower.service;
+package org.dromara.flowerapplet.service;
 
-import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
-import org.dromara.flower.domain.bo.MemberLevelPrivilegeBo;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.flower.domain.bo.MemberLevelPrivilegeBo;
+import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author mlhxj
  * @date 2024-12-26
  */
-public interface IMemberLevelPrivilegeService {
+public interface IMemberAppletLevelPrivilegeService {
 
     /**
      * 查询会员中心--会员等级--权益名称
@@ -67,4 +67,6 @@ public interface IMemberLevelPrivilegeService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
+
+    MemberPurchaseRecordVo getPurchasPrivilege(Long id);
 }

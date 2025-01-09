@@ -270,3 +270,4 @@ wechat:
 # 初始会员等级id
 member:
   initial_id: 1871455149741629442
+  applet_role_id: 1871386666300637186

@@ -19,4 +19,6 @@ public interface MemberLevelMapper extends BaseMapperPlus<MemberLevel, MemberLev
     void selectMapByIds(@Param("resultHandler") MapResultHandler resultHandler, @Param("ids") List<Long> ids);
 
     void selectIdMapGrade(@Param("resultHandler")MapResultHandler<Long, String> resultHandler);
+
+    MemberLevelVo selectMemberLevel(@Param("memberLevelId") Long memberLevelId);
 }

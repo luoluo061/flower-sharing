@@ -81,5 +81,14 @@ public class MemberPurchaseRecordBo extends BaseEntity {
 //    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long price;
 
+    /**
+     * 支付状态 0 待支付  1 已支付
+     */
+    private Long payStatus;
+
+    /**
+     * 支付信息，支付接口返回信息JSON字符串
+     */
+    private String payInfo;
 
 }

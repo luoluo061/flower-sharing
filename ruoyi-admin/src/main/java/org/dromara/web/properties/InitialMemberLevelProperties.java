@@ -20,4 +20,9 @@ public class InitialMemberLevelProperties {
      */
     private String initialId;
 
+    /**
+     * 小程序用户角色ID
+     */
+    private String appletRoleId;
+
 }

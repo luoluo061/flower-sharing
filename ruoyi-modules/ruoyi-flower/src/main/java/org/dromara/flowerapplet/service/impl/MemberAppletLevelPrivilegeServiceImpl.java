@@ -1,28 +1,32 @@
-package org.dromara.flower.service.impl;
+package org.dromara.flowerapplet.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MemberLevelPrivilege;
 import org.dromara.flower.domain.MemberPurchaseRecord;
-import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
-import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MemberLevelPrivilegeBo;
 import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
-import org.dromara.flower.domain.MemberLevelPrivilege;
+import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
+import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
+import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.service.IMemberLevelPrivilegeService;
+import org.dromara.flowerapplet.service.IMemberAppletLevelPrivilegeService;
+import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 /**
  * 会员中心--会员等级--权益名称Service业务层处理
@@ -32,9 +36,11 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
-public class MemberLevelPrivilegeServiceImpl implements IMemberLevelPrivilegeService {
+public class MemberAppletLevelPrivilegeServiceImpl implements IMemberAppletLevelPrivilegeService {
 
     private final MemberLevelPrivilegeMapper baseMapper;
+    private final MemberPurchaseRecordMapper recordMapper;
+    private final MemberLevelMapper memberLevelMapper;
 
     /**
      * 查询会员中心--会员等级--权益名称
@@ -138,4 +144,25 @@ public class MemberLevelPrivilegeServiceImpl implements IMemberLevelPrivilegeSer
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    /**
+     * 查询小程序端会员权益
+     * @return 权益集合
+     */
+    @Override
+    public MemberPurchaseRecordVo getPurchasPrivilege(Long id) {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null){
+            return new MemberPurchaseRecordVo();
+        }
+        LambdaQueryWrapper<MemberPurchaseRecord> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(MemberPurchaseRecord::getMemberId, id);
+        lqw.eq(MemberPurchaseRecord::getCreateBy, loginUser.getUserId());
+        MemberPurchaseRecordVo mpr = recordMapper.selectVoOne(lqw);
+        // 查询会员相关信息
+        if (mpr!= null && mpr.getMemberLevelId() != null){
+            MemberLevelVo memberLevelVo = memberLevelMapper.selectMemberLevel(mpr.getMemberLevelId());
+            mpr.setMemberLevelVo(memberLevelVo);
+        }
+        return mpr;
+    }
 }
