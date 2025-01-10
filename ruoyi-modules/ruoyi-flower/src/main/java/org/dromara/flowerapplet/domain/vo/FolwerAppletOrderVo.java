@@ -9,11 +9,12 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -101,7 +102,7 @@ public class FolwerAppletOrderVo implements Serializable {
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
-    @ExcelProperty(value = "配送方式 默认是1，表示物流配送, 0，商家配送")
+    @ExcelProperty(value = "配送方式 默认是1,商家配送， 2，表示物流配送")
     private Long deliveryMode;
 
     /**
@@ -157,6 +158,9 @@ public class FolwerAppletOrderVo implements Serializable {
      */
     @ExcelProperty(value = "取消原因")
     private String cancelMsg;
+
+    @ExcelProperty(value = "订单详情")
+    private List<FolwerAppletOrderDetailVo> orderDetails;
 
 
 }

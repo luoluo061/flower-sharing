@@ -15,7 +15,7 @@ import java.util.List;
  * @author mlhxj
  * @date 2025-01-02
  */
-public interface IFolwerBasketService {
+public interface IFolwerAppletBasketService {
 
     /**
      * 获取购物车商品列表

@@ -31,6 +31,12 @@ public class FolwerPickAddrBo extends BaseEntity {
      */
     private String addrName;
 
+
+    /**
+     * 用户ID
+     */
+    private String userId;
+
     /**
      * 地址
      */

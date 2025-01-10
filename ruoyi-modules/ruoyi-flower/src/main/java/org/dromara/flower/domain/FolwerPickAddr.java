@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -26,6 +27,11 @@ public class FolwerPickAddr extends BaseEntity {
      */
     @TableId(value = "addr_id")
     private Long addrId;
+
+    /**
+     * 用户ID
+     */
+    private String userId;
 
     /**
      * 自提点名称
