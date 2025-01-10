@@ -71,14 +71,11 @@ public class MarketingCouponReceive extends TenantEntity {
     private Long state;
 
     /**
-     * 优惠卷开始时间
+     * 优惠券数量
      */
-    private Date startTime;
+    private Long num;
 
-    /**
-     * 优惠卷结束时间
-     */
-    private Date endTime;
+
 
 
 }

@@ -4,4 +4,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.MarketingCouponReceiveMapper">
 
+    <resultMap id="couponRecevo" type="org.dromara.flower.domain.vo.MarketingCouponReceiveVo">
+        <id column="id" property="id"></id>
+        <result column="dept_id" property="deptId"></result>
+        <result column="coupon_id" property="couponId"></result>
+        <result column="user_id" property="userId"></result>
+        <result column="user_name" property="userName"></result>
+        <result column="phone" property="phone"></result>
+        <result column="icon" property="icon"></result>
+        <result column="state" property="state"></result>
+        <result column="num" property="num"></result>
+        <association property="marketingCoupon" javaType="org.dromara.flower.domain.MarketingCoupon">
+
+
+        </association>
+    </resultMap>
+
+
+
+    <select id="queryUserStateList" resultType="org.dromara.flower.domain.vo.MarketingCouponReceiveVo">
+
+
+
+
+
+
+
+    </select>
+
+
+
+
 </mapper>

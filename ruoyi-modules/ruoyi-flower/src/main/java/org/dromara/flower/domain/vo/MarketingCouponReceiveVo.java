@@ -1,7 +1,11 @@
 package org.dromara.flower.domain.vo;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.flower.domain.MarketingCoupon;
 import org.dromara.flower.domain.MarketingCouponReceive;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -80,16 +84,28 @@ public class MarketingCouponReceiveVo implements Serializable {
     private Long state;
 
     /**
-     * 优惠卷开始时间
+     * 创建时间
      */
-    @ExcelProperty(value = "优惠卷开始时间")
-    private Date startTime;
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
 
     /**
-     * 优惠卷结束时间
+     * 优惠券详细信息
+     *
      */
-    @ExcelProperty(value = "优惠卷结束时间")
-    private Date endTime;
+    private MarketingCoupon marketingCoupon;
+
+
+    /**
+     * 优惠券数量
+     */
+    private Long num;
+
+
+
+
+
+
 
 
 }

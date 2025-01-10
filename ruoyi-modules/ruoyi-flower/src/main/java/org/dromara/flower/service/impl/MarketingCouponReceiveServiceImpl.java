@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.bo.AppCouponRecord;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
@@ -17,6 +18,7 @@ import org.dromara.flower.domain.MarketingCouponReceive;
 import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.service.IMarketingCouponReceiveService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -80,8 +82,6 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
         lqw.eq(StringUtils.isNotBlank(bo.getPhone()), MarketingCouponReceive::getPhone, bo.getPhone());
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), MarketingCouponReceive::getIcon, bo.getIcon());
         lqw.eq(bo.getState() != null, MarketingCouponReceive::getState, bo.getState());
-        lqw.eq(bo.getStartTime() != null, MarketingCouponReceive::getStartTime, bo.getStartTime());
-        lqw.eq(bo.getEndTime() != null, MarketingCouponReceive::getEndTime, bo.getEndTime());
         return lqw;
     }
 
@@ -152,4 +152,34 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
         return TableDataInfo.build(result);
     }
+
+
+    /**
+     * 小程序用户查询自己 0已领取、1已使用、2已失效的优惠券
+     * @param appCouponRecord
+     * @return
+     */
+    @Override
+    public List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecord appCouponRecord) {
+
+        //刷新过期时间的优惠券
+        List<MarketingCouponReceive> marketingCouponReceiveslist = baseMapper.selectList();
+        for (MarketingCouponReceive receives:marketingCouponReceiveslist){
+
+
+
+
+        }
+
+
+
+        QueryWrapper<MarketingCouponReceiveVo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",appCouponRecord.getUserId());
+
+        return null;
+    }
+
+
+
+
 }
