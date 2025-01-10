@@ -35,6 +35,12 @@ public class FolwerPickAddrVo implements Serializable {
     private Long addrId;
 
     /**
+     * 用户ID
+     */
+    @ExcelProperty(value = "用户ID")
+    private String userId;
+
+    /**
      * 收货人
      */
     @ExcelProperty(value = "收货人")

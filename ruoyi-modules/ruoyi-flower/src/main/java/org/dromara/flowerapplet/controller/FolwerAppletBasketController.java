@@ -9,6 +9,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.dromara.flowerapplet.domain.FolwerShopCartItem;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
+import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -20,7 +21,6 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
-import org.dromara.flowerapplet.service.IFolwerBasketService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 
@@ -36,7 +36,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequestMapping("/flowerapplet/basket")
 public class FolwerAppletBasketController extends BaseController {
 
-    private final IFolwerBasketService folwerBasketService;
+    private final IFolwerAppletBasketService folwerBasketService;
 
     /**
      * 查询小程序购物车列表

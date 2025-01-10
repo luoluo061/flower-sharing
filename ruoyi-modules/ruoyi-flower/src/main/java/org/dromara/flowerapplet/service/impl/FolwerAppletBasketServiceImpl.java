@@ -14,9 +14,9 @@ import org.dromara.flowerapplet.domain.FolwerShopCartItem;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletBasketMapper;
+import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
-import org.dromara.flowerapplet.service.IFolwerBasketService;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
-public class FolwerAppletBasketServiceImpl implements IFolwerBasketService {
+public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService {
 
     private final FolwerAppletBasketMapper baseMapper;
 
