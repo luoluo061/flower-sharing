@@ -27,6 +27,8 @@ import java.util.List;
 @Schema(description = "订单参数")
 public class OrderParamBo {
 
+    @Schema(description = "用户ID" )
+    private Long UserId;
 
 	@Schema(description = "购物车id 数组" )
 	private List<Long> basketIds;

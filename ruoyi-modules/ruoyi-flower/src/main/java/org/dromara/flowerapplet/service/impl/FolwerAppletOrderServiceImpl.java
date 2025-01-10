@@ -170,17 +170,17 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public FolwerAppletOrderVo createOrder(OrderParamBo orderParam, Long userId) throws Exception {
+    public FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception {
         FolwerAppletOrderBo bo = new FolwerAppletOrderBo();
         //订单ID
         bo.setOrderId(snowflake.nextId());
-        LoginUser user = LoginHelper.getLoginUser();
-        bo.setUserId(user.getUserId());
-        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(user.getUserId());
+//        LoginUser user = LoginHelper.getLoginUser();
+        bo.setUserId(orderParam.getUserId());
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(orderParam.getUserId());
         bo.setUserName(appletUserInformationVo.getName());
         bo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
         // 组装获取用户提交的购物车商品项
-        List<FolwerAppletProductVo> shopCartItems = this.getShopCartItemsByOrderItems(orderParam.getBasketIds(),orderParam.getProductItem(),user.getUserId());
+        List<FolwerAppletProductVo> shopCartItems = this.getShopCartItemsByOrderItems(orderParam.getBasketIds(),orderParam.getProductItem(),orderParam.getUserId());
         if (CollectionUtil.isEmpty(shopCartItems)) {
             throw new Exception("请选择您需要的商品");
         }
@@ -264,7 +264,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             bo.setOrderId(add.getOrderId());
             folwerAppletOrderVo.setOrderDetails(orderDetailVoList);
             //放入缓存
-            this.putConfirmOrderCache(userId.toString(), folwerAppletOrderVo);
+            this.putConfirmOrderCache(orderParam.toString(), folwerAppletOrderVo);
         }
         return folwerAppletOrderVo;
     }
