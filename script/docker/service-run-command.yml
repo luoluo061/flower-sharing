@@ -1,0 +1,10 @@
+# 自己开发的后端服务启动说明，其它服务使用docker-compose启动, docker-compose文件在服务器 docker/docker-compose.yml文件
+
+# 美立花享家 后端docker-compose文件和Dockerfile文件位置 /docker/service
+# 自己开发jar包放在 /docker/service/target下
+# 第一次构建命令 cd /docker/service
+  运行构建命令: docker-compose -f docker-compose.yml build ruoyi-server1
+  运行启动服务命令: docker-compose -f docker-compose.yml up -d ruoyi-server1
+
+# 后期替换jar包后  cd /docker/service
+  重启命令: docker-compose -f docker-compose.yml restart ruoyi-server1
