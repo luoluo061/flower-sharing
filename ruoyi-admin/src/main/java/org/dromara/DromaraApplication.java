@@ -20,4 +20,5 @@ public class DromaraApplication {
         System.out.println("(♥◠‿◠)ﾉﾞ  RuoYi-Vue-Plus启动成功   ლ(´ڡ`ლ)ﾞ");
     }
 
+
 }

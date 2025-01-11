@@ -1,7 +1,9 @@
 package org.dromara.flower.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -10,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.bo.AppCouponRecord;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
@@ -17,9 +20,7 @@ import org.dromara.flower.domain.MarketingCouponReceive;
 import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.service.IMarketingCouponReceiveService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 优惠卷领取记录Service业务层处理
@@ -80,13 +81,11 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
         lqw.eq(StringUtils.isNotBlank(bo.getPhone()), MarketingCouponReceive::getPhone, bo.getPhone());
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), MarketingCouponReceive::getIcon, bo.getIcon());
         lqw.eq(bo.getState() != null, MarketingCouponReceive::getState, bo.getState());
-        lqw.eq(bo.getStartTime() != null, MarketingCouponReceive::getStartTime, bo.getStartTime());
-        lqw.eq(bo.getEndTime() != null, MarketingCouponReceive::getEndTime, bo.getEndTime());
         return lqw;
     }
 
     /**
-     * 新增优惠卷领取记录
+     * 新增优惠卷领取记录 == 用户领取优惠券、发放优惠券
      *
      * @param bo 优惠卷领取记录
      * @return 是否新增成功
@@ -95,6 +94,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     public Boolean insertByBo(MarketingCouponReceiveBo bo) {
         MarketingCouponReceive add = MapstructUtils.convert(bo, MarketingCouponReceive.class);
         validEntityBeforeSave(add);
+        add.setState(0L);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -152,4 +152,43 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
         return TableDataInfo.build(result);
     }
+
+
+    /**
+     * 小程序用户查询自己 0已领取、1已使用、2已失效的优惠券
+     * @param appCouponRecord
+     * @return
+     */
+    @Override
+    public List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecord appCouponRecord) {
+        List<MarketingCouponReceiveVo> marketingCouponlist = new ArrayList<>();
+
+        List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserStateList(appCouponRecord);
+
+        for (MarketingCouponReceiveVo marketingCouponReceive:marketingCouponReceiveVos){
+            //刷新过期时间的优惠券
+            Date endTime = marketingCouponReceive.getMarketingCoupon().getEndTime();
+            Date currenTime = new Date();
+            if (endTime.before(currenTime)){
+                marketingCouponReceive.setState(2L);
+                UpdateWrapper<MarketingCouponReceive> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",marketingCouponReceive.getId());
+                updateWrapper.set("state",marketingCouponReceive.getState());
+                baseMapper.update(updateWrapper);
+            }
+
+            if (marketingCouponReceive.getState().equals(appCouponRecord.getState()))
+                marketingCouponlist.add(marketingCouponReceive);
+
+        }
+
+        return marketingCouponlist;
+    }
+
+
+
+
+
+
+
 }
