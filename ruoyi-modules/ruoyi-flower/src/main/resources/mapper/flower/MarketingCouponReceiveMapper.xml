@@ -4,4 +4,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.MarketingCouponReceiveMapper">
 
+    <resultMap id="couponRecevo" type="org.dromara.flower.domain.vo.MarketingCouponReceiveVo">
+        <id column="crid" property="id"></id>
+        <result column="dept_id" property="deptId"></result>
+        <result column="coupon_id" property="couponId"></result>
+        <result column="user_id" property="userId"></result>
+        <result column="user_name" property="userName"></result>
+        <result column="phone" property="phone"></result>
+        <result column="icon" property="icon"></result>
+        <result column="state" property="state"></result>
+        <result column="num" property="num"></result>
+        <association property="marketingCoupon" javaType="org.dromara.flower.domain.vo.MarketingCouponVo">
+            <id column="cid" property="id"></id>
+            <result column="dept_id" property="deptId"></result>
+            <result column="coupon_name" property="couponName"></result>
+            <result column="coupon_description" property="couponDescription"></result>
+            <result column="applicable_category" property="applicableCategory"></result>
+            <result column="classification_id" property="classificationId"></result>
+            <result column="goods_id" property="goodsId"></result>
+            <result column="coupon_type" property="couponType"></result>
+            <result column="coupon_kind" property="couponKind"></result>
+            <result column="start_time" property="startTime"></result>
+            <result column="end_time" property="endTime"></result>
+            <result column="full_reduction_amount" property="fullReductionAmount"></result>
+            <result column="coupon_sum" property="couponSum"></result>
+            <result column="coupon_number" property="couponName"></result>
+            <result column="surplus_number" property="surplusNumber"></result>
+            <result column="state" property="state"></result>
+            <result column="specific_membership_level" property="specificMembershipLevel"></result>
+            <result column="specific_users_id" property="specificUsersId"></result>
+            <result column="applicable_scope" property="applicableScope"></result>
+            <result column="sorting" property="sorting"></result>
+        </association>
+    </resultMap>
+
+
+
+    <select id="queryUserStateList" resultMap="couponRecevo">
+        SELECT cr.id crid,c.id cid,cr.*,c.*
+        FROM marketing_coupon_receive cr LEFT JOIN marketing_coupon c ON  cr.coupon_id = c.id
+        WHERE cr.user_id=#{userId}
+    </select>
+
+
+
+
 </mapper>

@@ -67,6 +67,21 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
 
         Page<MarketingCouponVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
 
+        // 刷新已过期的优惠券
+        List<MarketingCouponVo> records = result.getRecords();
+        for (MarketingCouponVo record : records) {
+            Date endTime = record.getEndTime();
+            Date  currentTime= new Date();
+            if (endTime.before(currentTime)){
+                record.setState(0L);
+                UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",record.getId());
+                updateWrapper.set("state",record.getState());
+
+                if (baseMapper.update(updateWrapper)<0) throw new ServiceException("刷新失败!");
+            }
+        }
+
 
         return TableDataInfo.build(result);
     }
@@ -260,11 +275,28 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         //会员等级id
         Long memberLevelId = appletUserInformation.getMemberLevelId();
 
-        //返回的数据
+        //返回的优惠卷集合
         ArrayList<MarketingCouponVo> result = new ArrayList<>();
 
-        List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList();
+        //所有发放的优惠券
+        QueryWrapper<MarketingCoupon> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("state",1);
+        List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList(queryWrapper);
+
+
         for (MarketingCouponVo marketingCouponVo:marketingCouponsAll){
+            //刷新已过期的优惠卷，剔除已过期的优惠券
+            Date endTime = marketingCouponVo.getEndTime();
+            Date currenTime = new Date();
+            if (endTime.before(currenTime)){
+                UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",marketingCouponVo.getId());
+                //关闭优惠券
+                updateWrapper.set("state",0);
+                baseMapper.update(updateWrapper);
+                continue;
+            }
+
             //1. 普通优惠券
             if (marketingCouponVo.getCouponKind()==0L){
                 result.add(marketingCouponVo);

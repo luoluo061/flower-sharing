@@ -1,5 +1,6 @@
 package org.dromara.flower.service;
 
+import org.dromara.flower.domain.bo.AppCouponRecord;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -67,4 +68,6 @@ public interface IMarketingCouponReceiveService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     TableDataInfo<MarketingCouponReceiveVo> queryPageListByCouponId(Long id, PageQuery pageQuery);
+
+    List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecord appCouponRecord);
 }
