@@ -22,7 +22,12 @@ public enum UserType {
     /**
      * app端
      */
-    APP_USER("app_user");
+    APP_USER("app_user"),
+
+    /**
+     * 小程序端
+     */
+    XCX("xcx");
 
     private final String userType;
 

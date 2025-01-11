@@ -43,7 +43,8 @@ public class AppletUserInformationController extends BaseController {
     @SaCheckPermission("system:userInformation:list")
     @GetMapping("/list")
     public TableDataInfo<AppletUserInformationVo> list(AppletUserInformationBo bo, PageQuery pageQuery) {
-        return appletUserInformationService.queryPageList(bo, pageQuery);
+        TableDataInfo<AppletUserInformationVo>  result = appletUserInformationService.queryPageList(bo, pageQuery);
+        return result;
     }
 
     /**

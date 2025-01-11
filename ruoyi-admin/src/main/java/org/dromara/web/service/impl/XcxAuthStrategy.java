@@ -44,6 +44,7 @@ import org.dromara.system.domain.vo.SysRoleVo;
 import org.dromara.system.mapper.SysRoleMapper;
 import org.dromara.system.mapper.SysUserPostMapper;
 import org.dromara.system.mapper.SysUserRoleMapper;
+import org.dromara.system.service.ISysPermissionService;
 import org.dromara.system.service.impl.SysUserServiceImpl;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.XcxPhoneInfoVo;
@@ -79,6 +80,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
     private final SysUserRoleMapper userRoleMapper;
     private final LockTemplate lockTemplate;
     private final MarketingMemberPromotionPecordMapper memberPromotionPecordMapper;
+    private final ISysPermissionService permissionService;
 
     private final static Long ZERO = 0L;
 
@@ -93,9 +95,11 @@ public class XcxAuthStrategy implements IAuthStrategy {
         String appid = loginBody.getAppid();
 
         //获取小程序
-        String accessToken = loginService.getAccessToken();
+//        String accessToken = loginService.getAccessToken();
         //获取手机号信息
-        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(xcxCode, accessToken);
+//        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(xcxCode, accessToken);
+        XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
+        phoneInfo.setPhoneNumber("15912341234");
         //暂无code来使用，使用模拟数据
         /*XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
         phoneInfo.setPhoneNumber("15912341234");*/
@@ -188,12 +192,16 @@ public class XcxAuthStrategy implements IAuthStrategy {
             aib.setMemberId(createMemberId());
             aib.setParentId(loginBody.getParentId() != null ? loginBody.getParentId() : ZERO);
             aib.setMemberLevelId(Long.parseLong(initialMemberLevelProperties.getInitialId()));
+            // 后期更换
             aib.setCreateBy(1L);
-            aib.setCreateDept(103L);
+            aib.setCreateDept(1877911738916859905L);
+            aib.setDeptId(1877911738916859905L);
             if (appletUserInformationService.insertByBo(aib)) {
                 loginUser.setUserId(aib.getUserId());
                 loginUser.setUserType(aib.getUserType());
                 loginUser.setPhone(aib.getPhone());
+                // 后期修改为数据库查询或其他的地方获取
+                loginUser.setTenantId("000000");
             } else {
                 throw new ServiceException("添加小程序用户失败");
             }
@@ -211,7 +219,15 @@ public class XcxAuthStrategy implements IAuthStrategy {
             loginUser.setUserId(user.getUserId());
             loginUser.setUserType(user.getUserType());
             loginUser.setPhone(phone);
+            loginUser.setTenantId(user.getTenantId());
+            loginUser.setDeptId(user.getDeptId());
+            loginUser.setUsername(user.getName());
+            loginUser.setNickname(user.getNickName());
+            loginUser.setMenuPermission(permissionService.getMenuPermission(user.getUserId()));
+            loginUser.setRolePermission(permissionService.getRolePermission(user.getUserId()));
         }
+        // 获取用户其它信息
+
         return loginUser;
     }
 

@@ -213,4 +213,10 @@ public class AppletUserInformationVo implements Serializable {
     @ExcelProperty(value = "生日例子:1999-10-10")
     private String birthday;
 
+    /**
+     * 租户ID
+     */
+    @ExcelProperty(value = "租户ID")
+    private String tenantId;
+
 }
