@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flowerapplet.domain.bo.OrderParamBo;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -101,5 +103,17 @@ public class FolwerAppletOrderController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] orderIds) {
         return toAjax(folwerAppletOrderService.deleteWithValidByIds(List.of(orderIds), true));
+    }
+
+    /**
+     * 新增订单
+     */
+    @SaCheckPermission("flowerapplet:order:createOrder")
+    @Log(title = "订单", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/createOrder")
+    public R<FolwerAppletOrderVo> createOrder(@Validated(AddGroup.class) @RequestBody OrderParamBo orderParam) throws Exception {
+        FolwerAppletOrderVo order = folwerAppletOrderService.createOrder(orderParam);
+        return R.ok(order);
     }
 }

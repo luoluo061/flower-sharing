@@ -26,7 +26,7 @@ public class MarketingCouponReceive extends TenantEntity {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -70,10 +70,6 @@ public class MarketingCouponReceive extends TenantEntity {
      */
     private Long state;
 
-    /**
-     * 优惠券数量
-     */
-    private Long num;
 
 
 

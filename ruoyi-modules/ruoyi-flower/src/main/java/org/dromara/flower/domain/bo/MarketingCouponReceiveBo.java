@@ -25,7 +25,7 @@ public class MarketingCouponReceiveBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
@@ -67,15 +67,13 @@ public class MarketingCouponReceiveBo extends BaseEntity {
     /**
      * 优惠券状态（0默认已领取，1已使用，2已过期）
      */
-    @NotNull(message = "优惠券状态（0默认已领取，1已使用，2已过期）不能为空", groups = { AddGroup.class, EditGroup.class })
+    // @NotNull(message = "优惠券状态（0默认已领取，1已使用，2已过期）不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long state;
 
 
-    /**
-     * 优惠券数量
-     */
-    @NotNull(message = "优惠卷数量", groups = { AddGroup.class, EditGroup.class })
-    private Long num;
+
+
+
 
 
 

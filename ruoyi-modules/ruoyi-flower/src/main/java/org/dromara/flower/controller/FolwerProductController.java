@@ -46,6 +46,16 @@ public class FolwerProductController extends BaseController {
     }
 
     /**
+     * 查询所有商品管理列表
+     */
+    @SaCheckPermission("flower:product:allList")
+    @GetMapping("/allList")
+    public R<List<FolwerProductVo>> allList() {
+        FolwerProductBo bo = new FolwerProductBo();
+        return R.ok(folwerProductService.queryList(bo));
+    }
+
+    /**
      * 导出商品管理列表
      */
     @SaCheckPermission("flower:product:export")

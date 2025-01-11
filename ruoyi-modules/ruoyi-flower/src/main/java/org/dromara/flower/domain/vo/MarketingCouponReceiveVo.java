@@ -93,7 +93,7 @@ public class MarketingCouponReceiveVo implements Serializable {
      * 优惠券详细信息
      *
      */
-    private MarketingCoupon marketingCoupon;
+    private MarketingCouponVo marketingCoupon;
 
 
     /**

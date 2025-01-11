@@ -1,7 +1,9 @@
 package org.dromara.flower.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -18,10 +20,7 @@ import org.dromara.flower.domain.MarketingCouponReceive;
 import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.service.IMarketingCouponReceiveService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 优惠卷领取记录Service业务层处理
@@ -86,7 +85,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     }
 
     /**
-     * 新增优惠卷领取记录
+     * 新增优惠卷领取记录 == 用户领取优惠券、发放优惠券
      *
      * @param bo 优惠卷领取记录
      * @return 是否新增成功
@@ -95,6 +94,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     public Boolean insertByBo(MarketingCouponReceiveBo bo) {
         MarketingCouponReceive add = MapstructUtils.convert(bo, MarketingCouponReceive.class);
         validEntityBeforeSave(add);
+        add.setState(0L);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -161,23 +161,32 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
      */
     @Override
     public List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecord appCouponRecord) {
+        List<MarketingCouponReceiveVo> marketingCouponlist = new ArrayList<>();
 
-        //刷新过期时间的优惠券
-        List<MarketingCouponReceive> marketingCouponReceiveslist = baseMapper.selectList();
-        for (MarketingCouponReceive receives:marketingCouponReceiveslist){
+        List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserStateList(appCouponRecord);
 
+        for (MarketingCouponReceiveVo marketingCouponReceive:marketingCouponReceiveVos){
+            //刷新过期时间的优惠券
+            Date endTime = marketingCouponReceive.getMarketingCoupon().getEndTime();
+            Date currenTime = new Date();
+            if (endTime.before(currenTime)){
+                marketingCouponReceive.setState(2L);
+                UpdateWrapper<MarketingCouponReceive> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",marketingCouponReceive.getId());
+                updateWrapper.set("state",marketingCouponReceive.getState());
+                baseMapper.update(updateWrapper);
+            }
 
-
+            if (marketingCouponReceive.getState().equals(appCouponRecord.getState()))
+                marketingCouponlist.add(marketingCouponReceive);
 
         }
 
-
-
-        QueryWrapper<MarketingCouponReceiveVo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId",appCouponRecord.getUserId());
-
-        return null;
+        return marketingCouponlist;
     }
+
+
+
 
 
 
