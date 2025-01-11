@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.domain.bo.AppCouponRecordBo;
+import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
+import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -105,6 +108,7 @@ public class MarketingCouponReceiveController extends BaseController {
 
 
     /**
+     * pc端，查询领取优惠券领取记录
      * 查询优惠卷领取记录列表,根据优惠券id
      */
     @SaCheckPermission("flower:couponReceive:list")
@@ -113,6 +117,51 @@ public class MarketingCouponReceiveController extends BaseController {
                                                                       @PathVariable Long id, PageQuery pageQuery) {
         return marketingCouponReceiveService.queryPageListByCouponId(id, pageQuery);
     }
+
+    /**
+     * 小程序用户，查询自己领取、已使用、已过期的优惠券
+     */
+
+    @SaCheckPermission("flower:couponReceive:list")
+    @GetMapping("/userStateList")
+    public List<MarketingCouponReceiveVo> userStateList(AppCouponRecordBo appCouponRecordBo){
+        return marketingCouponReceiveService.queryUserStateList(appCouponRecordBo);
+
+    }
+
+
+    /**
+     *当前用户查询该商品可用优惠卷
+     * --订单使用优惠卷
+     *
+     */
+    @SaCheckPermission("flower:couponReceive:list")
+    @GetMapping("/userConsumeList")
+    public List<MarketingCouponReceiveVo> userConsumeList(AppOrderConsumeBo appOrderConsumeBo){
+        return marketingCouponReceiveService.queryUserConsumeList(appOrderConsumeBo);
+    }
+
+
+    /**
+     * 查询该商品用户是否拥有 花劵
+     * @param appIsFlowerCouponsBo
+     * @return
+     */
+    @PutMapping("/isFlowerCoupons")
+    public R<Void> isFlowerCoupons(AppIsFlowerCouponsBo appIsFlowerCouponsBo){
+        return toAjax(marketingCouponReceiveService.isFlowerCoupons(appIsFlowerCouponsBo));
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

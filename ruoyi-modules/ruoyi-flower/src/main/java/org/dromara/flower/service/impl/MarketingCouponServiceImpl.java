@@ -67,6 +67,21 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
 
         Page<MarketingCouponVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
 
+        // 刷新已过期的优惠券
+        List<MarketingCouponVo> records = result.getRecords();
+        for (MarketingCouponVo record : records) {
+            Date endTime = record.getEndTime();
+            Date  currentTime= new Date();
+            if (endTime.before(currentTime)){
+                record.setState(0L);
+                UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",record.getId());
+                updateWrapper.set("state",record.getState());
+
+                if (baseMapper.update(updateWrapper)<0) throw new ServiceException("刷新失败!");
+            }
+        }
+
 
         return TableDataInfo.build(result);
     }
@@ -238,7 +253,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         Long state = marketingCoupon.getState();
         updateWrapper.eq("id",id);
         state=((state == 0)?1L:0);
-        updateWrapper.set("state",1);
+        updateWrapper.set("state",state);
 
         return baseMapper.update(updateWrapper)>0;
     }
@@ -247,12 +262,11 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     /**
      * 根据会员用户id，显示待领取的优惠券
      * @param id
-     * @param pageQuery
      * @return
      * 优惠券种类（0普通优惠卷，1定向优惠卷）
      */
     @Override
-    public List<MarketingCouponVo> queryPageUserList(Long id, PageQuery pageQuery) {
+    public List<MarketingCouponVo> queryPageUserList(Long id) {
         //查询当前用户信息
         QueryWrapper queryUserWrapper = new QueryWrapper<AppletUserInformation>();
         queryUserWrapper.eq("member_id",id);
@@ -260,29 +274,60 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         //会员等级id
         Long memberLevelId = appletUserInformation.getMemberLevelId();
 
-        //返回的数据
+        //返回的优惠卷集合
         ArrayList<MarketingCouponVo> result = new ArrayList<>();
 
-        List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList();
-        for (MarketingCouponVo marketingCouponVo:marketingCouponsAll){
+        //所有发放的优惠券
+        QueryWrapper<MarketingCoupon> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("state",1);
+        List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList(queryWrapper);
+
+
+        for (MarketingCouponVo marketingCouponVo:marketingCouponsAll) {
+            //刷新已过期的优惠卷，剔除已过期的优惠券
+            Date endTime = marketingCouponVo.getEndTime();
+            Date currenTime = new Date();
+            if (endTime.before(currenTime)) {
+                UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", marketingCouponVo.getId());
+                //关闭优惠券
+                updateWrapper.set("state", 0);
+                baseMapper.update(updateWrapper);
+                continue;
+            }
+
             //1. 普通优惠券
-            if (marketingCouponVo.getCouponKind()==0L){
+            if (marketingCouponVo.getCouponKind() == 0L) {
                 result.add(marketingCouponVo);
             }
             //2. 定向优惠券
-            //2.1 定向会员等级
-            if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificMembershipLevel())){
-              if(marketingCouponVo.getSpecificMembershipLevel().contains(memberLevelId.toString()))
-                  result.add(marketingCouponVo);
-            }
+            else if (marketingCouponVo.getCouponKind() == 2L) {
+                //2.1 定向会员等级
+                if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificMembershipLevel())) {
+                    Long[] array = Arrays.stream(marketingCouponVo.getSpecificMembershipLevel().split(","))
+                        .map(String::trim)
+                        .mapToLong(Long::parseLong)
+                        .boxed()
+                        .toArray(Long[]::new);
+                    if (Arrays.stream(array).anyMatch(x -> x == memberLevelId))
+                        result.add(marketingCouponVo);
+                }
 
-            //2.2 定向用户
-            if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificUsersId())){
-                if (marketingCouponVo.getSpecificUsersId().contains(id.toString()))
-                    result.add(marketingCouponVo);
+                //2.2 定向用户
+                if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificUsersId())) {
+                    Long[] array = Arrays.stream(marketingCouponVo.getSpecificUsersId().split(","))
+                        .map(String::trim)
+                        .mapToLong(Long::parseLong)
+                        .boxed()
+                        .toArray(Long[]::new);
+
+                    if (Arrays.stream(array).anyMatch(x->x==id))
+                        result.add(marketingCouponVo);
+                }
+
+
             }
         }
-
 
         return result;
     }

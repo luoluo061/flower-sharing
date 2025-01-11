@@ -1,15 +1,23 @@
 package org.dromara.flower.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.checkerframework.checker.units.qual.A;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.bo.AppCouponRecordBo;
+import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
+import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
@@ -17,9 +25,9 @@ import org.dromara.flower.domain.MarketingCouponReceive;
 import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.service.IMarketingCouponReceiveService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+
+import static kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.list;
 
 /**
  * 优惠卷领取记录Service业务层处理
@@ -80,13 +88,11 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
         lqw.eq(StringUtils.isNotBlank(bo.getPhone()), MarketingCouponReceive::getPhone, bo.getPhone());
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), MarketingCouponReceive::getIcon, bo.getIcon());
         lqw.eq(bo.getState() != null, MarketingCouponReceive::getState, bo.getState());
-        lqw.eq(bo.getStartTime() != null, MarketingCouponReceive::getStartTime, bo.getStartTime());
-        lqw.eq(bo.getEndTime() != null, MarketingCouponReceive::getEndTime, bo.getEndTime());
         return lqw;
     }
 
     /**
-     * 新增优惠卷领取记录
+     * 新增优惠卷领取记录 == 用户领取优惠券、发放优惠券
      *
      * @param bo 优惠卷领取记录
      * @return 是否新增成功
@@ -95,6 +101,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     public Boolean insertByBo(MarketingCouponReceiveBo bo) {
         MarketingCouponReceive add = MapstructUtils.convert(bo, MarketingCouponReceive.class);
         validEntityBeforeSave(add);
+        add.setState(0L);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -152,4 +159,148 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
         return TableDataInfo.build(result);
     }
+
+
+    /**
+     * 小程序用户查询自己 0已领取、1已使用、2已失效的优惠券
+     * @param appCouponRecordBo
+     * @return
+     */
+    @Override
+    public List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecordBo) {
+        List<MarketingCouponReceiveVo> marketingCouponlist = new ArrayList<>();
+
+        List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserStateList(appCouponRecordBo);
+
+        for (MarketingCouponReceiveVo marketingCouponReceive:marketingCouponReceiveVos){
+            //刷新过期时间的优惠券
+            Date endTime = marketingCouponReceive.getMarketingCoupon().getEndTime();
+            Date currenTime = new Date();
+            if (endTime.before(currenTime)){
+                marketingCouponReceive.setState(2L);
+                UpdateWrapper<MarketingCouponReceive> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",marketingCouponReceive.getId());
+                updateWrapper.set("state",marketingCouponReceive.getState());
+                baseMapper.update(updateWrapper);
+            }
+
+            if (marketingCouponReceive.getState().equals(appCouponRecordBo.getState()))
+                marketingCouponlist.add(marketingCouponReceive);
+
+        }
+
+        return marketingCouponlist;
+    }
+
+
+    /**
+     *
+     * 当前用户查询该商品可用优惠卷列表
+     * @param appOrderConsumeBo
+     * @return
+     * 适用商品分类（0所有商品，1特定分类，2特定商品）
+     */
+    @Override
+    public List<MarketingCouponReceiveVo> queryUserConsumeList(AppOrderConsumeBo appOrderConsumeBo) {
+        List<MarketingCouponReceiveVo> list=new ArrayList<>();
+
+
+        List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserConsumeList(appOrderConsumeBo);
+        for (MarketingCouponReceiveVo marketingCouponReceiveVo : marketingCouponReceiveVos) {
+            //1. "0"所有商品
+            if (marketingCouponReceiveVo.getMarketingCoupon().getApplicableCategory()==0L){
+                list.add(marketingCouponReceiveVo);
+            }
+            //2. "1"特定分类
+             else if (marketingCouponReceiveVo.getMarketingCoupon().getApplicableCategory()==1L) {
+                Long[] classificationIdArray = Arrays.stream(marketingCouponReceiveVo.getMarketingCoupon().getClassificationId().split(","))
+                    .map(String::trim)
+                    .mapToLong(Long::parseLong)
+                    .boxed()
+                    .toArray(Long[]::new);
+                 Long[] categoryId = appOrderConsumeBo.getCategoryId();
+
+                boolean b = Arrays.stream(classificationIdArray).anyMatch(x -> Arrays.stream(categoryId).anyMatch(y -> x.equals(y)));
+                if (b) {
+                    list.add(marketingCouponReceiveVo);
+                }
+
+            }
+            //3. "2" 特定商品
+            else if (marketingCouponReceiveVo.getMarketingCoupon().getApplicableCategory()==2L){
+                Long[] goodIdArray = Arrays.stream(marketingCouponReceiveVo.getMarketingCoupon().getGoodsId().split(","))
+                    .map(String::trim)
+                    .mapToLong(Long::parseLong)
+                    .boxed()
+                    .toArray(Long[]::new);
+                Long[] productIds = appOrderConsumeBo.getProductIds();
+
+                boolean b = Arrays.stream(goodIdArray).anyMatch(x -> Arrays.stream(productIds).anyMatch(y -> x.equals(y)));
+                if (b){
+                    list.add(marketingCouponReceiveVo);
+                }
+            }
+        }
+
+
+
+        return list;
+
+
+    }
+
+
+    /**
+     * 查询该商品是否拥有花劵
+     * @param appIsFlowerCouponsBo
+     * @return
+     * （0所有商品，1特定分类，2特定商品）
+     */
+    @Override
+    public boolean isFlowerCoupons(AppIsFlowerCouponsBo appIsFlowerCouponsBo) {
+        List<MarketingCouponReceiveVo> flowerCoupons = baseMapper.isFlowerCoupons(appIsFlowerCouponsBo);
+
+        if (flowerCoupons.isEmpty() || flowerCoupons==null)return false;
+
+
+
+        for (MarketingCouponReceiveVo flowerCoupon : flowerCoupons) {
+            // 适用于所有商品的花劵 0
+            if (flowerCoupon.getMarketingCoupon().getApplicableCategory()==0L){
+                return  true;
+            }
+            // 适用于特定分类的花劵
+            else if (flowerCoupon.getMarketingCoupon().getApplicableCategory()==1L){
+                Long[] array = Arrays.stream(flowerCoupon.getMarketingCoupon().getSpecificUsersId().split(","))
+                    .map(String::trim)
+                    .mapToLong(Long::parseLong)
+                    .boxed()
+                    .toArray(Long[]::new);
+                if (Arrays.stream(array).anyMatch(x->x==appIsFlowerCouponsBo.getCategoryId()))
+                    return true;
+
+
+            }
+            //适用于特定商品的花劵
+            else if (flowerCoupon.getMarketingCoupon().getApplicableCategory()==2L) {
+                Long[] array = Arrays.stream(flowerCoupon.getMarketingCoupon().getGoodsId().split(","))
+                    .map(String::trim)
+                    .mapToLong(Long::parseLong)
+                    .boxed()
+                    .toArray(Long[]::new);
+
+                if (Arrays.stream(array).anyMatch(x->x==appIsFlowerCouponsBo.getProductId()))
+                    return true;
+
+
+            }
+
+
+    }
+
+        return false;
+
+    }
+
+
 }
