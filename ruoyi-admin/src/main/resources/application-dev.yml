@@ -271,3 +271,22 @@ wechat:
 member:
   initial_id: 1871455149741629442
   applet_role_id: 1871386666300637186
+
+wx:
+  pay:
+    #应用id（小程序id）
+    app-id: wxa1e0edcbbe684f4f
+    #商户号
+    mch-id: 1695346142
+    #商户API私钥路径
+    path: cert/apiclient_key.pem
+    #商户证书序列号
+    serial-number: 64760D1BAAF6BA7E592BF8EE35080CF70F33FF47
+    #商户APIV3密钥
+    key: QLUQB4ZWi5H6HJuwTdUrvsYMPnJEQnCD
+    #支付通知地址
+    notify-url: http://bixp4h.natappfree.cc/api/wxpayback/pay/wxCallback
+    #退款通知地址
+    refun-notify-url: http://3df521505ar6.vicp.fun/api/wx/refundNotify
+    #微信平台证书
+    wechatpay-Certificate-Path: cert/wechatpay_3996637EF4984ABC0796E6CED627793085E8C41F.pem

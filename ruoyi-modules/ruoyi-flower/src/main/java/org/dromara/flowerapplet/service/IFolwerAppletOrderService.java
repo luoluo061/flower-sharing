@@ -77,6 +77,13 @@ public interface IFolwerAppletOrderService {
      */
     FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception;
 
+    /***
+     * 提交订单
+     * @param orderId
+     * @return
+     */
+    FolwerAppletOrderVo submitOrders(Long orderId);
+
     /**
      * 获取购物车商品项
      *

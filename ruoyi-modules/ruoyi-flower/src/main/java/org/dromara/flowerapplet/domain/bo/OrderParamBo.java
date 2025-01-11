@@ -19,6 +19,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lanhai
@@ -49,11 +50,11 @@ public class OrderParamBo {
     @Schema(description = "物流公司ID" ,required=true)
     private Long dvyId;
 
-	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择" )
+	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
 	private Integer userChangeCoupon;
 
-	@Schema(description = "优惠券id数组" )
-	private List<Long> couponIds;
+	@Schema(description = "优惠券id数组,商品ID+优惠券ID" )
+	private Map<Long, Long> couponIds;
 
 //	@Schema(description = "每次订单提交时的uuid" )
 //	private String uuid;

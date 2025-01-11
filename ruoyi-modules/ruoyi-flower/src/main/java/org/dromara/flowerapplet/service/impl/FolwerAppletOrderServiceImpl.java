@@ -3,6 +3,7 @@ package org.dromara.flowerapplet.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Snowflake;
 import jakarta.annotation.Resource;
+import org.dromara.common.core.constant.GlobalConstants;
 import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -12,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.vo.FolwerDeliveryVo;
 import org.dromara.flower.domain.vo.FolwerPickAddrVo;
@@ -43,6 +45,7 @@ import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -54,6 +57,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
+
+    private static final String CONFIRM_ORDER_CACHE_KEY  = "order:confirm:";
 
     @Resource
     private final FolwerAppletOrderMapper baseMapper;
@@ -193,7 +198,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         //购物车商品总数
         int totalCount = 0;
         List<Double> productPriceList = new ArrayList<Double>();
-        List<FolwerAppletOrderDetailVo> orderDetailVoList = new ArrayList<>();
+        List<FolwerAppletOrderDetailVo> orderDetailVoList = null;
         for (FolwerAppletProductVo shopCartItem : shopCartItems){
             // 获取sku信息
             FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(shopCartItem.getSkuId());
@@ -225,8 +230,16 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             folwerAppletOrderDetailBo.setSubtotal((long) price);
 
             // 优惠 （未完）
-            if(price==0){
-                total = Arith.sub(shopCartItem.getOriPrice(), total);
+            if( orderParam.getUserChangeCoupon().equals(0)){        //-1:不参与优惠，0:满减，1：花券
+                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
+                //查询优惠券信息
+            }
+            else if (orderParam.getUserChangeCoupon().equals(1)){
+                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
+                //查询优惠券信息
+
+            } else if (orderParam.getUserChangeCoupon().equals(-1)) {
+
             }
             //运费相加
             total = Arith.add(price, shopCartItem.getDeliveryPrice());
@@ -237,8 +250,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             //商品详情插入
             Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
             if (b){
-                FolwerAppletOrderDetailVo orderDetailVo = MapstructUtils.convert(folwerAppletOrderDetailBo, FolwerAppletOrderDetailVo.class);
-                orderDetailVoList.add(orderDetailVo);
+                orderDetailVoList = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
             }
         }
         bo.setTotal((long) total);
@@ -255,18 +267,47 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(orderParam.getAddrId());
         bo.setAddrOrderId(orderParam.getAddrId());
 
+
+
+
+
+
+
+
         FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
 
-        boolean flag = baseMapper.insert(add) > 0;
+        boolean flag = baseMapper.insertOrUpdate(add);
+
+
+
         FolwerAppletOrderVo folwerAppletOrderVo = new FolwerAppletOrderVo();
         if (flag) {
             bo.setOrderId(add.getOrderId());
             folwerAppletOrderVo.setOrderDetails(orderDetailVoList);
             //放入缓存
-            this.putConfirmOrderCache(orderParam.toString(), folwerAppletOrderVo);
+//            this.putConfirmOrderCache(orderParam.toString(), folwerAppletOrderVo);
+
+            FolwerAppletOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
+            if (cacheObject != null){
+                boolean b = RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
+                if (b){
+                    RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
+                }
+            }else {
+                RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
+            }
+
+
         }
+
+
         return folwerAppletOrderVo;
+    }
+
+    @Override
+    public FolwerAppletOrderVo submitOrders(Long orderId) {
+        return null;
     }
 
     @Override

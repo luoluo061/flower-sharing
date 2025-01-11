@@ -98,7 +98,7 @@ public class FolwerAppletOrderController extends BaseController {
      * @param orderIds 主键串
      */
     @SaCheckPermission("flowerapplet:order:remove")
-    @Log(title = "订单", businessType = BusinessType.DELETE)
+    @Log(title = "删除订单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{orderIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] orderIds) {
@@ -109,11 +109,26 @@ public class FolwerAppletOrderController extends BaseController {
      * 新增订单
      */
     @SaCheckPermission("flowerapplet:order:createOrder")
-    @Log(title = "订单", businessType = BusinessType.INSERT)
+    @Log(title = "创建订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/createOrder")
     public R<FolwerAppletOrderVo> createOrder(@Validated(AddGroup.class) @RequestBody OrderParamBo orderParam) throws Exception {
         FolwerAppletOrderVo order = folwerAppletOrderService.createOrder(orderParam);
         return R.ok(order);
     }
+
+    /**
+     * 提交订单
+     */
+    @SaCheckPermission("flowerapplet:order:createOrder")
+    @Log(title = "提交订单", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/submit/{orderId}")
+    public R<FolwerAppletOrderVo> submitOrders(@NotNull(message = "主键不能为空")
+                                                   @PathVariable Long orderId) throws Exception {
+        FolwerAppletOrderVo order = folwerAppletOrderService.submitOrders(orderId);
+        return R.ok(order);
+    }
+
+
 }
