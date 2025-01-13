@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.flower.domain.bo.AppCouponRecord;
+import org.dromara.flower.domain.bo.AppCouponRecordBo;
+import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
+import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -122,9 +124,32 @@ public class MarketingCouponReceiveController extends BaseController {
 
     @SaCheckPermission("flower:couponReceive:list")
     @GetMapping("/userStateList")
-    public List<MarketingCouponReceiveVo> userStateList(AppCouponRecord appCouponRecord){
-        return marketingCouponReceiveService.queryUserStateList(appCouponRecord);
+    public List<MarketingCouponReceiveVo> userStateList(AppCouponRecordBo appCouponRecordBo){
+        return marketingCouponReceiveService.queryUserStateList(appCouponRecordBo);
 
+    }
+
+
+    /**
+     *当前用户查询该商品可用优惠卷
+     * --订单使用优惠卷
+     *
+     */
+    @SaCheckPermission("flower:couponReceive:list")
+    @GetMapping("/userConsumeList")
+    public List<MarketingCouponReceiveVo> userConsumeList(AppOrderConsumeBo appOrderConsumeBo){
+        return marketingCouponReceiveService.queryUserConsumeList(appOrderConsumeBo);
+    }
+
+
+    /**
+     * 查询该商品用户是否拥有 花劵
+     * @param appIsFlowerCouponsBo
+     * @return
+     */
+    @PutMapping("/isFlowerCoupons")
+    public R<Void> isFlowerCoupons(AppIsFlowerCouponsBo appIsFlowerCouponsBo){
+        return toAjax(marketingCouponReceiveService.isFlowerCoupons(appIsFlowerCouponsBo));
     }
 
 

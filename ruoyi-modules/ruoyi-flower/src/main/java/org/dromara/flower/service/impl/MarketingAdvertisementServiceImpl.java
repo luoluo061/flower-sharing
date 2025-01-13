@@ -65,7 +65,7 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
         List<MarketingAdvertisementVo> records = result.getRecords();
         for (MarketingAdvertisementVo record : records) {
             String s = sysOssService.selectUrlByIds(record.getThumbnail());
-          if (StringUtils.isBlank(s)) throw  new ServiceException("图片不存在");
+          /*if (StringUtils.isBlank(s)) throw  new ServiceException("图片不存在");*/
 
             record.setThumbnailUrl(s);
 

@@ -6,7 +6,7 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 
 @Data
-public class AppCouponRecord {
+public class AppCouponRecordBo {
 
     /**
      * 会员id

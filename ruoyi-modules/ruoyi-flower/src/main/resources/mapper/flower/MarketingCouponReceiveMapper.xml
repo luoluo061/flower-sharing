@@ -38,14 +38,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </association>
     </resultMap>
 
+    <sql id="queryMoupon">
+        SELECT cr.id crid,c.id cid,cr.*,c.*
+        FROM marketing_coupon_receive cr LEFT JOIN marketing_coupon c ON  cr.coupon_id = c.id
+    </sql>
 
 
     <select id="queryUserStateList" resultMap="couponRecevo">
-        SELECT cr.id crid,c.id cid,cr.*,c.*
-        FROM marketing_coupon_receive cr LEFT JOIN marketing_coupon c ON  cr.coupon_id = c.id
+        <include refid="queryMoupon"/>
         WHERE cr.user_id=#{userId}
     </select>
 
+    <select id="queryUserConsumeList" resultMap="couponRecevo">
+        <include refid="queryMoupon"/>
+        WHERE cr.user_id=#{userId} and c.coupon_type=#{couponType}
+    </select>
+
+
+    <select id="isFlowerCoupons" resultMap="couponRecevo">
+        <include refid="queryMoupon"/>
+        WHERE cr.user_id=#{userId} and c.coupon_type=2;
+    </select>
 
 
 
