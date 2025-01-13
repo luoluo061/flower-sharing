@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,14 +9,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.MemberLevelPrivilege;
+import org.dromara.flower.domain.OneselfMemberLevelPrivilege;
+import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
+import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
+import org.dromara.flower.mapper.OneselfMemberLevelPrivilegeMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MemberPurchaseRecordBo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
 import org.dromara.flower.domain.MemberPurchaseRecord;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.service.IMemberPurchaseRecordService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -29,6 +38,8 @@ import java.util.*;
 public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordService {
 
     private final MemberPurchaseRecordMapper baseMapper;
+    private final OneselfMemberLevelPrivilegeMapper oneselfMemberLevelPrivilegeMapper;
+    private final MemberLevelPrivilegeMapper memberLevelPrivilegeMapper;
 
     /**
      * 查询会员购买记录
@@ -37,7 +48,7 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
      * @return 会员购买记录
      */
     @Override
-    public MemberPurchaseRecordVo queryById(Long id){
+    public MemberPurchaseRecordVo queryById(Long id) {
         return baseMapper.selectVoById(id);
     }
 
@@ -89,9 +100,10 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
      * @return 是否新增成功
      */
     @Override
+    @Transactional
     public Boolean insertByBo(MemberPurchaseRecordBo bo) {
         MemberPurchaseRecord add = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
-        if (add == null){
+        if (add == null || add.getMemberLevelId() == null) {
             return false;
         }
         validEntityBeforeSave(add);
@@ -99,7 +111,43 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
         if (flag) {
             bo.setId(add.getId());
         }
+        // 保存 会员权益个人信息
+        createOneselfMemberInfo(add);
         return flag;
+    }
+
+    /**
+     * 保存 会员权益个人信息
+     *
+     * @param add
+     */
+    private void createOneselfMemberInfo(MemberPurchaseRecord add) {
+        LambdaQueryWrapper<MemberLevelPrivilege> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(MemberLevelPrivilege::getMemberLevelId, add.getMemberLevelId());
+        List<MemberLevelPrivilegeVo> vos = memberLevelPrivilegeMapper.selectVoList(lqw);
+        List<OneselfMemberLevelPrivilege> omlp = new ArrayList<>();
+        if (!vos.isEmpty()) {
+            vos.stream().forEach(v -> {
+                OneselfMemberLevelPrivilege convert = MapstructUtils.convert(v, new OneselfMemberLevelPrivilege());
+                // 当前时间退后一年
+                if (convert != null) {
+                    convert.setId(null);
+                    convert.setMemberPurchaseRecordId(add.getId());
+                    omlp.add(convert);
+                    // TODO 会员权益到期时间计算 默认一年后
+                    convert.setEndTime(createDateNextYear());
+                }
+            });
+        }
+        if (!omlp.isEmpty()){
+            oneselfMemberLevelPrivilegeMapper.insertBatch(omlp);
+        }
+    }
+
+    private Date createDateNextYear() {
+        ZonedDateTime currentTime = ZonedDateTime.now();
+        ZonedDateTime nextYear = currentTime.plusYears(1);
+        return Date.from(nextYear.toInstant());
     }
 
     /**
@@ -118,7 +166,7 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(MemberPurchaseRecord entity){
+    private void validEntityBeforeSave(MemberPurchaseRecord entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -131,7 +179,7 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;

@@ -41,7 +41,7 @@ public class CoursesManagerBo extends BaseEntity {
     /**
      * 课程名称
      */
-    @NotBlank(message = "课程名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "课程名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String name;
 
     /**

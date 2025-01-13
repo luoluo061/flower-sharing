@@ -64,5 +64,15 @@ public class MemberPointsExchangeGoldVo implements Serializable {
     @ExcelProperty(value = "创建人中文名称")
     private String createName;
 
+    /**
+     * 会员的UserId
+     */
+    @ExcelProperty(value = "会员的UserId")
+    private String memberId;
 
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
 }

@@ -56,5 +56,9 @@ public class MemberPointsExchangeGoldBo extends BaseEntity {
 //    @NotBlank(message = "创建人中文名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String createName;
 
+    /**
+     * 会员的UserId
+     */
+    private String memberId;
 
 }

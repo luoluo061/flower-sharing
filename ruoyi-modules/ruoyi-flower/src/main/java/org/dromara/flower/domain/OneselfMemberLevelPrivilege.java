@@ -4,19 +4,21 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
 
 /**
- * 会员中心--兑换记录对象 member_exchange_record
+ * 会员中心--个人会员权益详情记录对象 oneself_member_level_privilege
  *
  * @author mlhxj
- * @date 2024-12-27
+ * @date 2025-01-13
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("member_exchange_record")
-public class MemberExchangeRecord extends TenantEntity {
+@TableName("oneself_member_level_privilege")
+public class OneselfMemberLevelPrivilege extends TenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -38,27 +40,34 @@ public class MemberExchangeRecord extends TenantEntity {
     private Long delFlag;
 
     /**
-     * 兑现金额
+     * 会员权益名称
+     */
+    private String name;
+
+    /**
+     * 总数量
      */
     private Long amount;
 
     /**
-     * 兑现金币
+     * 会员购买记录ID
      */
-    private Long gold;
+    private Long memberPurchaseRecordId;
 
     /**
-     * 剩余金币
+     * 权益使用状态 0 否 1 是
      */
-    private Long balance;
+    private Long status;
 
     /**
-     * 创建人中文名称
+     * 个人权益到期时间
      */
-    private String createName;
+    private Date endTime;
 
     /**
-     * 会员的UserId
+     * 已使用数量
      */
-    private String memberId;
+    private Long usageQuantity;
+
+
 }

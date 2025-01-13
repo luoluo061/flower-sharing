@@ -24,6 +24,8 @@ import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
+import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.system.mapper.SysOssMapper;
 import org.springframework.stereotype.Service;
 
 
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 public class AppletUserInformationServiceImpl implements IAppletUserInformationService {
 
     private final AppletUserInformationMapper baseMapper;
+    private final SysOssMapper sysOssMapper;
 
     private static Long ZERO = 0L;
 
@@ -307,7 +310,35 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         // 生成二维码
         String qrCode = QrCodeUtil.generateAsBase64(loginUser.getUserId().toString(), config, "png");
 
-        return R.ok(qrCode);
+        return R.ok("操作成功",qrCode);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public AppletUserInformationVo queryUserInfo() {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null){
+            AppletUserInformationVo empty = new AppletUserInformationVo();
+            empty.setUserId(-1L);
+            return empty;
+        }
+        AppletUserInformationVo vo = baseMapper.selectVoById(loginUser.getUserId());
+        if (vo.getMemberLevelId() != null) {
+            String grade = baseMapper.selectMemberLevelByid(vo.getMemberLevelId());
+            if (ObjectUtil.isNotEmpty(grade)) {
+                vo.setMemberLevelName(grade);
+            }
+        }
+        // 设置头像URL
+        if (vo.getAvatarUrl() != null){
+            SysOssVo sysOssVo = sysOssMapper.selectVoById(vo.getAvatarUrl());
+            vo.setAvatarUrlUrl(sysOssVo.getUrl());
+        }
+
+        return vo;
     }
 
     /**

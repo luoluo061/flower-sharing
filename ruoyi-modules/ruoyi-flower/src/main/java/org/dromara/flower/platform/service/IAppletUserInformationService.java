@@ -104,4 +104,6 @@ public interface IAppletUserInformationService {
      * @return
      */
     R<String> generateQrCode();
+
+    AppletUserInformationVo queryUserInfo();
 }

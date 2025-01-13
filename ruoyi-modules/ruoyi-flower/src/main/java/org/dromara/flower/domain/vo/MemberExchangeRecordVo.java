@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.flower.domain.MemberExchangeRecord;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -64,5 +66,15 @@ public class MemberExchangeRecordVo implements Serializable {
     @ExcelProperty(value = "创建人中文名称")
     private String createName;
 
+    /**
+     * 会员的UserId
+     */
+    @ExcelProperty(value = "会员的UserId")
+    private String memberId;
 
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
 }

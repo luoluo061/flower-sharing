@@ -57,5 +57,8 @@ public class MemberPointsExchangeGold extends TenantEntity {
      */
     private String createName;
 
-
+    /**
+     * 会员的UserId
+     */
+    private String memberId;
 }

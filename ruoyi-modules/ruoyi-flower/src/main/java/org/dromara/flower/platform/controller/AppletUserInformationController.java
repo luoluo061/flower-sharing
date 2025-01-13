@@ -71,6 +71,17 @@ public class AppletUserInformationController extends BaseController {
     }
 
     /**
+     * 通过登陆信息获取小程序用户信息详细信息
+     *
+     * @return 小程序用户登陆信息
+     */
+    @SaCheckPermission("system:userInformation:query")
+    @GetMapping()
+    public R<AppletUserInformationVo> getInfo() {
+        return R.ok(appletUserInformationService.queryUserInfo());
+    }
+
+    /**
      * 新增小程序用户信息
      */
     @SaCheckPermission("system:userInformation:add")

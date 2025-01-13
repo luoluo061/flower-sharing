@@ -43,27 +43,25 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 会员ID
      */
-    @NotBlank(message = "会员ID不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "会员ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private String memberId;
 
     /**
      * 会员名称
      */
-    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String memberName;
-
-
 
     /**
      * 被推销人ID
      */
-    @NotNull(message = "被推销人ID不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "被推销人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long promotedPersonId;
 
     /**
      * 被推销人
      */
-    @NotBlank(message = "被推销人不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "被推销人不能为空", groups = { AddGroup.class, EditGroup.class })
     private String promotedPersonName;
 
     /**
@@ -75,7 +73,7 @@ public class MarketingMemberPromotionPecordBo extends BaseEntity {
     /**
      * 被推广人等级
      */
-    @NotBlank(message = "被推广人等级不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "被推广人等级不能为空", groups = { AddGroup.class, EditGroup.class })
     private String promotedPersonLevel;
 
     /**
