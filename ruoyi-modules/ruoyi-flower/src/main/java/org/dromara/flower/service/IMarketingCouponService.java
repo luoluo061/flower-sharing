@@ -70,5 +70,5 @@ public interface IMarketingCouponService {
 
     boolean updateState(Long id);
 
-    List<MarketingCouponVo> queryPageUserList(Long id, PageQuery pageQuery);
+    List<MarketingCouponVo> queryPageUserList(Long id);
 }

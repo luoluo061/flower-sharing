@@ -1,6 +1,8 @@
 package org.dromara.flower.service;
 
-import org.dromara.flower.domain.bo.AppCouponRecord;
+import org.dromara.flower.domain.bo.AppCouponRecordBo;
+import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
+import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -67,7 +69,33 @@ public interface IMarketingCouponReceiveService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
+
+    /**
+     * pc端，查询领取优惠券领取记录
+     * @param id
+     * @param pageQuery
+     * @return
+     */
     TableDataInfo<MarketingCouponReceiveVo> queryPageListByCouponId(Long id, PageQuery pageQuery);
 
-    List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecord appCouponRecord);
+    /**
+     * 小程序用户，查询自己领取、已使用、已过期的优惠券
+     * @param appCouponRecord
+     * @return
+     */
+    TableDataInfo<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecord);
+
+    /**
+     * 查询该商品可使用的所有花劵或者是优惠卷
+     * @param appOrderConsumeBo
+     * @return
+     */
+    List<MarketingCouponReceiveVo> queryUserConsumeList(AppOrderConsumeBo appOrderConsumeBo);
+
+    /**
+     * 查询该商品是否拥有花劵
+     * @param appIsFlowerCouponsBo
+     * @return
+     */
+    boolean isFlowerCoupons(AppIsFlowerCouponsBo appIsFlowerCouponsBo);
 }
