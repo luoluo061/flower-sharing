@@ -6,8 +6,9 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -120,15 +121,42 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 提交订单
      */
-    @SaCheckPermission("flowerapplet:order:createOrder")
+    @SaCheckPermission("flowerapplet:order:submitOrders")
     @Log(title = "提交订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping("/submit/{orderId}")
-    public R<FolwerAppletOrderVo> submitOrders(@NotNull(message = "主键不能为空")
-                                                   @PathVariable Long orderId) throws Exception {
-        FolwerAppletOrderVo order = folwerAppletOrderService.submitOrders(orderId);
+    @PostMapping("/submitOrder")
+    public R<FolwerAppletOrderVo> submitOrders(@RequestBody PayParam payParam) throws Exception {
+        FolwerAppletOrderVo order = folwerAppletOrderService.submitOrders(payParam);
         return R.ok(order);
     }
+
+    /**
+     * 退款
+     */
+    @SaCheckPermission("flowerapplet:order:refundOrder")
+    @Log(title = "退款", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/refundOrder")
+    public R<String> refundOrderFlowerApplet(@RequestBody WxRefundRequest wxRefundRequest) throws Exception {
+        return folwerAppletOrderService.refundOrder(wxRefundRequest);
+    }
+
+
+
+//    @SaCheckPermission("flowerapplet:order:submitOrder")
+//    @Log(title = "微信JSAPI预下单", businessType = BusinessType.INSERT)
+//    @RepeatSubmit()
+//    @PostMapping(value = "/submitOrder")
+//    public R<WxJsapiResponse> createWxOrder(@RequestBody @Validated WxPayRequest pay){
+//        pay.setClientIp(IpUtils.getIpAddr());
+//        try {
+////            WxJsapiResponse value =(WxJsapiResponse)this.payService.createOrder(pay);
+////            return R.ok("订单生成成功",value);
+//        }catch (Exception ex){
+//            return R.fail(HttpStatus.ERROR, ex.getLocalizedMessage());
+//        }
+//        return R.fail(HttpStatus.ERROR,"订单生成失败");
+//    }
 
 
 }

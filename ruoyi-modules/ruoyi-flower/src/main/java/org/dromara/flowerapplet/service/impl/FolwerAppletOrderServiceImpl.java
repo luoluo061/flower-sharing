@@ -2,9 +2,10 @@ package org.dromara.flowerapplet.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Snowflake;
+import com.wechat.pay.java.service.refund.model.Refund;
+import com.wechat.pay.java.service.refund.model.Status;
 import jakarta.annotation.Resource;
-import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.domain.model.LoginUser;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -13,8 +14,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mypay.domain.WxPayRequest;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.common.mypay.server.IPayService;
 import org.dromara.common.redis.utils.RedisUtils;
-import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.vo.FolwerDeliveryVo;
 import org.dromara.flower.domain.vo.FolwerPickAddrVo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
@@ -23,6 +26,8 @@ import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IFolwerDeliveryService;
 import org.dromara.flower.service.IFolwerPickAddrService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flowerapplet.domain.PayParam;
+import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
@@ -33,7 +38,6 @@ import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderDetailService;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.flowerapplet.util.Arith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -77,8 +81,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private final IFolwerDeliveryService deliveryService;
 
-    @Autowired
+    @Resource
     private Snowflake snowflake;
+
+    @Resource
+    private final IPayService payService;
 
     /**
      * 查询订单
@@ -267,19 +274,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(orderParam.getAddrId());
         bo.setAddrOrderId(orderParam.getAddrId());
 
-
-
-
-
-
-
-
         FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
 
         boolean flag = baseMapper.insertOrUpdate(add);
-
-
 
         FolwerAppletOrderVo folwerAppletOrderVo = new FolwerAppletOrderVo();
         if (flag) {
@@ -306,7 +304,41 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     }
 
     @Override
-    public FolwerAppletOrderVo submitOrders(Long orderId) {
+    public FolwerAppletOrderVo submitOrders(PayParam payParam) throws Exception {
+        WxPayRequest payJSAPIParam = new WxPayRequest();
+        payService.JsapiOrder(payJSAPIParam);
+
+        return null;
+    }
+
+    @Override
+    public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
+        Refund refund = payService.refundOrder(wxRefundRequest);
+//                log.info("请求退款返回：" + refund);
+        //接收退款返回参数
+        //  Status status = refund.getStatus();
+        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
+            //说明退款成功，开始接下来的业务操作
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款成功");
+        }
+        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款中");
+        }
+        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.fail("退款异常");
+        }
+        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return  R.fail("退款关闭");
+        }
+        return null;
+    }
+
+    @Override
+    public R<String> ProfitsharingOrder(PayProfitsharingParam payProfitsharingParam) throws Exception {
         return null;
     }
 

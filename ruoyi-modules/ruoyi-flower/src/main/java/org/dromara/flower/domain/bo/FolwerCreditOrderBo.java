@@ -54,6 +54,11 @@ public class FolwerCreditOrderBo extends BaseEntity {
      */
     private String remarks;
 
+    /***
+     *商家备注
+     */
+    private String merchRemarks;
+
     /**
      * 订单状态 0:待兑换 1：已兑换 2:待发货 3:待收货 4:待评价 5:成功 6:失败
      */

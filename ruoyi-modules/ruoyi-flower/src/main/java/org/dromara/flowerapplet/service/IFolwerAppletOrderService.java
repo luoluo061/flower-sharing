@@ -1,12 +1,15 @@
 package org.dromara.flowerapplet.service;
 
+import org.dromara.common.core.domain.R;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.flowerapplet.domain.PayParam;
+import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Collection;
 import java.util.List;
@@ -79,10 +82,22 @@ public interface IFolwerAppletOrderService {
 
     /***
      * 提交订单
-     * @param orderId
+     * @param payParam
      * @return
      */
-    FolwerAppletOrderVo submitOrders(Long orderId);
+    FolwerAppletOrderVo submitOrders(PayParam payParam) throws Exception;
+
+    /***
+     * 退款订单
+     * @param
+     * @return
+     */
+    R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception;
+
+    /***
+     * 分账
+     */
+    R<String>  ProfitsharingOrder(PayProfitsharingParam payProfitsharingParam) throws Exception;
 
     /**
      * 获取购物车商品项

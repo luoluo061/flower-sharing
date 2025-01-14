@@ -12,7 +12,7 @@
     <artifactId>ruoyi-common-pay</artifactId>
 
     <description>
-        ruoyi-common-redis 支付服务
+        ruoyi-common-pay 支付服务
     </description>
 
     <dependencies>
