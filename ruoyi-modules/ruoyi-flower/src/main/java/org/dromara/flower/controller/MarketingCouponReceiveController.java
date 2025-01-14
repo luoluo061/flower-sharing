@@ -125,7 +125,7 @@ public class MarketingCouponReceiveController extends BaseController {
     @SaCheckPermission("flower:couponReceive:list")
     @GetMapping("/userStateList")
     public TableDataInfo<MarketingCouponReceiveVo> userStateList(AppCouponRecordBo appCouponRecordBo,PageQuery pageQuery){
-        return marketingCouponReceiveService.queryUserStateList(appCouponRecordBo);
+        return marketingCouponReceiveService.queryUserStateList(appCouponRecordBo,pageQuery);
 
     }
 

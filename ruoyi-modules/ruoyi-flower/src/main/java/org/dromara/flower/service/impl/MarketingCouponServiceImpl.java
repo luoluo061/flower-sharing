@@ -269,7 +269,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     public List<MarketingCouponVo> queryPageUserList(Long id) {
         //查询当前用户信息
         QueryWrapper queryUserWrapper = new QueryWrapper<AppletUserInformation>();
-        queryUserWrapper.eq("member_id",id);
+        queryUserWrapper.eq("user_id",id);
         AppletUserInformation appletUserInformation = appletUserInformationMapper.selectOne(queryUserWrapper);
         //会员等级id
         Long memberLevelId = appletUserInformation.getMemberLevelId();
