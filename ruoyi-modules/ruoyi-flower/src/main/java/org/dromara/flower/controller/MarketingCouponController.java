@@ -139,8 +139,8 @@ public class MarketingCouponController extends BaseController {
      */
     @SaCheckPermission("flower:coupon:list")
     @GetMapping("/userlist/{id}")
-    public List<MarketingCouponVo> userList(@NotNull(message ="主键不能为空") @PathVariable Long id) {
-        return marketingCouponService.queryPageUserList(id);
+    public R<List<MarketingCouponVo>> userList(@NotNull(message ="主键不能为空") @PathVariable Long id) {
+        return R.ok(marketingCouponService.queryPageUserList(id));
     }
 
 

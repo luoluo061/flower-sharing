@@ -83,7 +83,7 @@ public interface IMarketingCouponReceiveService {
      * @param appCouponRecord
      * @return
      */
-    List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecord);
+    TableDataInfo<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecord);
 
     /**
      * 查询该商品可使用的所有花劵或者是优惠卷

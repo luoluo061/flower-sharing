@@ -63,6 +63,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     public TableDataInfo<MarketingCouponReceiveVo> queryPageList(MarketingCouponReceiveBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MarketingCouponReceive> lqw = buildQueryWrapper(bo);
         Page<MarketingCouponReceiveVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
         return TableDataInfo.build(result);
     }
 
@@ -167,7 +168,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
      * @return
      */
     @Override
-    public List<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecordBo) {
+    public TableDataInfo<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecordBo) {
         List<MarketingCouponReceiveVo> marketingCouponlist = new ArrayList<>();
 
         List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserStateList(appCouponRecordBo);
@@ -189,7 +190,8 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
         }
 
-        return marketingCouponlist;
+
+        return TableDataInfo.build(marketingCouponlist);
     }
 
 
@@ -248,6 +250,8 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
 
     }
+
+
 
 
     /**
