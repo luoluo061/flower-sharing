@@ -14,9 +14,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
 import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.mypay.server.IPayService;
+import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.flower.domain.vo.FolwerDeliveryVo;
 import org.dromara.flower.domain.vo.FolwerPickAddrVo;
@@ -304,11 +306,31 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     }
 
     @Override
-    public FolwerAppletOrderVo submitOrders(PayParam payParam) throws Exception {
-        WxPayRequest payJSAPIParam = new WxPayRequest();
-        payService.JsapiOrder(payJSAPIParam);
+    public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
+        FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(payParam.getOrderNumbers());
+        if(folwerAppletOrderVo == null){
+            throw new Exception("订单不存在");
+        }
+        if(folwerAppletOrderVo.getStatus() != 0){
+            throw new Exception("订单状态错误");
+        }
 
-        return null;
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletOrderVo.getUserId());
+        if (appletUserInformationVo == null){
+            throw new Exception("用户不存在");
+        }
+
+        WxPayRequest payJSAPIParam = new WxPayRequest();
+        payJSAPIParam.setClientIp(IpUtils.getIpAddr());
+        payJSAPIParam.setOutTradeNo(folwerAppletOrderVo.getOrderNumber());
+        payJSAPIParam.setAmount(folwerAppletOrderVo.getActualTotal());
+        payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
+        payJSAPIParam.setDescription(folwerAppletOrderVo.getRemarks());
+        WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
+        if (wxJsapiResponse == null){
+            R.fail("支付失败");
+        }
+        return R.ok(wxJsapiResponse);
     }
 
     @Override

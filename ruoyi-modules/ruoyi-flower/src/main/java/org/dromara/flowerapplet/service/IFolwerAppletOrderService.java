@@ -1,6 +1,8 @@
 package org.dromara.flowerapplet.service;
 
 import org.dromara.common.core.domain.R;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
@@ -85,7 +87,7 @@ public interface IFolwerAppletOrderService {
      * @param payParam
      * @return
      */
-    FolwerAppletOrderVo submitOrders(PayParam payParam) throws Exception;
+    R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception;
 
     /***
      * 退款订单

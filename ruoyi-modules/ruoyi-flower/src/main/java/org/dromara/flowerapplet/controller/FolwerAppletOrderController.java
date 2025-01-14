@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
@@ -118,6 +120,18 @@ public class FolwerAppletOrderController extends BaseController {
         return R.ok(order);
     }
 
+//    /**
+//     * 提交订单
+//     */
+//    @SaCheckPermission("flowerapplet:order:submitOrders")
+//    @Log(title = "提交订单", businessType = BusinessType.INSERT)
+//    @RepeatSubmit()
+//    @PostMapping("/submitOrder")
+//    public R<FolwerAppletOrderVo> submitOrders(@RequestBody WxPayRequest wxPayRequest) throws Exception {
+//        FolwerAppletOrderVo order = folwerAppletOrderService.submitOrders(wxPayRequest);
+//        return R.ok(order);
+//    }
+
     /**
      * 提交订单
      */
@@ -125,9 +139,9 @@ public class FolwerAppletOrderController extends BaseController {
     @Log(title = "提交订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/submitOrder")
-    public R<FolwerAppletOrderVo> submitOrders(@RequestBody PayParam payParam) throws Exception {
-        FolwerAppletOrderVo order = folwerAppletOrderService.submitOrders(payParam);
-        return R.ok(order);
+    public R<WxJsapiResponse> submitOrders(@RequestBody PayParam payParam) throws Exception {
+        R<WxJsapiResponse> wxJsapiResponseR = folwerAppletOrderService.submitOrders(payParam);
+        return wxJsapiResponseR;
     }
 
     /**

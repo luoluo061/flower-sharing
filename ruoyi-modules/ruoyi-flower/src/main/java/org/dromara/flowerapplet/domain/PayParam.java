@@ -20,12 +20,13 @@ public class PayParam {
 	 */
 	@NotBlank(message="订单号不能为空")
 	@Schema(description = "订单号" ,required=true)
-	private String orderNumbers;
+	private Long orderNumbers;
+
 
 	/**
 	 * 支付方式
 	 */
-	@NotNull(message="支付方式不能为空")
+//	@NotNull(message="支付方式不能为空")
 	@Schema(description = "支付方式 (1:微信支付 2:支付宝)" ,required=true)
 	private Integer payType;
 }

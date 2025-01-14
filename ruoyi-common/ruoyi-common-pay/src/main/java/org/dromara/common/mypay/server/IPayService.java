@@ -6,6 +6,7 @@ import com.wechat.pay.java.service.refund.model.RefundNotification;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
 import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.common.mypay.domain.WxRefundRequest;
 
@@ -20,7 +21,7 @@ public interface IPayService {
      * @return
      * @throws Exception
      */
-    Object JsapiOrder(WxPayRequest request) throws Exception;
+    WxJsapiResponse JsapiOrder(WxPayRequest request) throws Exception;
 
     /**
      * 支付回调确认

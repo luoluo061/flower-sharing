@@ -41,7 +41,7 @@ public class WxPayService implements IPayService {
     private PayProperties properties;
 
     @Override
-    public Object JsapiOrder(WxPayRequest wxPayRequest) throws Exception {
+    public WxJsapiResponse JsapiOrder(WxPayRequest wxPayRequest) throws Exception {
 
         PrepayRequest request = this.getPayOrderRequest(wxPayRequest);
         JsapiService service = mypayConfig.getJsapiService();
@@ -49,10 +49,11 @@ public class WxPayService implements IPayService {
         PrepayResponse response = service.prepay(request);
         if (log.isInfoEnabled()) {
             log.info("账户:{},下单:{},金额:{},PrepayId:{}",
-                wxPayRequest.getOutMchId(), request.getOutTradeNo(), wxPayRequest.getAmount(), response.getPrepayId());
+                properties.getMchId(), request.getOutTradeNo(), wxPayRequest.getAmount(), response.getPrepayId());
         }
-        return WxJsapiResponse.build(response.getPrepayId(), properties.getAppId(),
+        WxJsapiResponse build = WxJsapiResponse.build(response.getPrepayId(), properties.getAppId(),
             mypayConfig.getPrivateKey(), request.getOutTradeNo());
+        return build;
     }
 
     @Override

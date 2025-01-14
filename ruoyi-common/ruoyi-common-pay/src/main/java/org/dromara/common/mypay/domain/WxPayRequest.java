@@ -21,7 +21,7 @@ public class WxPayRequest implements Serializable {
     /**
      * 商户ID
      */
-    private String outMchId;
+//    private String outMchId;
 
     /**
      * 支付金额
@@ -41,7 +41,7 @@ public class WxPayRequest implements Serializable {
     /**
      * 订单ID
      */
-    private List<String> orderIds;
+//    private List<String> orderIds;
 
     /**
      * 系统生成ID
