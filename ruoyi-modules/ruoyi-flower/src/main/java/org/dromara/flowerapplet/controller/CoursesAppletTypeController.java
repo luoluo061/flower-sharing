@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 课程分类
@@ -115,5 +116,13 @@ public class CoursesAppletTypeController extends BaseController {
         return coursesTypeService.getCoursesTypeTree();
     }
 
+    /**
+     * 查询课程分类一级目录
+     */
+    @Log(title = "课程分类", businessType = BusinessType.DELETE)
+    @GetMapping("/primary")
+    public R<List<Map<String,String>>> getCoursesTypePrimary() {
+        return coursesTypeService.getCoursesTypePrimary();
+    }
 
 }

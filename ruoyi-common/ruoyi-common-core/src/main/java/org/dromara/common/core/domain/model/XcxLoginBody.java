@@ -30,4 +30,9 @@ public class XcxLoginBody extends LoginBody {
      */
     private Long parentId;
 
+    /**
+     * 小程序openid
+     */
+    private String openid;
+
 }

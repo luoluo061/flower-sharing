@@ -16,11 +16,6 @@
     </description>
 
     <dependencies>
-        <!-- RuoYi Common Core-->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-core</artifactId>
-        </dependency>
         <!--微信支付-->
         <dependency>
             <groupId>com.github.wechatpay-apiv3</groupId>

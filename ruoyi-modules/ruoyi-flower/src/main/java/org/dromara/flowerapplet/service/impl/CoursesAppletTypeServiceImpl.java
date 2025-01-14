@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.javassist.expr.NewArray;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -21,6 +22,7 @@ import org.dromara.flowerapplet.service.ICoursesAppletTypeService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 课程分类Service业务层处理
@@ -206,6 +208,27 @@ public class CoursesAppletTypeServiceImpl implements ICoursesAppletTypeService {
                 .setParentId(dept.getParentId())
                 .setName(dept.getName())
                 .setWeight(dept.getSort()));
+    }
+
+    /**
+     * 查询课程分类一级目录
+     */
+    @Override
+    public R<List<Map<String, String>>> getCoursesTypePrimary() {
+        LambdaQueryWrapper<CoursesType> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(CoursesType::getParentId, 0);
+        lqw.eq(CoursesType::getStatus,1);
+        List<CoursesTypeVo> list = baseMapper.selectVoList(lqw);
+        List<Map<String, String>> result = list.stream()
+            .map(v -> {
+                Map<String, String> map = new HashMap<>();
+                map.put("value", v.getId().toString());
+                map.put("label", v.getName());
+                return map;
+            })
+            .collect(Collectors.toList());
+
+        return R.ok(result);
     }
 }
 

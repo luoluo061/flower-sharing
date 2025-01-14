@@ -41,6 +41,11 @@ public class WxLoginBody {
      */
     private String iv;
 
+    /**
+     * 小程序openid
+     */
+    private String openid;
+
 
 
 

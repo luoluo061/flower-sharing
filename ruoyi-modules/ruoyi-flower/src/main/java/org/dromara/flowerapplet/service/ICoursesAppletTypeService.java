@@ -9,6 +9,7 @@ import org.dromara.flower.domain.vo.CoursesTypeVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 课程分类Service接口
@@ -80,4 +81,9 @@ public interface ICoursesAppletTypeService {
      * @return
      */
     List<Tree<Long>> buildCoursesTypeTree(List<CoursesTypeVo> coursesTypeVos);
+
+    /**
+     * 查询课程分类一级目录
+     */
+    R<List<Map<String, String>>> getCoursesTypePrimary();
 }

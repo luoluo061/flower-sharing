@@ -192,6 +192,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
             aib.setMemberId(createMemberId());
             aib.setParentId(loginBody.getParentId() != null ? loginBody.getParentId() : ZERO);
             aib.setMemberLevelId(Long.parseLong(initialMemberLevelProperties.getInitialId()));
+            aib.setOpenid(loginBody.getOpenid());
             // 后期更换
             aib.setCreateBy(1L);
             aib.setCreateDept(1877911738916859905L);
@@ -225,6 +226,10 @@ public class XcxAuthStrategy implements IAuthStrategy {
             loginUser.setNickname(user.getNickName());
             loginUser.setMenuPermission(permissionService.getMenuPermission(user.getUserId()));
             loginUser.setRolePermission(permissionService.getRolePermission(user.getUserId()));
+            AppletUserInformationBo bo = new AppletUserInformationBo();
+            bo.setOpenid(loginBody.getOpenid());
+            bo.setUserId(user.getUserId());
+            appletUserInformationService.updateByBo(bo);
         }
         // 获取用户其它信息
 
