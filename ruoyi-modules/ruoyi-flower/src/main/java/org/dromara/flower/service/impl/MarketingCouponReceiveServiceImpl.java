@@ -168,7 +168,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
      * @return
      */
     @Override
-    public TableDataInfo<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecordBo) {
+    public TableDataInfo<MarketingCouponReceiveVo> queryUserStateList(AppCouponRecordBo appCouponRecordBo,PageQuery pageQuery) {
         List<MarketingCouponReceiveVo> marketingCouponlist = new ArrayList<>();
 
         List<MarketingCouponReceiveVo> marketingCouponReceiveVos = baseMapper.queryUserStateList(appCouponRecordBo);
@@ -189,6 +189,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
                 marketingCouponlist.add(marketingCouponReceive);
 
         }
+
 
 
         return TableDataInfo.build(marketingCouponlist);
