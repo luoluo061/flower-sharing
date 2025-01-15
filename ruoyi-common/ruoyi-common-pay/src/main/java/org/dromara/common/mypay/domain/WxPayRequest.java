@@ -48,6 +48,11 @@ public class WxPayRequest implements Serializable {
      */
     private String outTradeNo;
 
+    /***
+     * 是否分账
+     */
+    private Boolean profitSharing;
+
 
     /**
      * 获取金额长整型

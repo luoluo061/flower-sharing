@@ -41,7 +41,7 @@ public class FolwerAppletCategoryController extends BaseController {
     /**
      * 查询小程序端产品类目列表
      */
-    @SaCheckPermission("flowerapplet:category:list")
+    @SaCheckPermission("flower:category:list")
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletCategoryVo> list(FolwerAppletCategoryBo bo, PageQuery pageQuery) {
         return folwerCategoryService.queryPageList(bo, pageQuery);
@@ -50,7 +50,7 @@ public class FolwerAppletCategoryController extends BaseController {
     /**
      * 查询产品所有类目列表
      */
-    @SaCheckPermission("flowerapplet:category:alllist")
+    @SaCheckPermission("flower:category:alllist")
     @GetMapping("/allList")
     public R<List<FolwerAppletCategoryVo>> getAllList() {
         FolwerAppletCategoryBo bo = new FolwerAppletCategoryBo();
@@ -61,7 +61,7 @@ public class FolwerAppletCategoryController extends BaseController {
     /**
      * 导出小程序端产品类目列表
      */
-    @SaCheckPermission("flowerapplet:category:export")
+    @SaCheckPermission("flower:category:export")
     @Log(title = "小程序端产品类目", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletCategoryBo bo, HttpServletResponse response) {
@@ -74,7 +74,7 @@ public class FolwerAppletCategoryController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("flowerapplet:category:query")
+    @SaCheckPermission("flower:category:query")
     @GetMapping("/{id}")
     public R<FolwerAppletCategoryVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -84,7 +84,7 @@ public class FolwerAppletCategoryController extends BaseController {
     /**
      * 新增小程序端产品类目
      */
-    @SaCheckPermission("flowerapplet:category:add")
+    @SaCheckPermission("flower:category:add")
     @Log(title = "小程序端产品类目", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -95,7 +95,7 @@ public class FolwerAppletCategoryController extends BaseController {
     /**
      * 修改小程序端产品类目
      */
-    @SaCheckPermission("flowerapplet:category:edit")
+    @SaCheckPermission("flower:category:edit")
     @Log(title = "小程序端产品类目", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -108,7 +108,7 @@ public class FolwerAppletCategoryController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("flowerapplet:category:remove")
+    @SaCheckPermission("flower:category:remove")
     @Log(title = "小程序端产品类目", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

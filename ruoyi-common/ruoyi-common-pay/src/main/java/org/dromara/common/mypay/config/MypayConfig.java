@@ -10,7 +10,6 @@ import com.wechat.pay.java.core.util.PemUtil;
 import com.wechat.pay.java.service.payments.jsapi.JsapiService;
 import com.wechat.pay.java.service.profitsharing.ProfitsharingService;
 import com.wechat.pay.java.service.refund.RefundService;
-import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.mypay.config.properties.PayProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Lion Li
  */
-@Slf4j
+//@Slf4j
 @AutoConfiguration
 @EnableConfigurationProperties(PayProperties.class)
 public class MypayConfig {

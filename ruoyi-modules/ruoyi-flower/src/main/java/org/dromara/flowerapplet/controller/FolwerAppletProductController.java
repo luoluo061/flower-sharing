@@ -39,7 +39,7 @@ public class FolwerAppletProductController extends BaseController {
     /**
      * 查询小程序端商品管理列表
      */
-    @SaCheckPermission("flowerapplet:product:list")
+    @SaCheckPermission("flower:product:list")
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletProductVo> list(FolwerAppletProductBo bo, PageQuery pageQuery) {
         return folwerAppletProductService.queryPageList(bo, pageQuery);
@@ -48,7 +48,7 @@ public class FolwerAppletProductController extends BaseController {
     /**
      * 导出小程序端商品管理列表
      */
-    @SaCheckPermission("flowerapplet:product:export")
+    @SaCheckPermission("flower:product:export")
     @Log(title = "小程序端商品管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletProductBo bo, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class FolwerAppletProductController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("flowerapplet:product:query")
+    @SaCheckPermission("flower:product:query")
     @GetMapping("/{id}")
     public R<FolwerAppletProductVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -71,7 +71,7 @@ public class FolwerAppletProductController extends BaseController {
     /**
      * 新增小程序端商品管理
      */
-    @SaCheckPermission("flowerapplet:product:add")
+    @SaCheckPermission("flower:product:add")
     @Log(title = "小程序端商品管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -82,7 +82,7 @@ public class FolwerAppletProductController extends BaseController {
     /**
      * 修改小程序端商品管理
      */
-    @SaCheckPermission("flowerapplet:product:edit")
+    @SaCheckPermission("flower:product:edit")
     @Log(title = "小程序端商品管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -95,7 +95,7 @@ public class FolwerAppletProductController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("flowerapplet:product:remove")
+    @SaCheckPermission("flower:product:remove")
     @Log(title = "小程序端商品管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

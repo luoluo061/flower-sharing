@@ -193,6 +193,9 @@ public class WxPayService implements IPayService {
         Payer payer = new Payer();
         payer.setOpenid(wxPayRequest.getOpenId());
         request.setPayer(payer);
+        SettleInfo settleInfo = new SettleInfo();
+        settleInfo.setProfitSharing(wxPayRequest.getProfitSharing());
+        request.setSettleInfo(settleInfo);
 
         return request;
     }

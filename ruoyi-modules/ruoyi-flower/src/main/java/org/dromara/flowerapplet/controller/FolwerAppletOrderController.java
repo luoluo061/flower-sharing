@@ -44,7 +44,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 查询订单列表
      */
-    @SaCheckPermission("flowerapplet:order:list")
+    @SaCheckPermission("flower:order:list")
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletOrderVo> list(FolwerAppletOrderBo bo, PageQuery pageQuery) {
         return folwerAppletOrderService.queryPageList(bo, pageQuery);
@@ -53,7 +53,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 导出订单列表
      */
-    @SaCheckPermission("flowerapplet:order:export")
+    @SaCheckPermission("flower:order:export")
     @Log(title = "订单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletOrderBo bo, HttpServletResponse response) {
@@ -66,7 +66,7 @@ public class FolwerAppletOrderController extends BaseController {
      *
      * @param orderId 主键
      */
-    @SaCheckPermission("flowerapplet:order:query")
+    @SaCheckPermission("flower:order:query")
     @GetMapping("/{orderId}")
     public R<FolwerAppletOrderVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long orderId) {
@@ -76,7 +76,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 新增订单
      */
-    @SaCheckPermission("flowerapplet:order:add")
+    @SaCheckPermission("flower:order:add")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -87,7 +87,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 修改订单
      */
-    @SaCheckPermission("flowerapplet:order:edit")
+    @SaCheckPermission("flower:order:edit")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -100,7 +100,7 @@ public class FolwerAppletOrderController extends BaseController {
      *
      * @param orderIds 主键串
      */
-    @SaCheckPermission("flowerapplet:order:remove")
+    @SaCheckPermission("flower:order:remove")
     @Log(title = "删除订单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{orderIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
@@ -111,7 +111,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 新增订单
      */
-    @SaCheckPermission("flowerapplet:order:createOrder")
+    @SaCheckPermission("flower:order:createOrder")
     @Log(title = "创建订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/createOrder")
@@ -135,7 +135,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 提交订单
      */
-    @SaCheckPermission("flowerapplet:order:submitOrders")
+    @SaCheckPermission("flower:order:submitOrders")
     @Log(title = "提交订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/submitOrder")
@@ -147,7 +147,7 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 退款
      */
-    @SaCheckPermission("flowerapplet:order:refundOrder")
+    @SaCheckPermission("flower:order:refundOrder")
     @Log(title = "退款", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/refundOrder")
