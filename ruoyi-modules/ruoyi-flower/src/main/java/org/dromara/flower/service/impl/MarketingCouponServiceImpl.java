@@ -301,7 +301,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                 result.add(marketingCouponVo);
             }
             //2. 定向优惠券
-            else if (marketingCouponVo.getCouponKind() == 2L) {
+            else if (marketingCouponVo.getCouponKind() == 1L) {
                 //2.1 定向会员等级
                 if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificMembershipLevel())) {
                     Long[] array = Arrays.stream(marketingCouponVo.getSpecificMembershipLevel().split(","))
@@ -309,8 +309,10 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                         .mapToLong(Long::parseLong)
                         .boxed()
                         .toArray(Long[]::new);
-                    if (Arrays.stream(array).anyMatch(x -> x == memberLevelId))
+                    if (Arrays.stream(array).anyMatch(x -> x.equals(memberLevelId) )){
                         result.add(marketingCouponVo);
+                    }
+
                 }
 
                 //2.2 定向用户
@@ -321,7 +323,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                         .boxed()
                         .toArray(Long[]::new);
 
-                    if (Arrays.stream(array).anyMatch(x->x==id))
+                    if (Arrays.stream(array).anyMatch(x->x.equals(id)))
                         result.add(marketingCouponVo);
                 }
 

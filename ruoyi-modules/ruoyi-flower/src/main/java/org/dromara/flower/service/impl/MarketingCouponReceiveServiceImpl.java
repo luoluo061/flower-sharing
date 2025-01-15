@@ -15,15 +15,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.MarketingCoupon;
 import org.dromara.flower.domain.bo.AppCouponRecordBo;
 import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
 import org.dromara.flower.domain.bo.AppOrderConsumeBo;
+import org.dromara.flower.mapper.MarketingCouponMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
 import org.dromara.flower.domain.MarketingCouponReceive;
 import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.service.IMarketingCouponReceiveService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -40,6 +43,8 @@ import static kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.li
 public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiveService {
 
     private final MarketingCouponReceiveMapper baseMapper;
+
+    private  final MarketingCouponMapper marketingCouponMapper;
 
     /**
      * 查询优惠卷领取记录
@@ -98,13 +103,25 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
      * @param bo 优惠卷领取记录
      * @return 是否新增成功
      */
+    @Transactional
     @Override
     public Boolean insertByBo(MarketingCouponReceiveBo bo) {
+        // 优惠卷信息
+        MarketingCoupon marketingCoupon = marketingCouponMapper.selectById(bo.getCouponId());
+
         MarketingCouponReceive add = MapstructUtils.convert(bo, MarketingCouponReceive.class);
         validEntityBeforeSave(add);
-        add.setState(0L);
+        add.setState(0L); //0领取
+
+        // 优惠卷剩余数量-1
+        UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",add.getCouponId());
+        updateWrapper.set("surplus_number",marketingCoupon.getSurplusNumber()-1);
+        boolean update = marketingCouponMapper.update(updateWrapper)>0;
+
+
         boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
+        if (flag && update) {
             bo.setId(add.getId());
         }
         return flag;
