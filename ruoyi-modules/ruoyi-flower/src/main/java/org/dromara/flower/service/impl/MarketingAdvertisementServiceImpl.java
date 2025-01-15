@@ -144,6 +144,7 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
     public Boolean insertByBo(MarketingAdvertisementBo bo) {
         MarketingAdvertisement add = MapstructUtils.convert(bo, MarketingAdvertisement.class);
         validEntityBeforeSave(add);
+        add.setSortId(0L);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());

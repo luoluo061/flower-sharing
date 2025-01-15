@@ -23,19 +23,19 @@ public class MarketingAdvertisementBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long id;
 
     /**
      * 部门id
      */
-    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long deptId;
 
     /**
      * 序号
      */
-    @NotNull(message = "序号不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotNull(message = "序号不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long sortId;
 
     /**
