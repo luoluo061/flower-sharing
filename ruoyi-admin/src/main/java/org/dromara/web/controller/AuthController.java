@@ -122,11 +122,6 @@ public class AuthController {
         // 授权类型和客户端id
         String clientId = loginBody.getClientId();
         String grantType = loginBody.getGrantType();
-        // 获取下程序 openid
-        String openid = loginBody.getOpenid();
-        if (ObjectUtil.isNull(openid)) {
-            throw new RuntimeException("登陆失败，openid必传");
-        }
 
         SysClientVo client = clientService.queryByClientId(clientId);
         log.info("客户端信息：{}",client);

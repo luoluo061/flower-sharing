@@ -40,13 +40,5 @@ public class WxLoginBody {
      *加密算法的初始向量
      */
     private String iv;
-
-    /**
-     * 小程序openid
-     */
-    private String openid;
-
-
-
-
+    
 }

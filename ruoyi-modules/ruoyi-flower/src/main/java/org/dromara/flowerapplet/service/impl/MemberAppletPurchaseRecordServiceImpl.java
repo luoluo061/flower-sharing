@@ -40,7 +40,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     /**
      * 查询会员购买记录
      *
-     * @param id 主键
+     * @param createBy 创建用户ID
      * @return 会员购买记录
      */
     @Override
