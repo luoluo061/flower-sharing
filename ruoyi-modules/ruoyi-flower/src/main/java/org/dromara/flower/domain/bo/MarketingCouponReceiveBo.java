@@ -49,13 +49,13 @@ public class MarketingCouponReceiveBo extends BaseEntity {
     /**
      * 会员名称
      */
-    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String userName;
 
     /**
      * 手机号
      */
-    @NotBlank(message = "手机号不能为空", groups = { AddGroup.class, EditGroup.class })
+    //@NotBlank(message = "手机号不能为空", groups = { AddGroup.class, EditGroup.class })
     private String phone;
 
     /**
