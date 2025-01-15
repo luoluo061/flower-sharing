@@ -95,12 +95,12 @@ public class XcxAuthStrategy implements IAuthStrategy {
         // 多个小程序识别使用
         String appid = loginBody.getAppid();
 
-        //获取小程序 accessToken
-        String accessToken = loginService.getAccessToken();
-        //获取手机号信息
-        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(xcxCode, accessToken);
-//        XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
-//        phoneInfo.setPhoneNumber("15912341234");
+//        //获取小程序 accessToken
+//        String accessToken = loginService.getAccessToken();
+//        //获取手机号信息
+//        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(xcxCode, accessToken);
+        XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
+        phoneInfo.setPhoneNumber("15912341234");
         //暂无code来使用，使用模拟数据
         /*XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
         phoneInfo.setPhoneNumber("15912341234");*/
@@ -189,12 +189,12 @@ public class XcxAuthStrategy implements IAuthStrategy {
             log.info("登录用户：{} 不存在...准备插入用户信息", phone);
             AppletUserInformationBo aib = new AppletUserInformationBo();
             // 获取小程序 openid
-            try {
-                WxLoginVo wxLoginVo = loginService.wxLogin(loginBody.getCode());
-                aib.setOpenid(wxLoginVo.getOpenid());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                WxLoginVo wxLoginVo = loginService.wxLogin(loginBody.getCode());
+//                aib.setOpenid(wxLoginVo.getOpenid());
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
             aib.setPhone(phone);
             aib.setUserType("xcx");
             aib.setMemberId(createMemberId());
