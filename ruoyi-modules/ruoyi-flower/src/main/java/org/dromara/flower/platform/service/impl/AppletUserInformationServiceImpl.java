@@ -18,6 +18,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MemberPurchaseRecord;
+import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
+import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.platform.constant.AddAndSubtract;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
@@ -45,6 +48,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
 
     private final AppletUserInformationMapper baseMapper;
     private final SysOssMapper sysOssMapper;
+    private final MemberPurchaseRecordMapper memberPurchaseRecordMapper;
 
     private static Long ZERO = 0L;
 
@@ -189,6 +193,9 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     @Override
     public Boolean updateByBo(AppletUserInformationBo bo) {
+        if (bo.getUserId() == null){
+            bo.setUserId(LoginHelper.getLoginUser().getUserId());
+        }
         AppletUserInformation update = MapstructUtils.convert(bo, AppletUserInformation.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
@@ -337,7 +344,13 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
             SysOssVo sysOssVo = sysOssMapper.selectVoById(vo.getAvatarUrl());
             vo.setAvatarUrlUrl(sysOssVo.getUrl());
         }
-
+        // 查询购买记录
+        if (vo.getMemberLevelId() != null){
+            LambdaQueryWrapper<MemberPurchaseRecord> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(MemberPurchaseRecord::getCreateBy, vo.getUserId());
+            lqw.eq(MemberPurchaseRecord::getStatus, 1);
+            vo.setPurchaseRecordVo(memberPurchaseRecordMapper.selectVoOne(lqw));
+        }
         return vo;
     }
 

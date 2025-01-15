@@ -47,7 +47,7 @@ public class AppletUserInformationBo extends BaseEntity {
     /**
      * 头像
      */
-    private Long avatarUrl;
+    private String avatarUrl;
 
     /**
      * 用户类型 xcx 表示小程序

@@ -233,10 +233,6 @@ public class XcxAuthStrategy implements IAuthStrategy {
             loginUser.setNickname(user.getNickName());
             loginUser.setMenuPermission(permissionService.getMenuPermission(user.getUserId()));
             loginUser.setRolePermission(permissionService.getRolePermission(user.getUserId()));
-            AppletUserInformationBo bo = new AppletUserInformationBo();
-            bo.setOpenid(loginBody.getOpenid());
-            bo.setUserId(user.getUserId());
-            appletUserInformationService.updateByBo(bo);
         }
         // 获取用户其它信息
 

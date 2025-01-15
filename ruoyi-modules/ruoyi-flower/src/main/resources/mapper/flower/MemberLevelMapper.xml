@@ -42,7 +42,6 @@
 
     </resultMap>
 
-
     <select id="selectMapByIds" resultMap="mapResult">
         SELECT
         DISTINCT id,
@@ -83,4 +82,29 @@
                 LEFT JOIN sys_oss AS c ON a.grade_icon = c.oss_id
         WHERE a.id = #{memberLevelId} AND b.del_flag = 0;
     </select>
+    <select id="selectMemberLevelIds" resultMap="level_privilege_result_map">
+        SELECT
+            a.id,
+            a.grade,
+            a.grade_name,
+            a.grade_icon,
+            a.discount_ratio,
+            a.price,
+            a.coupon,
+            a.display,
+            a.privilege,
+            b.id AS ids,
+            b.`name`,
+            b.amount,
+            c.url AS grade_icon_url
+        FROM
+            member_level AS a
+                LEFT JOIN member_level_privilege AS b ON a.id = b.member_level_id
+                LEFT JOIN sys_oss AS c ON a.grade_icon = c.oss_id
+        WHERE b.del_flag = 0  AND a.id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

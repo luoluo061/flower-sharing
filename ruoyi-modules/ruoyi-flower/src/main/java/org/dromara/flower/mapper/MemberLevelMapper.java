@@ -7,6 +7,7 @@ import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 会员等级Mapper接口
@@ -21,4 +22,7 @@ public interface MemberLevelMapper extends BaseMapperPlus<MemberLevel, MemberLev
     void selectIdMapGrade(@Param("resultHandler")MapResultHandler<Long, String> resultHandler);
 
     MemberLevelVo selectMemberLevel(@Param("memberLevelId") Long memberLevelId);
+
+
+    List<MemberLevelVo> selectMemberLevelIds(@Param("ids") List<Long> ids);
 }

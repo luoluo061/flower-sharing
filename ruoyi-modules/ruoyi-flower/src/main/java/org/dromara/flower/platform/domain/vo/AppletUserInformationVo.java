@@ -12,6 +12,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 
 import java.io.Serial;
@@ -218,5 +219,11 @@ public class AppletUserInformationVo implements Serializable {
      */
     @ExcelProperty(value = "租户ID")
     private String tenantId;
+
+    /**
+     * 会员购买记录
+     */
+    @ExcelProperty(value = "会员购买记录")
+    private MemberPurchaseRecordVo purchaseRecordVo;
 
 }

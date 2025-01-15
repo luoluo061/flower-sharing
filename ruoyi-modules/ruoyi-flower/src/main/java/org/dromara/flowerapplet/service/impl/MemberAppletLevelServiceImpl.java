@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 会员等级Service业务层处理
@@ -73,27 +74,13 @@ public class MemberAppletLevelServiceImpl implements IMemberAppletLevelService {
         Page<MemberLevelVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()){
             // 获取图片Url
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                result.getRecords().stream()
-                    .map(MemberLevelVo::getGradeIcon) // 获取 gradeIcon
-                    .filter(Objects::nonNull) // 过滤掉 null 值
-                    .distinct()
-                    .filter(gradeIcon -> {
-                        try {
-                            Long.parseLong(gradeIcon); // 尝试转换为 Long
-                            return true; // 转换成功，保留
-                        } catch (NumberFormatException e) {
-                            return false; // 转换失败，过滤掉
-                        }
-                    })
-                    .map(Long::parseLong) // 转换为 Long
-                    .toList());
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                result.getRecords().forEach(record ->
-                    record.setGradeIconUrl(longStringMap.get(record.getGradeIcon()))
-                );
-            }
+            List<Long> ids = result.getRecords().stream()
+                .map(MemberLevelVo::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+            List<MemberLevelVo>  vos = baseMapper.selectMemberLevelIds(ids);
+            result.setRecords(vos);
         }
         return TableDataInfo.build(result);
     }

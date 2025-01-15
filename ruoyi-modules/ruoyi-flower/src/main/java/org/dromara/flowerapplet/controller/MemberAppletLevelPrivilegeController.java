@@ -108,7 +108,7 @@ public class MemberAppletLevelPrivilegeController extends BaseController {
     /**
      * 会员权益--获取小程序会员信息
      *
-     * @param id  会员ID
+     * @param id  购买记录id
      * @return 会员权益
      */
 
