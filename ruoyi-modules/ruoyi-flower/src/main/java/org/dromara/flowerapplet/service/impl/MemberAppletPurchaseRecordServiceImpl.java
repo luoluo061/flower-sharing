@@ -44,8 +44,11 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
      * @return 会员购买记录
      */
     @Override
-    public MemberPurchaseRecordVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+    public MemberPurchaseRecordVo queryById(Long createBy){
+        LambdaQueryWrapper<MemberPurchaseRecord> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(MemberPurchaseRecord::getCreateBy, createBy);
+        lqw.eq(MemberPurchaseRecord::getStatus, 1);
+        return baseMapper.selectVoOne(lqw);
     }
 
     /**

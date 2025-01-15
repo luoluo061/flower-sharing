@@ -6,5 +6,4 @@
   运行构建命令: docker-compose -f docker-compose.yml build ruoyi-server1
   运行启动服务命令: docker-compose -f docker-compose.yml up -d ruoyi-server1
 
-# 后期替换jar包后  cd /docker/service
-  重启命令: docker-compose -f docker-compose.yml restart ruoyi-server1
+# 后期替换jar包

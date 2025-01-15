@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
+        <module>ruoyi-common-bom</module>
         <module>ruoyi-common-social</module>
         <module>ruoyi-common-core</module>
         <module>ruoyi-common-doc</module>
@@ -34,7 +35,6 @@
         <module>ruoyi-common-websocket</module>
         <module>ruoyi-common-sse</module>
         <module>ruoyi-common-pay</module>
-
     </modules>
 
     <artifactId>ruoyi-common</artifactId>

@@ -16,23 +16,25 @@
     </description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
         <!--微信支付-->
         <dependency>
             <groupId>com.github.wechatpay-apiv3</groupId>
             <artifactId>wechatpay-java</artifactId>
-            <version>0.2.12</version>
         </dependency>
         <!--微信支付HttpClient-->
         <dependency>
             <groupId>com.github.wechatpay-apiv3</groupId>
             <artifactId>wechatpay-apache-httpclient</artifactId>
-            <version>0.4.8</version>
         </dependency>
         <!--使用BouncyCastle库来处理RSA签名-->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.68</version>
         </dependency>
         <dependency>
             <groupId>org.dromara</groupId>

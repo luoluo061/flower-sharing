@@ -60,6 +60,9 @@
         <flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
         <com-google-zxing>3.5.1</com-google-zxing>
         <com-alibaba-fastjson>1.2.7</com-alibaba-fastjson>
+        <wechatpay-java>0.2.12</wechatpay-java>
+        <wechatpay-apache-httpclient>0.4.8</wechatpay-apache-httpclient>
+        <bcprov-jdk15on>1.68</bcprov-jdk15on>
     </properties>
 
     <profiles>
@@ -365,6 +368,25 @@
                 <groupId>com.google.zxing</groupId>
                 <artifactId>core</artifactId>
                 <version>${com-google-zxing}</version>
+            </dependency>
+
+            <!--微信支付-->
+            <dependency>
+                <groupId>com.github.wechatpay-apiv3</groupId>
+                <artifactId>wechatpay-java</artifactId>
+                <version>${wechatpay-java}</version>
+            </dependency>
+            <!--微信支付HttpClient-->
+            <dependency>
+                <groupId>com.github.wechatpay-apiv3</groupId>
+                <artifactId>wechatpay-apache-httpclient</artifactId>
+                <version>${wechatpay-apache-httpclient}</version>
+            </dependency>
+            <!--使用BouncyCastle库来处理RSA签名-->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov-jdk15on}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
