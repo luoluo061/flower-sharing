@@ -2,9 +2,11 @@ package org.dromara.flower.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.checkerframework.checker.units.qual.A;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.validate.AddGroup;
@@ -20,6 +22,8 @@ import org.dromara.flower.domain.bo.AppCouponRecordBo;
 import org.dromara.flower.domain.bo.AppIsFlowerCouponsBo;
 import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.dromara.flower.mapper.MarketingCouponMapper;
+import org.dromara.flower.platform.domain.AppletUserInformation;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
@@ -45,6 +49,8 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     private final MarketingCouponReceiveMapper baseMapper;
 
     private  final MarketingCouponMapper marketingCouponMapper;
+
+    private final AppletUserInformationMapper appletUserInformationMapper;
 
     /**
      * 查询优惠卷领取记录
@@ -106,12 +112,27 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     @Transactional
     @Override
     public Boolean insertByBo(MarketingCouponReceiveBo bo) {
-        // 优惠卷信息
+        //2. 查询用户信息
+        QueryWrapper queryUserWrapper = new QueryWrapper<AppletUserInformation>();
+        queryUserWrapper.eq("user_id",bo.getUserId());
+        AppletUserInformation appletUserInformation = appletUserInformationMapper.selectOne(queryUserWrapper);
+        if (ObjectUtils.isEmpty(appletUserInformation)){
+            throw  new ServiceException("该用户不存在");
+        }
+
+        // 2.优惠卷信息
         MarketingCoupon marketingCoupon = marketingCouponMapper.selectById(bo.getCouponId());
+        if (ObjectUtils.isEmpty(marketingCoupon)) throw new ServiceException("该优惠卷信息不存在");
+
+        //3. 查询优惠卷份额
+        if (marketingCoupon.getSurplusNumber().equals(0L)) throw new ServiceException("优惠卷被抢光啦!");
 
         MarketingCouponReceive add = MapstructUtils.convert(bo, MarketingCouponReceive.class);
         validEntityBeforeSave(add);
         add.setState(0L); //0领取
+        add.setUserName(appletUserInformation.getName());//用户名称
+        add.setPhone(appletUserInformation.getPhone());// 用户的电话号码
+
 
         // 优惠卷剩余数量-1
         UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
@@ -316,8 +337,6 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
 
             }
-
-
     }
 
         return false;
