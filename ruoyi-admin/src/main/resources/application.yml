@@ -125,6 +125,8 @@ security:
     - /*/api-docs
     - /*/api-docs/**
     - /**/test/**
+    # 支付回调
+    - /wxpayback/**
 
 # 多租户配置
 tenant:

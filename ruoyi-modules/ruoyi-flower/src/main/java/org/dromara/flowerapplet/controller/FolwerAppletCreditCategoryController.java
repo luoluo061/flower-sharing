@@ -1,4 +1,4 @@
-package org.dromara.flower.controller;
+package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
@@ -6,8 +6,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.flower.domain.bo.FolwerCategoryBo;
-import org.dromara.flower.domain.vo.FolwerCategoryVo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletCategoryBo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -19,44 +18,43 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
-import org.dromara.flower.domain.vo.FolwerCreditCategoryVo;
-import org.dromara.flower.domain.bo.FolwerCreditCategoryBo;
-import org.dromara.flower.service.IFolwerCreditCategoryService;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditCategoryVo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditCategoryBo;
+import org.dromara.flowerapplet.service.IFolwerAppletCreditCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
  * 积分商城产品类目
  *
  * @author mlhxj
- * @date 2024-12-27
+ * @date 2025-01-15
  */
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/creditCategory")
-public class FolwerCreditCategoryController extends BaseController {
+@RequestMapping("/flowerapplet/creditCategory")
+public class FolwerAppletCreditCategoryController extends BaseController {
 
-    private final IFolwerCreditCategoryService folwerCreditCategoryService;
+    private final IFolwerAppletCreditCategoryService folwerAppletCreditCategoryService;
 
     /**
      * 查询积分商城产品类目列表
      */
     @SaCheckPermission("flower:creditCategory:list")
     @GetMapping("/list")
-    public TableDataInfo<FolwerCreditCategoryVo> list(FolwerCreditCategoryBo bo, PageQuery pageQuery) {
-        bo.setParentId(0L);
-        return folwerCreditCategoryService.queryPageList(bo, pageQuery);
+    public TableDataInfo<FolwerAppletCreditCategoryVo> list(FolwerAppletCreditCategoryBo bo, PageQuery pageQuery) {
+        return folwerAppletCreditCategoryService.queryPageList(bo, pageQuery);
     }
 
     /**
-     * 查询积分商城所有类目列表
+     * 查询所有积分商城产品类目列表
      */
     @SaCheckPermission("flower:creditCategory:alllist")
-    @GetMapping("/allList")
-    public R<List<FolwerCreditCategoryVo>> list() {
-        FolwerCreditCategoryBo bo = new FolwerCreditCategoryBo();
+    @GetMapping("/alllist")
+    public List<FolwerAppletCreditCategoryVo> allList() {
+        FolwerAppletCreditCategoryBo bo = new FolwerAppletCreditCategoryBo();
         bo.setParentId(0L);
-        return R.ok(folwerCreditCategoryService.queryList(bo));
+        return folwerAppletCreditCategoryService.queryList(bo);
     }
 
     /**
@@ -65,9 +63,9 @@ public class FolwerCreditCategoryController extends BaseController {
     @SaCheckPermission("flower:creditCategory:export")
     @Log(title = "积分商城产品类目", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(FolwerCreditCategoryBo bo, HttpServletResponse response) {
-        List<FolwerCreditCategoryVo> list = folwerCreditCategoryService.queryList(bo);
-        ExcelUtil.exportExcel(list, "积分商城产品类目", FolwerCreditCategoryVo.class, response);
+    public void export(FolwerAppletCreditCategoryBo bo, HttpServletResponse response) {
+        List<FolwerAppletCreditCategoryVo> list = folwerAppletCreditCategoryService.queryList(bo);
+        ExcelUtil.exportExcel(list, "积分商城产品类目", FolwerAppletCreditCategoryVo.class, response);
     }
 
     /**
@@ -77,9 +75,9 @@ public class FolwerCreditCategoryController extends BaseController {
      */
     @SaCheckPermission("flower:creditCategory:query")
     @GetMapping("/{id}")
-    public R<FolwerCreditCategoryVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<FolwerAppletCreditCategoryVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
-        return R.ok(folwerCreditCategoryService.queryById(id));
+        return R.ok(folwerAppletCreditCategoryService.queryById(id));
     }
 
     /**
@@ -89,8 +87,8 @@ public class FolwerCreditCategoryController extends BaseController {
     @Log(title = "积分商城产品类目", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerCreditCategoryBo bo) {
-        return toAjax(folwerCreditCategoryService.insertByBo(bo));
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerAppletCreditCategoryBo bo) {
+        return toAjax(folwerAppletCreditCategoryService.insertByBo(bo));
     }
 
     /**
@@ -100,8 +98,8 @@ public class FolwerCreditCategoryController extends BaseController {
     @Log(title = "积分商城产品类目", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerCreditCategoryBo bo) {
-        return toAjax(folwerCreditCategoryService.updateByBo(bo));
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerAppletCreditCategoryBo bo) {
+        return toAjax(folwerAppletCreditCategoryService.updateByBo(bo));
     }
 
     /**
@@ -114,6 +112,6 @@ public class FolwerCreditCategoryController extends BaseController {
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
-        return toAjax(folwerCreditCategoryService.deleteWithValidByIds(List.of(ids), true));
+        return toAjax(folwerAppletCreditCategoryService.deleteWithValidByIds(List.of(ids), true));
     }
 }

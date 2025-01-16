@@ -41,7 +41,7 @@ public class FolwerAppletBasketController extends BaseController {
     /**
      * 查询小程序购物车列表
      */
-    @SaCheckPermission("flowerapplet:basket:list")
+    @SaCheckPermission("flower:basket:list")
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletBasketVo> list(FolwerAppletBasketBo bo, PageQuery pageQuery) {
         return folwerBasketService.queryPageList(bo, pageQuery);
@@ -50,7 +50,7 @@ public class FolwerAppletBasketController extends BaseController {
     /**
      * 导出小程序购物车列表
      */
-    @SaCheckPermission("flowerapplet:basket:export")
+    @SaCheckPermission("flower:basket:export")
     @Log(title = "小程序购物车", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletBasketBo bo, HttpServletResponse response) {
@@ -63,7 +63,7 @@ public class FolwerAppletBasketController extends BaseController {
      *
      * @param basketId 主键
      */
-    @SaCheckPermission("flowerapplet:basket:query")
+    @SaCheckPermission("flower:basket:query")
     @GetMapping("/{basketId}")
     public R<FolwerAppletBasketVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long basketId) {
@@ -73,7 +73,7 @@ public class FolwerAppletBasketController extends BaseController {
     /**
      * 新增小程序购物车
      */
-    @SaCheckPermission("flowerapplet:basket:add")
+    @SaCheckPermission("flower:basket:add")
     @Log(title = "小程序购物车", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -84,7 +84,7 @@ public class FolwerAppletBasketController extends BaseController {
     /**
      * 修改小程序购物车
      */
-    @SaCheckPermission("flowerapplet:basket:edit")
+    @SaCheckPermission("flower:basket:edit")
     @Log(title = "小程序购物车", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -97,7 +97,7 @@ public class FolwerAppletBasketController extends BaseController {
      *
      * @param basketIds 主键串
      */
-    @SaCheckPermission("flowerapplet:basket:remove")
+    @SaCheckPermission("flower:basket:remove")
     @Log(title = "小程序购物车", businessType = BusinessType.DELETE)
     @DeleteMapping("/{basketIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
@@ -110,7 +110,7 @@ public class FolwerAppletBasketController extends BaseController {
      *
      * @param userId 主键
      */
-    @SaCheckPermission("flowerapplet:basket:query")
+    @SaCheckPermission("flower:basket:query")
     @GetMapping("/CartItem/{userId}")
     public R<FolwerShopCartItem> getFolwerShopCartItem(@NotNull(message = "主键不能为空")
                                            @PathVariable Long userId) {
