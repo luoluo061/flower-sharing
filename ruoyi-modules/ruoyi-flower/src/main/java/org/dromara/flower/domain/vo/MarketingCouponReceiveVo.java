@@ -77,6 +77,12 @@ public class MarketingCouponReceiveVo implements Serializable {
     private String icon;
 
     /**
+     * 头像
+     */
+    @ExcelProperty(value = "头像")
+    private String iconUrl;
+
+    /**
      * 优惠券状态（0默认已领取，1已使用，已过期）
      */
     @ExcelProperty(value = "优惠券状态", converter = ExcelDictConvert.class)

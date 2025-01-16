@@ -13,6 +13,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.MarketingCouponReceive;
+import org.dromara.flower.mapper.MarketingCouponReceiveMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
@@ -26,6 +28,7 @@ import org.dromara.flower.service.IMarketingCouponService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 优惠卷管理Service业务层处理
@@ -40,6 +43,9 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     private final MarketingCouponMapper baseMapper;
 
     private final AppletUserInformationMapper appletUserInformationMapper;
+
+
+    private final MarketingCouponReceiveMapper couponReceiveMapper;
 
 
     /**
@@ -72,7 +78,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         for (MarketingCouponVo record : records) {
             Date endTime = record.getEndTime();
             Date  currentTime= new Date();
-            if (endTime.before(currentTime)){
+            if (endTime.before(currentTime) || record.getSurplusNumber().equals(0L)){
                 record.setState(0L);
                 UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id",record.getId());
@@ -202,6 +208,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
+
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
@@ -219,6 +226,14 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     public boolean deleteOneById(Long id) {
         MarketingCouponVo marketingCouponVo = baseMapper.selectVoById(id);
         if (ObjectUtils.isEmpty(marketingCouponVo)) throw new ServiceException("该数据不存在");
+
+        QueryWrapper<MarketingCouponReceive> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("coupon_id",marketingCouponVo.getId());
+        List<MarketingCouponReceive> marketingCouponReceives = couponReceiveMapper.selectList(queryWrapper);
+        if (!marketingCouponReceives.isEmpty() && marketingCouponReceives!=null)
+            throw new ServiceException("该优惠卷已有用户领取，不能删除，可以选择关闭发放");
+
+
 
         return baseMapper.deleteById(id) >0 ;
     }
@@ -267,27 +282,38 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
      */
     @Override
     public List<MarketingCouponVo> queryPageUserList(Long id) {
-        //查询当前用户信息
+        //1. 查询当前用户信息
         QueryWrapper queryUserWrapper = new QueryWrapper<AppletUserInformation>();
         queryUserWrapper.eq("user_id",id);
         AppletUserInformation appletUserInformation = appletUserInformationMapper.selectOne(queryUserWrapper);
+        if (ObjectUtils.isEmpty(appletUserInformation)){
+            throw  new ServiceException("该用户不存在");
+        }
         //会员等级id
         Long memberLevelId = appletUserInformation.getMemberLevelId();
 
-        //返回的优惠卷集合
+
+        //2. 返回的优惠卷集合
         ArrayList<MarketingCouponVo> result = new ArrayList<>();
 
-        //所有发放的优惠券
+        //3. 所有发放的优惠券
         QueryWrapper<MarketingCoupon> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("state",1);
         List<MarketingCouponVo> marketingCouponsAll = baseMapper.selectVoList(queryWrapper);
 
+        //4.排除用户已领取的优惠卷
+        QueryWrapper<MarketingCouponReceive> queryReceiveWrapper = new QueryWrapper<>();
+        queryReceiveWrapper.eq("user_id",id);
+        List<MarketingCouponReceive> marketingCouponReceives = couponReceiveMapper.selectList(queryReceiveWrapper);
+        List<Long> couponids = marketingCouponReceives.stream().map(MarketingCouponReceive::getCouponId).collect(Collectors.toList());
+
 
         for (MarketingCouponVo marketingCouponVo:marketingCouponsAll) {
-            //刷新已过期的优惠卷，剔除已过期的优惠券
+            //1.刷新已过期的优惠卷，剔除已过期的优惠券 2. 优惠卷份额已领取完了
             Date endTime = marketingCouponVo.getEndTime();
             Date currenTime = new Date();
-            if (endTime.before(currenTime)) {
+            boolean equals = marketingCouponVo.getSurplusNumber().equals(0L);
+            if (endTime.before(currenTime) || equals) {
                 UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id", marketingCouponVo.getId());
                 //关闭优惠券
@@ -295,13 +321,22 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                 baseMapper.update(updateWrapper);
                 continue;
             }
+            //2. 优惠卷份额已领取完了
+   /*         if (marketingCouponVo.getSurplusNumber().equals(0))
+                continue;*/
+
+
+
+            //3.排除用户已领取的优惠卷
+            if (couponids.contains(marketingCouponVo.getId())) continue;
+
 
             //1. 普通优惠券
             if (marketingCouponVo.getCouponKind() == 0L) {
                 result.add(marketingCouponVo);
             }
             //2. 定向优惠券
-            else if (marketingCouponVo.getCouponKind() == 2L) {
+            else if (marketingCouponVo.getCouponKind() == 1L) {
                 //2.1 定向会员等级
                 if (StringUtils.isNotEmpty(marketingCouponVo.getSpecificMembershipLevel())) {
                     Long[] array = Arrays.stream(marketingCouponVo.getSpecificMembershipLevel().split(","))
@@ -309,8 +344,10 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                         .mapToLong(Long::parseLong)
                         .boxed()
                         .toArray(Long[]::new);
-                    if (Arrays.stream(array).anyMatch(x -> x == memberLevelId))
+                    if (Arrays.stream(array).anyMatch(x -> x.equals(memberLevelId) )){
                         result.add(marketingCouponVo);
+                    }
+
                 }
 
                 //2.2 定向用户
@@ -321,7 +358,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                         .boxed()
                         .toArray(Long[]::new);
 
-                    if (Arrays.stream(array).anyMatch(x->x==id))
+                    if (Arrays.stream(array).anyMatch(x->x.equals(id)))
                         result.add(marketingCouponVo);
                 }
 
