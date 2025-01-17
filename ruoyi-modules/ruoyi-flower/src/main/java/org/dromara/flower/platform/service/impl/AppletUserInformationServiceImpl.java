@@ -68,7 +68,7 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     @Override
     public AppletUserInformationVo queryById(Long userId) {
         AppletUserInformationVo vo = baseMapper.selectVoById(userId);
-        if (vo.getMemberLevelId() != null) {
+        if (vo != null && vo.getMemberLevelId() != null) {
             String grade = baseMapper.selectMemberLevelByid(vo.getMemberLevelId());
             if (ObjectUtil.isNotEmpty(grade)) {
                 vo.setMemberLevelName(grade);
