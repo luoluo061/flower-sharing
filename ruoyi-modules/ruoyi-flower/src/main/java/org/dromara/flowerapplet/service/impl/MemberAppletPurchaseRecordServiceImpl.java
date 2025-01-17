@@ -3,25 +3,44 @@ package org.dromara.flowerapplet.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wechat.pay.java.service.refund.model.Refund;
+import com.wechat.pay.java.service.refund.model.Status;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.handler.MapResultHandler;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxPayRequest;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.common.mypay.server.IPayService;
+import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.MemberPurchaseRecord;
 import org.dromara.flower.domain.bo.MemberPurchaseRecordBo;
+import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
+import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IMemberPurchaseRecordService;
+import org.dromara.flowerapplet.domain.PayParam;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.dromara.flowerapplet.service.IMemberAppletPurchaseRecordService;
+import org.dromara.system.mapper.SysOssMapper;
+import org.dromara.system.service.impl.SysOssServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 会员购买记录Service业务层处理
@@ -35,8 +54,15 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
 
     private final MemberPurchaseRecordMapper baseMapper;
     private final AppletUserInformationMapper userInformationMapper;
+    private final MemberLevelMapper memberLevelMapper;
+    private final IAppletUserInformationService appletUserInformationService;
+
+    @Resource
+    private final IPayService payService;
+
     private final static Long ZERO = 0L;
     private final static Long ONE = 1L;
+
     /**
      * 查询会员购买记录
      *
@@ -44,7 +70,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
      * @return 会员购买记录
      */
     @Override
-    public MemberPurchaseRecordVo queryById(Long createBy){
+    public MemberPurchaseRecordVo queryById(Long createBy) {
         LambdaQueryWrapper<MemberPurchaseRecord> lqw = new LambdaQueryWrapper<>();
         lqw.eq(MemberPurchaseRecord::getCreateBy, createBy);
         lqw.eq(MemberPurchaseRecord::getStatus, 1);
@@ -62,6 +88,31 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     public TableDataInfo<MemberPurchaseRecordVo> queryPageList(MemberPurchaseRecordBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MemberPurchaseRecord> lqw = buildQueryWrapper(bo);
         Page<MemberPurchaseRecordVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        // 查询会员图标
+        if (!result.getRecords().isEmpty()) {
+            List<Long> list = result.getRecords().stream()
+                .map(MemberPurchaseRecordVo::getMemberLevelId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+            List<MemberLevelVo> memberLevelVos = new ArrayList<>();
+            if (!list.isEmpty()) {
+                memberLevelVos = memberLevelMapper.selectMemberLevelIds(list);
+            }
+            if (!memberLevelVos.isEmpty()) {
+                Map<Long, MemberLevelVo> collect = memberLevelVos.stream()
+                    .collect(Collectors.toMap(
+                        MemberLevelVo::getId,
+                        member -> member,
+                        (existing, replacement) -> existing
+                    ));
+                result.getRecords().forEach(v -> {
+                    if (collect.containsKey(v.getMemberLevelId())) {
+                        v.setMemberLevelVo(collect.get(v.getMemberLevelId()));
+                    }
+                });
+            }
+        }
         return TableDataInfo.build(result);
     }
 
@@ -101,7 +152,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     @Override
     public MemberPurchaseRecordVo insertByBo(MemberPurchaseRecordBo bo) {
         MemberPurchaseRecord add = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
-        if (add == null){
+        if (add == null) {
             return new MemberPurchaseRecordVo();
         }
         validEntityBeforeSave(add);
@@ -129,7 +180,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(MemberPurchaseRecord entity){
+    private void validEntityBeforeSave(MemberPurchaseRecord entity) {
         Date date = new Date();
         entity.setCreateTime(date);
         Calendar calendar = Calendar.getInstance();
@@ -153,7 +204,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
@@ -163,13 +214,13 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     @Transactional
     public Boolean payLaterUpdateByBo(MemberPurchaseRecordBo bo) {
         LoginUser loginUser = LoginHelper.getLoginUser();
-        if (loginUser == null){
+        if (loginUser == null) {
             return false;
         }
-        if (bo.getPayInfo() == null){
+        if (bo.getPayInfo() == null) {
             return false;
         }
-        if (!ONE.equals(bo.getPayStatus())){
+        if (!ONE.equals(bo.getPayStatus())) {
             return false;
         }
         MemberPurchaseRecord update = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
@@ -177,12 +228,69 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         update.setPayStatus(ONE);
         baseMapper.updateById(update);
         // 修改其余会员购买记录状态为  0 关闭
-        baseMapper.updateOtherMemberInfoByUserID(loginUser.getUserId(),update.getId());
+        baseMapper.updateOtherMemberInfoByUserID(loginUser.getUserId(), update.getId());
         // 修改会员基础信息中的会员等级
         AppletUserInformation auf = new AppletUserInformation();
         auf.setUserId(loginUser.getUserId());
         auf.setMemberLevelId(update.getMemberLevelId());
         userInformationMapper.updateById(auf);
         return true;
+    }
+
+    @Override
+    public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
+        MemberPurchaseRecordVo recordVo = this.queryById(payParam.getOrderNumbers());
+        if (recordVo == null) {
+            throw new RuntimeException("订单不存在");
+        }
+        if (recordVo.getStatus() != 0) {
+            throw new RuntimeException("订单状态错误");
+        }
+
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(recordVo.getCreateBy());
+        if (appletUserInformationVo == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null || loginUser.getUserId() != recordVo.getCreateBy()) {
+            throw new RuntimeException("支付失败");
+        }
+        WxPayRequest payJSAPIParam = new WxPayRequest();
+        payJSAPIParam.setClientIp(IpUtils.getIpAddr());
+        payJSAPIParam.setOutTradeNo(recordVo.getOrderCode());
+        payJSAPIParam.setAmount(recordVo.getPrice());
+        payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
+        payJSAPIParam.setDescription(loginUser.getUserId() + "会员购买");
+        WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
+        if (wxJsapiResponse == null) {
+            R.fail("支付失败");
+        }
+        return R.ok(wxJsapiResponse);
+    }
+
+    @Override
+    public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
+        Refund refund = payService.refundOrder(wxRefundRequest);
+//                log.info("请求退款返回：" + refund);
+        //接收退款返回参数
+        //  Status status = refund.getStatus();
+        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
+            //说明退款成功，开始接下来的业务操作
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款成功");
+        }
+        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款中");
+        }
+        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.fail("退款异常");
+        }
+        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return  R.fail("退款关闭");
+        }
+        return null;
     }
 }

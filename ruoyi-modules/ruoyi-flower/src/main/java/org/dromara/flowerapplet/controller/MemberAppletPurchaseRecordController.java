@@ -14,10 +14,13 @@ import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.flower.domain.bo.MemberPurchaseRecordBo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
 import org.dromara.flower.service.IMemberPurchaseRecordService;
+import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.service.IMemberAppletPurchaseRecordService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -116,4 +119,29 @@ public class MemberAppletPurchaseRecordController extends BaseController {
     public R<Void> payLaterEdit(@Validated(EditGroup.class) @RequestBody MemberPurchaseRecordBo bo) {
         return toAjax(memberPurchaseRecordService.payLaterUpdateByBo(bo));
     }
+
+    /**
+     * 购买会员支付
+     */
+    @SaCheckPermission("flower:purchaseRecord:submitOrders")
+    @Log(title = "提交订单", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/submitOrder")
+    public R<WxJsapiResponse> submitOrders(@RequestBody PayParam payParam) throws Exception {
+        R<WxJsapiResponse> wxJsapiResponseR = memberPurchaseRecordService.submitOrders(payParam);
+        return wxJsapiResponseR;
+    }
+
+    /**
+     * 退款
+     */
+    @SaCheckPermission("flower:order:refundOrder")
+    @Log(title = "退款", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/refundOrder")
+    public R<String> refundOrderFlowerApplet(@RequestBody WxRefundRequest wxRefundRequest) throws Exception {
+        return memberPurchaseRecordService.refundOrder(wxRefundRequest);
+    }
+
+
 }
