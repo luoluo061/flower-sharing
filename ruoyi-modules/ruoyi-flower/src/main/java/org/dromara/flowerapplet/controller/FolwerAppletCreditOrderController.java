@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.springframework.web.bind.annotation.*;
@@ -77,8 +79,8 @@ public class FolwerAppletCreditOrderController extends BaseController {
     @Log(title = "积分订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerAppletCreditOrderBo bo) {
-        return toAjax(folwerAppletCreditOrderService.insertByBo(bo));
+    public R<FolwerAppletCreditOrderVo> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
+        return R.ok(folwerAppletCreditOrderService.insertByBo(bo));
     }
 
     /**
@@ -103,6 +105,18 @@ public class FolwerAppletCreditOrderController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] orderIds) {
         return toAjax(folwerAppletCreditOrderService.deleteWithValidByIds(List.of(orderIds), true));
+    }
+
+    /**
+     * 提交积分订单
+     */
+    @SaCheckPermission("flower:creditOrder:submitCreditOrders")
+    @Log(title = "提交订单", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/submitCreditOrder")
+    public R<String> submitCreditOrders(@RequestBody PayParam payParam) throws Exception {
+        String str = folwerAppletCreditOrderService.submitOrders(payParam);
+        return R.ok(str);
     }
 
 }

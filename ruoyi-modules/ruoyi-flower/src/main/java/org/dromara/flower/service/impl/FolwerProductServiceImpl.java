@@ -17,6 +17,7 @@ import org.dromara.flower.service.IFolwerSkuService;
 import org.dromara.system.domain.SysOss;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerProductBo;
@@ -25,6 +26,7 @@ import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerProductService;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -217,6 +219,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         lqw.eq(bo.getStatus() != null, FolwerProduct::getStatus, bo.getStatus());
         lqw.eq(bo.getIfRefund() != null, FolwerProduct::getIfRefund, bo.getIfRefund());
         lqw.eq(bo.getIfFreeShipping() != null, FolwerProduct::getIfFreeShipping, bo.getIfFreeShipping());
+        lqw.eq(bo.getIsRecommend() != null, FolwerProduct::getIsRecommend, bo.getIsRecommend());
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
@@ -232,11 +235,14 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
      */
     @Override
     public Boolean insertByBo(FolwerProductBo bo) {
-        FolwerProduct add = MapstructUtils.convert(bo, FolwerProduct.class);
-        validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
+        FolwerProduct FolwerProduct = new FolwerProduct();
+        BeanUtils.copyProperties(bo,FolwerProduct);
+        FolwerProduct.setWeight(Double.parseDouble(bo.getWeight()));
+        FolwerProduct.setDeliveryPrice(new BigDecimal(bo.getDeliveryPrice()));
+        validEntityBeforeSave(FolwerProduct);
+        boolean flag = baseMapper.insert(FolwerProduct) > 0;
         if (flag) {
-            bo.setId(add.getId());
+            bo.setId(FolwerProduct.getId());
         }
         return flag;
     }

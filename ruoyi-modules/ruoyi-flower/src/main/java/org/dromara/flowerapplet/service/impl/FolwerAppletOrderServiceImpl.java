@@ -187,7 +187,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     public FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception {
         FolwerAppletOrderBo bo = new FolwerAppletOrderBo();
         //订单ID
-        bo.setOrderId(snowflake.nextId());
+//        bo.setOrderId(snowflake.nextId());
 //        LoginUser user = LoginHelper.getLoginUser();
         bo.setUserId(orderParam.getUserId());
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(orderParam.getUserId());
@@ -270,6 +270,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         bo.setDeliveryMode(folwerDeliveryVo.getDvyType());
         bo.setDvyId(orderParam.getDvyId());
         bo.setDvyName(folwerDeliveryVo.getDvyName());
+        //是否分账
+        bo.setIsProfitSharing(0L);
         //物流单号
 //        bo.setDvyFlowId();
         bo.setFreightAmount((long) transfee);
@@ -278,7 +280,6 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
         FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
-
         boolean flag = baseMapper.insertOrUpdate(add);
 
         FolwerAppletOrderVo folwerAppletOrderVo = new FolwerAppletOrderVo();
@@ -326,6 +327,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         payJSAPIParam.setAmount(folwerAppletOrderVo.getActualTotal());
         payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
         payJSAPIParam.setDescription(folwerAppletOrderVo.getRemarks());
+        //是否分账
+        payJSAPIParam.setProfitSharing(folwerAppletOrderVo.getIsProfitSharing() == 1?true:false);
         WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
         if (wxJsapiResponse == null){
             R.fail("支付失败");

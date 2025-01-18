@@ -100,6 +100,12 @@ public class FolwerAppletOrderVo implements Serializable {
     private Long status;
 
     /**
+     * 是否分账 0：否，1：是
+     */
+    @ExcelProperty(value = "是否分账 0：否，1：是")
+    private long isProfitSharing;
+
+    /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
     @ExcelProperty(value = "配送方式 默认是1,商家配送， 2，表示物流配送")

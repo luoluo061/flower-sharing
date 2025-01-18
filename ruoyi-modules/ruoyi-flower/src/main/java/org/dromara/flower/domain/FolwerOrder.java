@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -53,6 +54,11 @@ public class FolwerOrder extends TenantEntity {
      * 商品总价
      */
     private Long total;
+
+    /**
+     * 返点
+     */
+    private Long rebate;
 
     /**
      * 实际金额

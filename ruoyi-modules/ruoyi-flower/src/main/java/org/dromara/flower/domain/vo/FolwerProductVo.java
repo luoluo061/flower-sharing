@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
@@ -127,6 +129,7 @@ public class FolwerProductVo implements Serializable {
      * 重量
      */
     @ExcelProperty(value = "重量")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long weight;
 
     /**
@@ -139,6 +142,7 @@ public class FolwerProductVo implements Serializable {
      * 快递费
      */
     @ExcelProperty(value = "快递费")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long deliveryPrice;
 
     /**
@@ -152,6 +156,12 @@ public class FolwerProductVo implements Serializable {
      */
     @ExcelProperty(value = "是否使用花券 默认是1，表示使用, 0，不使用")
     private Long isCoupon;
+
+    /**
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    @ExcelProperty(value = "是否为你推荐 默认是0，表示不推荐, 1，推荐")
+    private Long isRecommend;
 
     /**
      * 是否支持退款1 是 2  否

@@ -13,7 +13,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -137,6 +137,12 @@ public class FolwerAppletCreditOrderVo implements Serializable {
      */
     @ExcelProperty(value = "取消原因")
     private String cancelMsg;
+
+    /**
+     * 订单详细
+     */
+    @ExcelProperty(value = "订单详细")
+    private List<FolwerAppletCreditOrderDetailVo> folwerAppletCreditOrderDetailList;
 
 
 }

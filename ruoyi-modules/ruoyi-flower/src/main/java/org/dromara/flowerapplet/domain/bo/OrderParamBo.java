@@ -29,6 +29,7 @@ import java.util.Map;
 public class OrderParamBo {
 
     @Schema(description = "用户ID" )
+    @NotNull(message = "用户ID")
     private Long UserId;
 
 	@Schema(description = "购物车id 数组" )
@@ -38,7 +39,7 @@ public class OrderParamBo {
 	private Long productItem;
 
 	@Schema(description = "地址ID，0为默认地址" ,required=true)
-	@NotNull(message = "地址不能为空")
+//	@NotNull(message = "地址不能为空")
 	private Long addrId;
 
     @Schema(description = "订单备注" ,required=true)

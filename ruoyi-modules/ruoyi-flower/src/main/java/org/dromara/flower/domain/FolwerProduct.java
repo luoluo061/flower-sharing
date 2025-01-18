@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 商品管理对象 folwer_product
@@ -93,7 +94,7 @@ public class FolwerProduct extends TenantEntity {
     /**
      * 重量
      */
-    private Long weight;
+    private Double weight;
 
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
@@ -103,7 +104,7 @@ public class FolwerProduct extends TenantEntity {
     /**
      * 快递费
      */
-    private Long deliveryPrice;
+    private BigDecimal deliveryPrice;
 
     /**
      * 默认是1，表示正常状态, -1表示删除, 0下架
@@ -114,6 +115,11 @@ public class FolwerProduct extends TenantEntity {
      * 是否使用花券 默认是1，表示使用, 0，不使用
      */
     private Long isCoupon;
+
+    /**
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    private Long isRecommend;
 
     /**
      * 是否支持退款1 是 2  否

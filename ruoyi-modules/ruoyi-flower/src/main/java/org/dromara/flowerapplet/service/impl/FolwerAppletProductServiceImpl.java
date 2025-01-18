@@ -51,6 +51,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
      */
     @Override
     public TableDataInfo<FolwerAppletProductVo> queryPageList(FolwerAppletProductBo bo, PageQuery pageQuery) {
+        stringToLong(bo);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
@@ -64,8 +65,15 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
      */
     @Override
     public List<FolwerAppletProductVo> queryList(FolwerAppletProductBo bo) {
+        stringToLong(bo);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
+    }
+
+    private void stringToLong(FolwerAppletProductBo bo) {
+        if (StringUtils.isNotBlank(bo.getCategoryIdStr())) {
+            bo.setCategoryId(Long.parseLong(bo.getCategoryIdStr()));
+        }
     }
 
     private LambdaQueryWrapper<FolwerAppletProduct> buildQueryWrapper(FolwerAppletProductBo bo) {

@@ -1,5 +1,9 @@
 package org.dromara.flowerapplet.service;
 
+import org.dromara.common.core.domain.R;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.flowerapplet.domain.PayParam;
+import org.dromara.flowerapplet.domain.bo.OrderParamBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditOrderVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -47,7 +51,7 @@ public interface IFolwerAppletCreditOrderService {
      * @param bo 积分订单
      * @return 是否新增成功
      */
-    Boolean insertByBo(FolwerAppletCreditOrderBo bo);
+    public FolwerAppletCreditOrderVo insertByBo(OrderParamBo bo) throws Exception;
 
     /**
      * 修改积分订单
@@ -65,4 +69,12 @@ public interface IFolwerAppletCreditOrderService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
+    /***
+     * 提交订单
+     * @param payParam
+     * @return
+     */
+    String submitOrders(PayParam payParam) throws Exception;
 }

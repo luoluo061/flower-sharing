@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 积分订单业务对象 folwer_credit_order
@@ -108,6 +109,11 @@ public class FolwerAppletCreditOrderBo extends BaseEntity {
      * 取消原因
      */
     private String cancelMsg;
+
+    /**
+     * 积分商品ID
+     */
+    private List<Long> CreditProduct;
 
 
 }

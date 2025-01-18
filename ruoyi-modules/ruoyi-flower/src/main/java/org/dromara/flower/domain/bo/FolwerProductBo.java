@@ -1,6 +1,7 @@
 package org.dromara.flower.domain.bo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.json.handler.BigNumberSerializer;
 import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -9,6 +10,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 
 /**
  * 商品管理业务对象 folwer_product
@@ -105,7 +108,7 @@ public class FolwerProductBo extends BaseEntity {
      * 重量
      */
 //    @NotNull(message = "重量", groups = { AddGroup.class, EditGroup.class })
-    private Long weight;
+    private String weight;
 
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
@@ -117,7 +120,7 @@ public class FolwerProductBo extends BaseEntity {
      * 快递费
      */
 //    @NotNull(message = "快递费", groups = { AddGroup.class, EditGroup.class })
-    private Long deliveryPrice;
+    private String deliveryPrice;
 
 
     /**
@@ -131,6 +134,11 @@ public class FolwerProductBo extends BaseEntity {
      */
 //    @NotNull(message = "是否使用花券 默认是1，表示使用, 0，不使用", groups = { AddGroup.class, EditGroup.class })
     private Long isCoupon;
+
+    /**
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    private Long isRecommend;
 
 
     /**

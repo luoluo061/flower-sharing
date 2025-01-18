@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -115,17 +116,22 @@ public class FolwerAppletProduct extends TenantEntity {
     private Long isCoupon;
 
     /**
-     * 是否支持退款1 是 2  否 
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    private Long isRecommend;
+
+    /**
+     * 是否支持退款1 是 2  否
      */
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否 
+     * 是否免费配送 1 是 2  否
      */
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否 
+     * 是否预警 1 是 2  否
      */
     private Long ifEarlyWarning;
 

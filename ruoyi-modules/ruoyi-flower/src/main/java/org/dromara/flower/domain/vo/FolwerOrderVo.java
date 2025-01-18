@@ -67,6 +67,12 @@ public class FolwerOrderVo implements Serializable {
     private Long total;
 
     /**
+     * 返点
+     */
+    @ExcelProperty(value = "返点")
+    private Long rebate;
+
+    /**
      * 实际金额
      */
     @ExcelProperty(value = "实际金额")

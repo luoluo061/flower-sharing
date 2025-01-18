@@ -143,19 +143,19 @@ public class FolwerAppletCreditProductVo implements Serializable {
     private Long isCoupon;
 
     /**
-     * 是否支持退款1 是 2  否 
+     * 是否支持退款1 是 2  否
      */
     @ExcelProperty(value = "是否支持退款1 是 2  否 ")
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否 
+     * 是否免费配送 1 是 2  否
      */
     @ExcelProperty(value = "是否免费配送 1 是 2  否 ")
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否 
+     * 是否预警 1 是 2  否
      */
     @ExcelProperty(value = "是否预警 1 是 2  否 ")
     private Long ifEarlyWarning;

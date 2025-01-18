@@ -151,6 +151,12 @@ public class FolwerAppletProductVo implements Serializable {
     private Long isCoupon;
 
     /**
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    @ExcelProperty(value = "是否为你推荐 默认是0，表示不推荐, 1，推荐")
+    private Long isRecommend;
+
+    /**
      * 是否支持退款1 是 2  否
      */
     @ExcelProperty(value = "是否支持退款1 是 2  否 ", converter = ExcelDictConvert.class)

@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -51,6 +52,11 @@ public class FolwerAppletProductBo extends BaseEntity {
      * 商品分类
      */
     private Long categoryId;
+
+    /**
+     * 商品分类字符串类
+     */
+    private String categoryIdStr;
 
     /**
      * 原价
@@ -113,17 +119,22 @@ public class FolwerAppletProductBo extends BaseEntity {
     private Long isCoupon;
 
     /**
-     * 是否支持退款1 是 2  否 
+     * 是否为你推荐 默认是0，表示不推荐, 1，推荐
+     */
+    private Long isRecommend;
+
+    /**
+     * 是否支持退款1 是 2  否
      */
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否 
+     * 是否免费配送 1 是 2  否
      */
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否 
+     * 是否预警 1 是 2  否
      */
     private Long ifEarlyWarning;
 

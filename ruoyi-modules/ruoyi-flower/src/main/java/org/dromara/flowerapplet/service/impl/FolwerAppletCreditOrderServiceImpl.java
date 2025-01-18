@@ -8,16 +8,27 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
+import org.dromara.flowerapplet.domain.PayParam;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditGetrecordsBo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderDetailBo;
+import org.dromara.flowerapplet.domain.bo.OrderParamBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditProductVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.service.*;
+import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditOrderVo;
 import org.dromara.flowerapplet.domain.FolwerAppletCreditOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletCreditOrderMapper;
-import org.dromara.flowerapplet.service.IFolwerAppletCreditOrderService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.time.Duration;
+import java.util.*;
 
 /**
  * 积分订单Service业务层处理
@@ -30,6 +41,16 @@ import java.util.Collection;
 public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOrderService {
 
     private final FolwerAppletCreditOrderMapper baseMapper;
+
+    private final IAppletUserInformationService appletUserInformationService;
+
+    private final IFolwerAppletCreditProductService folwerAppletCreditProductService;
+
+    private final IFolwerAppletCreditOrderDetailService folwerAppletCreditOrderDetailService;
+
+    private final IFolwerAppletCreditGetrecordsService folwerAppletCreditGetrecordsService;
+
+    private static final String CONFIRM_CREDITORDER_CACHE_KEY  = "creditorder:confirm:";
 
     /**
      * 查询积分订单
@@ -98,14 +119,66 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(FolwerAppletCreditOrderBo bo) {
-        FolwerAppletCreditOrder add = MapstructUtils.convert(bo, FolwerAppletCreditOrder.class);
+    public FolwerAppletCreditOrderVo insertByBo(OrderParamBo bo) throws Exception {
+
+        FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
+        if (cacheObject != null){
+            return cacheObject;
+        }
+
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(bo.getUserId());
+        if (appletUserInformationVo == null){
+            throw new Exception("用户不存在");
+        }
+        FolwerAppletCreditProductVo folwerAppletCreditProductVo = folwerAppletCreditProductService.queryById(bo.getProductItem());
+        if (folwerAppletCreditProductVo == null){
+            throw new Exception("商品不存在");
+        }
+
+        double points = Arith.mul(folwerAppletCreditProductVo.getRedeemPrice(), bo.getProdCount());
+        double sun = Arith.sub(appletUserInformationVo.getPoints(), points);
+        if (sun < 0){
+            throw new Exception("积分不足");
+        }
+
+//        FolwerAppletCreditOrder add = MapstructUtils.convert(bo, FolwerAppletCreditOrder.class);
+        FolwerAppletCreditOrder add = new FolwerAppletCreditOrder();
+        add.setUserId(bo.getUserId());
+        add.setUserName(appletUserInformationVo.getName());
+        add.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
+        add.setActualTotal((long) points);
+        add.setPayTime(new Date());
+        add.setRemarks(bo.getRemarks());
+        add.setFreightAmount(folwerAppletCreditProductVo.getDeliveryPrice());
+        add.setStatus(0L);
+
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
-            bo.setOrderId(add.getOrderId());
+            FolwerAppletCreditOrderDetailBo folwerAppletCreditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
+            folwerAppletCreditOrderDetailBo.setOrderId(String.valueOf(add.getOrderId()));
+            folwerAppletCreditOrderDetailBo.setProductName(folwerAppletCreditProductVo.getProductName());
+            folwerAppletCreditOrderDetailBo.setProductListPictureUrl(folwerAppletCreditProductVo.getProductListPictureUrl());
+            folwerAppletCreditOrderDetailBo.setOrderPrice(folwerAppletCreditProductVo.getRedeemPrice());
+            folwerAppletCreditOrderDetailBo.setNumber(Long.valueOf(bo.getProdCount()));
+            folwerAppletCreditOrderDetailBo.setSubtotal((long) points);
+            Boolean b = folwerAppletCreditOrderDetailService.insertByBo(folwerAppletCreditOrderDetailBo);
+            FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(add.getOrderId());
+            folwerAppletCreditOrderVo.setFolwerAppletCreditOrderDetailList(folwerAppletCreditOrderDetailService.queryList(folwerAppletCreditOrderDetailBo));
+
+            //放入缓存
+//            FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
+            if (cacheObject != null){
+                boolean deleteObject = RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
+                if (deleteObject){
+                    RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
+                }
+            }else {
+                RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
+            }
+            return folwerAppletCreditOrderVo;
         }
-        return flag;
+        return null;
     }
 
     /**
@@ -141,5 +214,48 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public String submitOrders(PayParam payParam) throws Exception {
+        FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(payParam.getOrderNumbers());
+        if(folwerAppletCreditOrderVo == null){
+            throw new Exception("订单不存在");
+        }
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletCreditOrderVo.getUserId());
+        if (appletUserInformationVo == null){
+            throw new Exception("用户不存在");
+        }
+        if (folwerAppletCreditOrderVo.getStatus() != 0){
+            throw new Exception("订单状态异常");
+        }
+        double sub = Arith.sub(appletUserInformationVo.getPoints(), folwerAppletCreditOrderVo.getActualTotal());
+        if (sub < 0){
+            throw new Exception("积分不足");
+        }
+        if (folwerAppletCreditOrderVo.getStatus() == 0){
+            AppletUserInformationBo  appletUserInformationBo = MapstructUtils.convert(folwerAppletCreditOrderVo, AppletUserInformationBo.class);
+            appletUserInformationBo.setPoints((long) sub);
+            Boolean b = appletUserInformationService.updateByBo(appletUserInformationBo);
+            if (b){
+                FolwerAppletCreditOrderBo add = MapstructUtils.convert(folwerAppletCreditOrderVo, FolwerAppletCreditOrderBo.class);
+                add.setStatus(1L);
+                add.setPayTime(new Date());
+                Boolean updateCreditOrderByBo = this.updateByBo(add);
+                if (updateCreditOrderByBo){
+                    FolwerAppletCreditGetrecordsBo folwerAppletCreditGetrecordsBo = new FolwerAppletCreditGetrecordsBo();
+                    folwerAppletCreditGetrecordsBo.setUserId(folwerAppletCreditOrderVo.getUserId());
+                    folwerAppletCreditGetrecordsBo.setUserName(folwerAppletCreditOrderVo.getUserName());
+                    folwerAppletCreditGetrecordsBo.setMemberLevelId(folwerAppletCreditOrderVo.getMemberLevelId());
+                    folwerAppletCreditGetrecordsBo.setCreditSourId(6L);
+                    folwerAppletCreditGetrecordsBo.setGetTotal(String.valueOf(folwerAppletCreditOrderVo.getActualTotal()));
+                    folwerAppletCreditGetrecordsBo.setGetTime(new Date());
+                    folwerAppletCreditGetrecordsService.insertByBo(folwerAppletCreditGetrecordsBo);
+                    return "订单提交成功";
+                }
+            }
+        }
+
+        return "订单提交失败";
     }
 }
