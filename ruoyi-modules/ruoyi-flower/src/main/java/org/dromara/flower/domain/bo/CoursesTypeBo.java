@@ -54,7 +54,7 @@ public class CoursesTypeBo extends BaseEntity {
      * 父级Id
      */
 //    @NotNull(message = "父级Id不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long parentId;
+    private String parentId;
 
 
 }

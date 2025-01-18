@@ -4,4 +4,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.FolwerCreditGetrecordsMapper">
 
+    <select id="getReditGetrecords" resultType="java.lang.Long">
+        SELECT
+            IFNULL(SUM(CAST(get_total AS UNSIGNED)), 0) AS gold
+        FROM
+            folwer_credit_getrecords
+        WHERE user_id = #{userId}
+          AND DATE(create_time) = CURDATE();
+    </select>
 </mapper>

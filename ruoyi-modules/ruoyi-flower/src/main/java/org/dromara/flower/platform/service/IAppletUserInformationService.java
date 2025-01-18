@@ -9,6 +9,7 @@ import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 小程序用户信息Service接口
@@ -106,4 +107,6 @@ public interface IAppletUserInformationService {
     R<String> generateQrCode();
 
     AppletUserInformationVo queryUserInfo();
+
+    R<Map<String, String>> myPoints();
 }

@@ -69,7 +69,6 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
 
             record.setThumbnailUrl(s);
 
-
         }
 
 /*        HashMap<String , List<MarketingAdvertisementVo>> groupedBanners  = new HashMap<>();
@@ -224,10 +223,22 @@ public class MarketingAdvertisementServiceImpl implements IMarketingAdvertisemen
     public List<MarketingAdvertisementVo> selectByType(String type) {
         QueryWrapper queryWrapper = new QueryWrapper<MarketingAdvertisement>();
         queryWrapper.eq("type",type);
-        List<MarketingAdvertisementVo> list = baseMapper.selectList(queryWrapper);
+        queryWrapper.eq("status",1);//状态为开启的
+        List<MarketingAdvertisementVo> list = baseMapper.selectVoList(queryWrapper);
+
+        for (MarketingAdvertisementVo advertisementVo : list) {
+            String s = sysOssService.selectUrlByIds(advertisementVo.getThumbnail());
+            advertisementVo.setThumbnailUrl(s);
+        }
 
         return list;
     }
+
+
+
+
+
+
 
 
 

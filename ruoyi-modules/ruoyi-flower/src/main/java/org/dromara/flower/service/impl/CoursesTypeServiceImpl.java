@@ -59,7 +59,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
      */
     @Override
     public TableDataInfo<CoursesTypeVo> queryPageList(CoursesTypeBo bo, PageQuery pageQuery) {
-        bo.setParentId(ZERO);
+        bo.setParentId(String.valueOf(ZERO));
         LambdaQueryWrapper<CoursesType> lqw = buildQueryWrapper(bo);
         Page<CoursesTypeVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         List<CoursesTypeVo> child = new ArrayList<>();

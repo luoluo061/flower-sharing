@@ -1,6 +1,7 @@
 package org.dromara.flower.platform.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
@@ -141,6 +142,14 @@ public class AppletUserInformationController extends BaseController {
     @GetMapping("/qrCode")
     public R<String> generateQrCode() {
         return appletUserInformationService.generateQrCode();
+    }
+
+    /**
+     * 我的积分
+     */
+    @GetMapping("/myPoints")
+    public R<Map<String,String>> myPoints() {
+        return appletUserInformationService.myPoints();
     }
 
 }

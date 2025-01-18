@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 营销推广-会员推广计划Service业务层处理
@@ -135,13 +137,28 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
     public Boolean insertByBo(MarketingMemberPromotionPlanBo bo) {
         MarketingMemberPromotionPlan add = MapstructUtils.convert(bo, MarketingMemberPromotionPlan.class);
         validEntityBeforeSave(add);
-        // 默认剩余次数
+        //1.默认剩余次数
         add.setResidue(add.getNum());
-        // 默认剩余额度
+        //2.默认剩余额度
         add.setSurplusRewar(add.getMaxRewar());
-
-        //设置编号
+        //3.设置编号
         add.setCode(String.valueOf(IdUtil.getSnowflakeNextId()));
+        //4.同一个会员等级的推广计划只能有一个生效
+        List<MarketingMemberPromotionPlan> marketingMemberPromotionPlans = baseMapper.selectList();
+        //4.1 数据库已有的数据
+        List<Long> collect = marketingMemberPromotionPlans.stream().map(MarketingMemberPromotionPlan::getCategoryDetailsId)
+            .flatMap(x -> Stream.of(x.split(",")))
+            .map(Long::parseLong)
+            .collect(Collectors.toList());
+
+
+        // 新增的数据
+        List<Long> boDetailsId = Arrays.stream(bo.getCategoryDetailsId().split(",")).map(Long::parseLong).collect(Collectors.toList());
+
+        if (boDetailsId.stream().allMatch(collect::contains)){
+            add.setStatus(0L); // 设置为失效
+        }
+
 
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

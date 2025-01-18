@@ -18,8 +18,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MemberPointsExchangeGold;
 import org.dromara.flower.domain.MemberPurchaseRecord;
+import org.dromara.flower.domain.vo.MemberPointsExchangeGoldVo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
+import org.dromara.flower.mapper.FolwerCreditGetrecordsMapper;
+import org.dromara.flower.mapper.MemberExchangeRecordMapper;
+import org.dromara.flower.mapper.MemberPointsExchangeGoldMapper;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.platform.constant.AddAndSubtract;
 import org.dromara.flower.platform.domain.AppletUserInformation;
@@ -49,6 +54,9 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     private final AppletUserInformationMapper baseMapper;
     private final SysOssMapper sysOssMapper;
     private final MemberPurchaseRecordMapper memberPurchaseRecordMapper;
+    private final MemberPointsExchangeGoldMapper memberPointsExchangeGoldMapper;
+    private final MemberExchangeRecordMapper memberExchangeRecordMapper;
+    private final FolwerCreditGetrecordsMapper folwerCreditGetrecordsMapper;
 
     private static Long ZERO = 0L;
 
@@ -352,6 +360,28 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
             vo.setPurchaseRecordVo(memberPurchaseRecordMapper.selectVoOne(lqw));
         }
         return vo;
+    }
+
+    /**
+     * 我的积分
+     */
+    @Override
+    public R<Map<String, String>> myPoints() {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser != null){
+            return null;
+        }
+        AppletUserInformationVo app = this.baseMapper.selectVoById(loginUser.getUserId());
+        // 统计兑换所有积分
+        Long count = memberPointsExchangeGoldMapper.selectPointsCount(app.getUserId());
+        Long gold = memberExchangeRecordMapper.selectExchangeRecord(app.getUserId());
+        Long credit = folwerCreditGetrecordsMapper.getReditGetrecords(app.getUserId());
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("balance", String.valueOf(app.getPoints()));
+        resultMap.put("today", String.valueOf(credit));
+        resultMap.put("gold", String.valueOf(gold));
+
+        return R.ok(resultMap);
     }
 
     /**

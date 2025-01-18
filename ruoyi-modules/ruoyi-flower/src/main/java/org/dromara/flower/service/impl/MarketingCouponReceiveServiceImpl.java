@@ -337,8 +337,6 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
 
             }
-
-
     }
 
         return false;
