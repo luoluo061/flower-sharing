@@ -20,10 +20,14 @@ import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.mypay.server.IPayService;
 import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.MarketingMemberPromotionPecord;
+import org.dromara.flower.domain.MarketingMemberPromotionPlan;
 import org.dromara.flower.domain.MemberPurchaseRecord;
 import org.dromara.flower.domain.bo.MemberPurchaseRecordBo;
+import org.dromara.flower.domain.vo.MarketingMemberPromotionPlanVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
+import org.dromara.flower.mapper.MarketingMemberPromotionPlanMapper;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
@@ -39,6 +43,7 @@ import org.dromara.system.service.impl.SysOssServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +61,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     private final AppletUserInformationMapper userInformationMapper;
     private final MemberLevelMapper memberLevelMapper;
     private final IAppletUserInformationService appletUserInformationService;
+    private final MarketingMemberPromotionPlanMapper marketingMemberPromotionPlanMapper;
 
     @Resource
     private final IPayService payService;
@@ -210,6 +216,10 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         return baseMapper.deleteByIds(ids) > 0;
     }
 
+    /**
+     * @param bo 会员购买记录
+     * @return
+     */
     @Override
     @Transactional
     public Boolean payLaterUpdateByBo(MemberPurchaseRecordBo bo) {
@@ -226,7 +236,6 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         MemberPurchaseRecord update = MapstructUtils.convert(bo, MemberPurchaseRecord.class);
         update.setStatus(ONE);
         update.setPayStatus(ONE);
-        baseMapper.updateById(update);
         // 修改其余会员购买记录状态为  0 关闭
         baseMapper.updateOtherMemberInfoByUserID(loginUser.getUserId(), update.getId());
         // 修改会员基础信息中的会员等级
@@ -234,7 +243,39 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         auf.setUserId(loginUser.getUserId());
         auf.setMemberLevelId(update.getMemberLevelId());
         userInformationMapper.updateById(auf);
+        // 更新会员推广记录表信息
+        updateMarketingMemberPromotionRecord(update, loginUser);
+        baseMapper.updateById(update);
         return true;
+    }
+
+    // 更新会员推广记录表信息
+    private void updateMarketingMemberPromotionRecord(MemberPurchaseRecord update, LoginUser loginUser) {
+        AppletUserInformationVo app = userInformationMapper.selectVoById(loginUser.getUserId());
+        // 查询推广计划信息
+        LambdaQueryWrapper<MarketingMemberPromotionPlan> lqw = new LambdaQueryWrapper<MarketingMemberPromotionPlan>();
+        lqw.eq(MarketingMemberPromotionPlan::getStatus, 1);
+        lqw.eq(MarketingMemberPromotionPlan::getCategoryDetailsId, app.getMemberLevelId());
+        lqw.le(MarketingMemberPromotionPlan::getActivityEnd, new Date());
+        lqw.ge(MarketingMemberPromotionPlan::getResidue, 0);
+        lqw.ge(MarketingMemberPromotionPlan::getSurplusRewar, 0);
+        MarketingMemberPromotionPlanVo mo = marketingMemberPromotionPlanMapper.selectVoById(lqw);
+        // 没有mo就不更新数据
+        if (mo != null) {
+            MarketingMemberPromotionPlan plan = new MarketingMemberPromotionPlan();
+            MarketingMemberPromotionPecord promotionRecord = new MarketingMemberPromotionPecord();
+            plan.setId(mo.getId());
+            plan.setResidue(mo.getResidue() - 1L);
+            if (plan.getRewardAmount() - update.getPrice() > 0) {
+                plan.setRewardAmount(plan.getRewardAmount() - update.getPrice());
+                promotionRecord.setPromotionCashback(BigDecimal.valueOf(mo.getRewardAmount()));
+                // TODO 未完成
+            }
+            if (mo.getResidue() - ONE == ZERO) {
+                plan.setStatus(ZERO);
+            }
+            marketingMemberPromotionPlanMapper.updateById(plan);
+        }
     }
 
     @Override
@@ -289,7 +330,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         }
         if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
             //你的业务代码，根据请求返回状态修改对应订单状态
-            return  R.fail("退款关闭");
+            return R.fail("退款关闭");
         }
         return null;
     }

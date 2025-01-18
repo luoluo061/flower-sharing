@@ -355,6 +355,19 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
     }
 
     /**
+     * 我的积分
+     */
+    @Override
+    public R<Map<String, String>> myPoints() {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser != null){
+            return null;
+        }
+        AppletUserInformationVo app = this.baseMapper.selectVoById(loginUser.getUserId());
+        return null;
+    }
+
+    /**
      * 减金币
      *
      * @param app
