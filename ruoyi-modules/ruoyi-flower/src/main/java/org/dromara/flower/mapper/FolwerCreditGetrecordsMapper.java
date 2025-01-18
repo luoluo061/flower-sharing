@@ -1,5 +1,6 @@
 package org.dromara.flower.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flower.domain.FolwerCreditGetrecords;
 import org.dromara.flower.domain.vo.FolwerCreditGetrecordsVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
@@ -12,4 +13,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface FolwerCreditGetrecordsMapper extends BaseMapperPlus<FolwerCreditGetrecords, FolwerCreditGetrecordsVo> {
 
+    Long getReditGetrecords(@Param("userId") Long userId);
 }

@@ -4,4 +4,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.MemberExchangeRecordMapper">
 
+    <select id="selectExchangeRecord" resultType="java.lang.Long">
+        SELECT
+            COUNT(gold) AS gold
+        FROM
+            member_exchange_record
+        WHERE member_id = #{userId}
+    </select>
 </mapper>

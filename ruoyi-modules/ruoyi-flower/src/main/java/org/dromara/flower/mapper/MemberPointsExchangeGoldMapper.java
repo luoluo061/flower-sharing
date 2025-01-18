@@ -1,5 +1,6 @@
 package org.dromara.flower.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flower.domain.MemberPointsExchangeGold;
 import org.dromara.flower.domain.vo.MemberPointsExchangeGoldVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
@@ -12,4 +13,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface MemberPointsExchangeGoldMapper extends BaseMapperPlus<MemberPointsExchangeGold, MemberPointsExchangeGoldVo> {
 
+    Long selectPointsCount(@Param("userId") Long userId);
 }

@@ -1,5 +1,6 @@
 package org.dromara.flower.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flower.domain.MemberExchangeRecord;
 import org.dromara.flower.domain.vo.MemberExchangeRecordVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
@@ -12,4 +13,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 public interface MemberExchangeRecordMapper extends BaseMapperPlus<MemberExchangeRecord, MemberExchangeRecordVo> {
 
+    Long selectExchangeRecord(@Param("userId") Long userId);
 }

@@ -4,4 +4,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flower.mapper.MemberPointsExchangeGoldMapper">
 
+    <select id="selectPointsCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(points) AS count
+        FROM
+            member_points_exchange_gold
+        WHERE member_id = #{userId}
+    </select>
 </mapper>
