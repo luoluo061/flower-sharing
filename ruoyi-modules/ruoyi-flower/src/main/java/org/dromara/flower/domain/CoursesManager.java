@@ -4,6 +4,8 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -82,7 +84,7 @@ public class CoursesManager extends TenantEntity {
     /**
      * 价格
      */
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 状态 0 否(下架) 1 是(上架)

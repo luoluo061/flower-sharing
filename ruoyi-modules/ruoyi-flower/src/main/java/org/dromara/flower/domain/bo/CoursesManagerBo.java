@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -89,7 +90,7 @@ public class CoursesManagerBo extends BaseEntity {
      * 价格
      */
 //    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 状态 0 否(下架) 1 是(上架)

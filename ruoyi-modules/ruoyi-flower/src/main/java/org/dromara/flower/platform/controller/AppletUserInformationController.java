@@ -146,6 +146,10 @@ public class AppletUserInformationController extends BaseController {
 
     /**
      * 我的积分
+     * Map<String,String>
+     *     balance 积分
+     *     today 今日积分
+     *     gold 金币积分
      */
     @GetMapping("/myPoints")
     public R<Map<String,String>> myPoints() {

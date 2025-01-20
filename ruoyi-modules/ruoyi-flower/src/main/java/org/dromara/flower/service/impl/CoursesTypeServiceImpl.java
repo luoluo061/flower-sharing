@@ -59,15 +59,21 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
      */
     @Override
     public TableDataInfo<CoursesTypeVo> queryPageList(CoursesTypeBo bo, PageQuery pageQuery) {
-        bo.setParentId(String.valueOf(ZERO));
+//        bo.setParentId(String.valueOf(ZERO));
         LambdaQueryWrapper<CoursesType> lqw = buildQueryWrapper(bo);
         Page<CoursesTypeVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         List<CoursesTypeVo> child = new ArrayList<>();
         // 构造子级
         if (!result.getRecords().isEmpty()) {
+            List<Long> ids = result.getRecords().stream()
+                .map(CoursesTypeVo::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
             // 查询所有的数据
             LambdaQueryWrapper<CoursesType> all = new LambdaQueryWrapper<>();
             all.eq(CoursesType::getDelFlag, 0);
+            all.in(CoursesType::getId, ids);
             List<CoursesTypeVo> list = baseMapper.selectVoList(all);
             child = buildTree(list);
             if (!child.isEmpty()){
@@ -97,7 +103,7 @@ public class CoursesTypeServiceImpl implements ICoursesTypeService {
         lqw.like(StringUtils.isNotBlank(bo.getName()), CoursesType::getName, bo.getName());
         lqw.eq(bo.getStatus() != null, CoursesType::getStatus, bo.getStatus());
         lqw.eq(bo.getSort() != null, CoursesType::getSort, bo.getSort());
-        lqw.eq(bo.getParentId() != null, CoursesType::getParentId, bo.getParentId());
+//        lqw.eq(bo.getParentId() != null, CoursesType::getParentId, Long.parseLong(bo.getParentId()));
         return lqw;
     }
 
