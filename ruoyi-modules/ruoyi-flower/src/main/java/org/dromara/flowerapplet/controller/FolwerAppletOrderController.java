@@ -80,7 +80,7 @@ public class FolwerAppletOrderController extends BaseController {
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerAppletOrderBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
         return toAjax(folwerAppletOrderService.insertByBo(bo));
     }
 
@@ -111,14 +111,14 @@ public class FolwerAppletOrderController extends BaseController {
     /**
      * 新增订单
      */
-    @SaCheckPermission("flower:order:createOrder")
-    @Log(title = "创建订单", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
-    @PostMapping("/createOrder")
-    public R<FolwerAppletOrderVo> createOrder(@Validated(AddGroup.class) @RequestBody OrderParamBo orderParam) throws Exception {
-        FolwerAppletOrderVo order = folwerAppletOrderService.createOrder(orderParam);
-        return R.ok(order);
-    }
+//    @SaCheckPermission("flower:order:createOrder")
+//    @Log(title = "创建订单", businessType = BusinessType.INSERT)
+//    @RepeatSubmit()
+//    @PostMapping("/createOrder")
+//    public R<FolwerAppletOrderVo> createOrder(@Validated(AddGroup.class) @RequestBody OrderParamBo orderParam) throws Exception {
+//        FolwerAppletOrderVo order = folwerAppletOrderService.createOrder(orderParam);
+//        return R.ok(order);
+//    }
 
 //    /**
 //     * 提交订单

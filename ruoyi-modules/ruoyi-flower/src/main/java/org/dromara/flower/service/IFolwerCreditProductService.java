@@ -47,7 +47,7 @@ public interface IFolwerCreditProductService {
      * @param bo 积分商品管理
      * @return 是否新增成功
      */
-    Boolean insertByBo(FolwerCreditProductBo bo);
+    Boolean insertByBo(FolwerCreditProductBo bo) throws Exception;
 
     /**
      * 修改积分商品管理
@@ -55,7 +55,7 @@ public interface IFolwerCreditProductService {
      * @param bo 积分商品管理
      * @return 是否修改成功
      */
-    Boolean updateByBo(FolwerCreditProductBo bo);
+    Boolean updateByBo(FolwerCreditProductBo bo) throws Exception;
 
     /**
      * 校验并批量删除积分商品管理信息

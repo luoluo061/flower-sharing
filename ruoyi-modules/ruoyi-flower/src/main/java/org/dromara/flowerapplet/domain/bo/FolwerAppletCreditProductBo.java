@@ -6,6 +6,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
+
 /**
  * 积分商品管理业务对象 folwer_credit_product
  *
@@ -15,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = FolwerAppletCreditProduct.class, reverseConvertGenerate = false)
-public class FolwerAppletCreditProductBo extends BaseEntity {
+public class FolwerAppletCreditProductBo extends BaseEntity implements Serializable {
 
     /**
      * 主键

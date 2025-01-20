@@ -8,6 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
+import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditProductVo;
@@ -31,6 +35,8 @@ public class FolwerAppletCreditProductServiceImpl implements IFolwerAppletCredit
 
     private final FolwerAppletCreditProductMapper baseMapper;
 
+    private final IFolwerAppletSkuService folwerAppletSkuService;
+
     /**
      * 查询积分商品管理
      *
@@ -39,7 +45,16 @@ public class FolwerAppletCreditProductServiceImpl implements IFolwerAppletCredit
      */
     @Override
     public FolwerAppletCreditProductVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        FolwerAppletCreditProductVo folwerAppletCreditProductVo = baseMapper.selectVoById(id);
+        if (folwerAppletCreditProductVo != null) {
+            if (folwerAppletCreditProductVo.getNormsType().equals(1L)) {
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setProdId(folwerAppletCreditProductVo.getId());
+                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                folwerAppletCreditProductVo.setSkuList(folwerAppletSkuVos);
+            }
+        }
+        return folwerAppletCreditProductVo;
     }
 
     /**
@@ -53,6 +68,16 @@ public class FolwerAppletCreditProductServiceImpl implements IFolwerAppletCredit
     public TableDataInfo<FolwerAppletCreditProductVo> queryPageList(FolwerAppletCreditProductBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletCreditProduct> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCreditProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if (!result.getRecords().isEmpty()) {
+            result.getRecords().forEach(item -> {
+                if (item.getNormsType().equals(1L)) {
+                    FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                    folwerAppletSkuBo.setProdId(item.getId());
+                    List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                    item.setSkuList(folwerAppletSkuVos);
+                }
+            });
+        }
         return TableDataInfo.build(result);
     }
 
@@ -65,7 +90,16 @@ public class FolwerAppletCreditProductServiceImpl implements IFolwerAppletCredit
     @Override
     public List<FolwerAppletCreditProductVo> queryList(FolwerAppletCreditProductBo bo) {
         LambdaQueryWrapper<FolwerAppletCreditProduct> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletCreditProductVo> creditProductVos = baseMapper.selectVoList(lqw);
+        for (FolwerAppletCreditProductVo creditProductVo : creditProductVos) {
+            if (creditProductVo.getNormsType().equals(1L)) {
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setProdId(creditProductVo.getId());
+                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                creditProductVo.setSkuList(folwerAppletSkuVos);
+            }
+        }
+        return creditProductVos;
     }
 
     private LambdaQueryWrapper<FolwerAppletCreditProduct> buildQueryWrapper(FolwerAppletCreditProductBo bo) {

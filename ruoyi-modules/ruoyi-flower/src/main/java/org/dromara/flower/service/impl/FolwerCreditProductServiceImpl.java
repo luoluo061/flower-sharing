@@ -12,6 +12,7 @@ import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.domain.vo.*;
 import org.dromara.flower.service.IFolwerCreditCategoryService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerCreditProductBo;
@@ -169,6 +170,7 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FolwerCreditProduct> lqw = Wrappers.lambdaQuery();
         lqw.like(StringUtils.isNotBlank(bo.getProductName()), FolwerCreditProduct::getProductName, bo.getProductName());
+        lqw.eq(bo.getId() != null, FolwerCreditProduct::getId, bo.getId());
         lqw.eq(StringUtils.isNotBlank(bo.getUnit()), FolwerCreditProduct::getUnit, bo.getUnit());
         lqw.eq(StringUtils.isNotBlank(bo.getProductListPictureUrl()), FolwerCreditProduct::getProductListPictureUrl, bo.getProductListPictureUrl());
         lqw.eq(StringUtils.isNotBlank(bo.getProductCarouselPictureUrl()), FolwerCreditProduct::getProductCarouselPictureUrl, bo.getProductCarouselPictureUrl());
@@ -203,7 +205,8 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(FolwerCreditProductBo bo) {
+    public Boolean insertByBo(FolwerCreditProductBo bo) throws Exception {
+        stringToLong(bo);
         FolwerCreditProduct add = MapstructUtils.convert(bo, FolwerCreditProduct.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
@@ -220,7 +223,8 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
      * @return 是否修改成功
      */
     @Override
-    public Boolean updateByBo(FolwerCreditProductBo bo) {
+    public Boolean updateByBo(FolwerCreditProductBo bo) throws Exception {
+        stringToLong(bo);
         FolwerCreditProduct update = MapstructUtils.convert(bo, FolwerCreditProduct.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
@@ -274,5 +278,14 @@ public class FolwerCreditProductServiceImpl implements IFolwerCreditProductServi
         }
 
         return true;
+    }
+
+    private void stringToLong(FolwerCreditProductBo bo) throws Exception{
+        if (StringUtils.isNotBlank(bo.getWeightStr())) {
+            bo.setWeight(Long.parseLong(bo.getWeightStr()));
+        }
+        if (StringUtils.isNotBlank(bo.getDeliveryPriceStr())) {
+            bo.setDeliveryPrice(Long.parseLong(bo.getDeliveryPriceStr()));
+        }
     }
 }

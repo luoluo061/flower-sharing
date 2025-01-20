@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
@@ -16,14 +17,11 @@ import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditGetrecordsBo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderDetailBo;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditProductVo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.*;
 import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditOrderVo;
 import org.dromara.flowerapplet.domain.FolwerAppletCreditOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletCreditOrderMapper;
 
@@ -50,7 +48,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
 
     private final IFolwerAppletCreditGetrecordsService folwerAppletCreditGetrecordsService;
 
-    private static final String CONFIRM_CREDITORDER_CACHE_KEY  = "creditorder:confirm:";
+    private static final String CONFIRM_CREDITORDER_CACHE_KEY  = "CreditOrder:";
 
     /**
      * 查询积分订单
@@ -60,7 +58,22 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
      */
     @Override
     public FolwerAppletCreditOrderVo queryById(Long orderId){
-        return baseMapper.selectVoById(orderId);
+        FolwerAppletCreditOrderVo creditOrderVo = baseMapper.selectVoById(orderId);
+        if (creditOrderVo != null){
+            FolwerAppletCreditOrderDetailBo creditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
+            creditOrderDetailBo.setOrderId(String.valueOf(creditOrderVo.getOrderId()));
+            List<FolwerAppletCreditOrderDetailVo> creditOrderDetailVos = folwerAppletCreditOrderDetailService.queryList(creditOrderDetailBo);
+            if (creditOrderDetailVos == null){
+                try {
+                    throw new Exception("商品不存在");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            creditOrderVo.setFolwerAppletCreditOrderDetailList(creditOrderDetailVos);
+        }
+
+        return creditOrderVo;
     }
 
     /**
@@ -74,6 +87,22 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     public TableDataInfo<FolwerAppletCreditOrderVo> queryPageList(FolwerAppletCreditOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletCreditOrder> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCreditOrderVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if(result.getRecords() != null){
+            result.getRecords().forEach(item -> {
+                FolwerAppletCreditOrderDetailBo creditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
+                creditOrderDetailBo.setOrderId(String.valueOf(item.getOrderId()));
+                List<FolwerAppletCreditOrderDetailVo> creditOrderDetailVos = folwerAppletCreditOrderDetailService.queryList(creditOrderDetailBo);
+                if (creditOrderDetailVos == null){
+                    try {
+                        throw new Exception("商品不存在");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                item.setFolwerAppletCreditOrderDetailList(creditOrderDetailVos);
+            });
+        }
+
         return TableDataInfo.build(result);
     }
 
@@ -86,7 +115,23 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     @Override
     public List<FolwerAppletCreditOrderVo> queryList(FolwerAppletCreditOrderBo bo) {
         LambdaQueryWrapper<FolwerAppletCreditOrder> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletCreditOrderVo> creditOrderVos = baseMapper.selectVoList(lqw);
+        if (creditOrderVos != null){
+            creditOrderVos.forEach(item -> {
+                FolwerAppletCreditOrderDetailBo creditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
+                creditOrderDetailBo.setOrderId(String.valueOf(item.getOrderId()));
+                List<FolwerAppletCreditOrderDetailVo> creditOrderDetailVos = folwerAppletCreditOrderDetailService.queryList(creditOrderDetailBo);
+                if (creditOrderDetailVos == null){
+                    try {
+                        throw new Exception("商品不存在");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                item.setFolwerAppletCreditOrderDetailList(creditOrderDetailVos);
+            });
+        }
+        return creditOrderVos;
     }
 
     private LambdaQueryWrapper<FolwerAppletCreditOrder> buildQueryWrapper(FolwerAppletCreditOrderBo bo) {
@@ -121,10 +166,10 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     @Override
     public FolwerAppletCreditOrderVo insertByBo(OrderParamBo bo) throws Exception {
 
-        FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
-        if (cacheObject != null){
-            return cacheObject;
-        }
+//        FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
+//        if (cacheObject != null){
+//            return cacheObject;
+//        }
 
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(bo.getUserId());
         if (appletUserInformationVo == null){
@@ -134,7 +179,6 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
         if (folwerAppletCreditProductVo == null){
             throw new Exception("商品不存在");
         }
-
         double points = Arith.mul(folwerAppletCreditProductVo.getRedeemPrice(), bo.getProdCount());
         double sun = Arith.sub(appletUserInformationVo.getPoints(), points);
         if (sun < 0){
@@ -157,6 +201,10 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
         if (flag) {
             FolwerAppletCreditOrderDetailBo folwerAppletCreditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
             folwerAppletCreditOrderDetailBo.setOrderId(String.valueOf(add.getOrderId()));
+            folwerAppletCreditOrderDetailBo.setProductId(bo.getProductItem());
+            if(bo.getSkuId() != null){
+                folwerAppletCreditOrderDetailBo.setSkuId(bo.getSkuId());
+            }
             folwerAppletCreditOrderDetailBo.setProductName(folwerAppletCreditProductVo.getProductName());
             folwerAppletCreditOrderDetailBo.setProductListPictureUrl(folwerAppletCreditProductVo.getProductListPictureUrl());
             folwerAppletCreditOrderDetailBo.setOrderPrice(folwerAppletCreditProductVo.getRedeemPrice());
@@ -167,15 +215,16 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
             folwerAppletCreditOrderVo.setFolwerAppletCreditOrderDetailList(folwerAppletCreditOrderDetailService.queryList(folwerAppletCreditOrderDetailBo));
 
             //放入缓存
+            RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
 //            FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
-            if (cacheObject != null){
-                boolean deleteObject = RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
-                if (deleteObject){
-                    RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
-                }
-            }else {
-                RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
-            }
+//            if (cacheObject != null){
+//                boolean deleteObject = RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId());
+//                if (deleteObject){
+//                    RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
+//                }
+//            }else {
+//                RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
+//            }
             return folwerAppletCreditOrderVo;
         }
         return null;

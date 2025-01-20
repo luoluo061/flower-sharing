@@ -20,22 +20,16 @@ import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.mypay.server.IPayService;
 import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
-import org.dromara.flower.domain.vo.FolwerDeliveryVo;
-import org.dromara.flower.domain.vo.FolwerPickAddrVo;
-import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flower.domain.vo.*;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
-import org.dromara.flower.service.IFolwerDeliveryService;
-import org.dromara.flower.service.IFolwerPickAddrService;
-import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.*;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderDetailVo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderDetailService;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
@@ -45,7 +39,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
@@ -64,7 +57,7 @@ import java.util.*;
 @Service
 public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
-    private static final String CONFIRM_ORDER_CACHE_KEY  = "order:confirm:";
+    private static final String CONFIRM_ORDER_CACHE_KEY  = "order:";
 
     @Resource
     private final FolwerAppletOrderMapper baseMapper;
@@ -82,6 +75,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final IFolwerSkuService folwerSkuService;
 
     private final IFolwerDeliveryService deliveryService;
+
+    private final IMarketingCouponService marketingCouponService;
+
+    private final IOneselfMemberLevelPrivilegeService oneselfMemberLevelPrivilegeService;
 
     @Resource
     private Snowflake snowflake;
@@ -159,12 +156,137 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(FolwerAppletOrderBo bo) {
-        FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean insertByBo(OrderParamBo bo) throws Exception {
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(bo.getUserId());
+        if (appletUserInformationVo == null){
+            throw new Exception("用户不存在");
+        }
+
+        //总价
+        double total = 0.0;
+        //折扣价
+        double derlinePrice = 0.0;
+        //运费
+        double transfee = 0.0;
+        //购物车商品总数
+        int totalCount = 0;
+
+//        List<FolwerAppletProductVo> productVos = new ArrayList<>();
+        List<FolwerAppletOrderDetailBo> folwerAppletOrderDetailBos = new ArrayList<>();
+        //立即购买
+        if(bo.getProductItem() != null){
+            FolwerAppletProductVo folwerAppletProductVo = productService.queryById(bo.getProductItem());
+            if (folwerAppletProductVo == null){
+                throw new Exception("商品不存在");
+            }
+            total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+            transfee = folwerAppletProductVo.getDeliveryPrice();
+            if(bo.getUserChangeCoupon() != null){
+                //0:满减
+                if(bo.getUserChangeCoupon().equals(0)){
+//                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+                    MarketingCouponVo marketingCouponVo = marketingCouponService.queryById(Long.valueOf(bo.getCouponId()));
+                    derlinePrice = marketingCouponVo.getCouponSum().doubleValue();
+
+                }else if(bo.getUserChangeCoupon().equals(1)){       //1：花券
+//                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+                    OneselfMemberLevelPrivilegeVo oneselfMemberLevelPrivilegeVo = oneselfMemberLevelPrivilegeService.queryById(Long.valueOf(bo.getCouponId()));
+                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
+                }
+            }
+
+            //订单详情
+            FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
+//                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
+            folwerAppletOrderDetailBo.setProductName(folwerAppletProductVo.getProductName());
+            folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletProductVo.getProductListPictureUrl());
+            folwerAppletOrderDetailBo.setOrderPrice(folwerAppletProductVo.getOriPrice());
+            folwerAppletOrderDetailBo.setNumber(Long.valueOf(bo.getProdCount()));
+            folwerAppletOrderDetailBos.add(folwerAppletOrderDetailBo);
+        }
+        //购物车购买
+        if(bo.getBasketIds() != null){
+            for (Long basketId : bo.getBasketIds()) {
+                FolwerAppletBasketVo basketVo = basketService.queryById(basketId);
+                if (basketVo == null){
+                    throw new Exception("购物车不存在");
+                }
+                FolwerAppletProductVo productVo = productService.queryById(basketVo.getProdId());
+                if (productVo == null){
+                    throw new Exception("商品不存在");
+                }
+//                productVos.add(productVo);
+                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
+                total = Arith.add(total,price);
+                transfee = Arith.add(transfee, Arith.mul(productVo.getDeliveryPrice(), basketVo.getBasketCount()));
+
+                //订单详情
+                FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
+//                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
+                folwerAppletOrderDetailBo.setProductName(productVo.getProductName());
+                folwerAppletOrderDetailBo.setProductListPictureUrl(productVo.getProductListPictureUrl());
+                folwerAppletOrderDetailBo.setOrderPrice(productVo.getOriPrice());
+                folwerAppletOrderDetailBo.setNumber(basketVo.getBasketCount());
+                folwerAppletOrderDetailBos.add(folwerAppletOrderDetailBo);
+            }
+
+            if(bo.getUserChangeCoupon() != null){
+                //0:满减
+                if(bo.getUserChangeCoupon().equals(0)){
+                    MarketingCouponVo marketingCouponVo = marketingCouponService.queryById(Long.valueOf(bo.getCouponId()));
+                    derlinePrice = marketingCouponVo.getCouponSum().doubleValue();
+                }else if(bo.getUserChangeCoupon().equals(1)){       //1：花券
+//                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+//                    OneselfMemberLevelPrivilegeVo oneselfMemberLevelPrivilegeVo = oneselfMemberLevelPrivilegeService.queryById(Long.valueOf(bo.getCouponId()));
+//                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
+                    List<Map<String, String> > couponIds = bo.getCouponIds();
+                    int count = 0;
+                    for (Map<String, String> map : couponIds) {
+                        for (String key: map.keySet()){
+                            FolwerAppletProductVo productVo = productService.queryById(Long.valueOf(key));
+                            derlinePrice = Arith.add(derlinePrice, productVo.getOriPrice());
+                        }
+                        count += 1;
+                    }
+                }
+            }
+        }
+
+        FolwerAppletOrderBo orderBo = new FolwerAppletOrderBo();
+        orderBo.setUserId(bo.getUserId());
+        orderBo.setUserName(appletUserInformationVo.getName());
+        orderBo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
+
+        orderBo.setTotal((long) total);
+        orderBo.setActualTotal((long)Arith.sub(total, derlinePrice));
+        orderBo.setRemarks(bo.getRemarks());
+        orderBo.setStatus(0L);
+        FolwerDeliveryVo folwerDeliveryVo = deliveryService.queryById(bo.getDvyId());
+        orderBo.setDeliveryMode(folwerDeliveryVo.getDvyType());
+        orderBo.setDvyId(bo.getDvyId());
+        orderBo.setDvyName(folwerDeliveryVo.getDvyName());
+        //是否分账
+        orderBo.setIsProfitSharing(0L);
+        //物流单号
+//        bo.setDvyFlowId();
+        orderBo.setFreightAmount((long) transfee);
+        FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(bo.getAddrId());
+        orderBo.setAddrOrderId(bo.getAddrId());
+
+        FolwerAppletOrder add = MapstructUtils.convert(orderBo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
-            bo.setOrderId(add.getOrderId());
+            orderBo.setOrderId(add.getOrderId());
+            for (FolwerAppletOrderDetailBo folwerAppletOrderDetailBo : folwerAppletOrderDetailBos){
+                folwerAppletOrderDetailBo.setOrderId(orderBo.getOrderId().toString());
+                //商品详情插入
+                Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
+            }
+            //放入缓存
+            FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
+            RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo, Duration.ofMinutes(15));
         }
         return flag;
     }
@@ -182,129 +304,129 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         return baseMapper.updateById(update) > 0;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception {
-        FolwerAppletOrderBo bo = new FolwerAppletOrderBo();
-        //订单ID
-//        bo.setOrderId(snowflake.nextId());
-//        LoginUser user = LoginHelper.getLoginUser();
-        bo.setUserId(orderParam.getUserId());
-        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(orderParam.getUserId());
-        bo.setUserName(appletUserInformationVo.getName());
-        bo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
-        // 组装获取用户提交的购物车商品项
-        List<FolwerAppletProductVo> shopCartItems = this.getShopCartItemsByOrderItems(orderParam.getBasketIds(),orderParam.getProductItem(),orderParam.getUserId());
-        if (CollectionUtil.isEmpty(shopCartItems)) {
-            throw new Exception("请选择您需要的商品");
-        }
-        //总价
-        double total = 0.0;
-        //折扣价
-        double derlinePrice = 0.0;
-        //运费
-        double transfee = 0.0;
-        //购物车商品总数
-        int totalCount = 0;
-        List<Double> productPriceList = new ArrayList<Double>();
-        List<FolwerAppletOrderDetailVo> orderDetailVoList = null;
-        for (FolwerAppletProductVo shopCartItem : shopCartItems){
-            // 获取sku信息
-            FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(shopCartItem.getSkuId());
-            if (shopCartItem == null || folwerSkuVo == null) {
-                throw new Exception("购物车包含无法识别的商品");
-            }
-            if (shopCartItem.getStatus() != 1 || folwerSkuVo.getStatus() != 1) {
-                throw new Exception("商品[" + shopCartItem.getProductName() + "]已下架");
-            }
-            //订单详情
-            FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
-            folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
-            folwerAppletOrderDetailBo.setProductName(shopCartItem.getProductName());
-            folwerAppletOrderDetailBo.setProductListPictureUrl(shopCartItem.getProductListPictureUrl());
-            folwerAppletOrderDetailBo.setOrderPrice(shopCartItem.getOriPrice());
-            double price = 0.0;
-            if (!CollectionUtil.isEmpty(orderParam.getBasketIds()) && orderParam.getProductItem() == null) {
-                FolwerAppletBasketBo folwerAppletBasketBo = new FolwerAppletBasketBo();
-                folwerAppletBasketBo.setProdId(shopCartItem.getId());
-                int count = Math.toIntExact(basketService.queryList(folwerAppletBasketBo).get(0).getBasketCount());
-                price = Arith.mul(shopCartItem.getOriPrice(), count);
-                totalCount = (int) Arith.add(count, totalCount);
-                folwerAppletOrderDetailBo.setNumber((long) count);
-            }else {
-                price = Arith.mul(shopCartItem.getOriPrice(), orderParam.getProdCount());
-                totalCount = orderParam.getProdCount();
-                folwerAppletOrderDetailBo.setNumber(Long.valueOf(orderParam.getProdCount()));
-            }
-            folwerAppletOrderDetailBo.setSubtotal((long) price);
-
-            // 优惠 （未完）
-            if( orderParam.getUserChangeCoupon().equals(0)){        //-1:不参与优惠，0:满减，1：花券
-                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
-                //查询优惠券信息
-            }
-            else if (orderParam.getUserChangeCoupon().equals(1)){
-                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
-                //查询优惠券信息
-
-            } else if (orderParam.getUserChangeCoupon().equals(-1)) {
-
-            }
-            //运费相加
-            total = Arith.add(price, shopCartItem.getDeliveryPrice());
-
-            //运费
-            transfee = Arith.add(shopCartItem.getDeliveryPrice(), transfee);
-
-            //商品详情插入
-            Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
-            if (b){
-                orderDetailVoList = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
-            }
-        }
-        bo.setTotal((long) total);
-//        bo.setActualTotal((long) derlinePrice);
-        bo.setRemarks(orderParam.getRemarks());
-        bo.setStatus(0L);
-        FolwerDeliveryVo folwerDeliveryVo = deliveryService.queryById(orderParam.getDvyId());
-        bo.setDeliveryMode(folwerDeliveryVo.getDvyType());
-        bo.setDvyId(orderParam.getDvyId());
-        bo.setDvyName(folwerDeliveryVo.getDvyName());
-        //是否分账
-        bo.setIsProfitSharing(0L);
-        //物流单号
-//        bo.setDvyFlowId();
-        bo.setFreightAmount((long) transfee);
-        FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(orderParam.getAddrId());
-        bo.setAddrOrderId(orderParam.getAddrId());
-
-        FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
-        validEntityBeforeSave(add);
-        boolean flag = baseMapper.insertOrUpdate(add);
-
-        FolwerAppletOrderVo folwerAppletOrderVo = new FolwerAppletOrderVo();
-        if (flag) {
-            bo.setOrderId(add.getOrderId());
-            folwerAppletOrderVo.setOrderDetails(orderDetailVoList);
-            //放入缓存
-//            this.putConfirmOrderCache(orderParam.toString(), folwerAppletOrderVo);
-
-            FolwerAppletOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
-            if (cacheObject != null){
-                boolean b = RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
-                if (b){
-                    RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
-                }
-            }else {
-                RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
-            }
-
-
-        }
-
-
-        return folwerAppletOrderVo;
-    }
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception {
+//        FolwerAppletOrderBo bo = new FolwerAppletOrderBo();
+//        //订单ID
+////        bo.setOrderId(snowflake.nextId());
+////        LoginUser user = LoginHelper.getLoginUser();
+//        bo.setUserId(orderParam.getUserId());
+//        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(orderParam.getUserId());
+//        bo.setUserName(appletUserInformationVo.getName());
+//        bo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
+//        // 组装获取用户提交的购物车商品项
+//        List<FolwerAppletProductVo> shopCartItems = this.getShopCartItemsByOrderItems(orderParam.getBasketIds(),orderParam.getProductItem(),orderParam.getUserId());
+//        if (CollectionUtil.isEmpty(shopCartItems)) {
+//            throw new Exception("请选择您需要的商品");
+//        }
+//        //总价
+//        double total = 0.0;
+//        //折扣价
+//        double derlinePrice = 0.0;
+//        //运费
+//        double transfee = 0.0;
+//        //购物车商品总数
+//        int totalCount = 0;
+//        List<Double> productPriceList = new ArrayList<Double>();
+//        List<FolwerAppletOrderDetailVo> orderDetailVoList = null;
+//        for (FolwerAppletProductVo shopCartItem : shopCartItems){
+//            // 获取sku信息
+//            FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(shopCartItem.getSkuId());
+//            if (shopCartItem == null || folwerSkuVo == null) {
+//                throw new Exception("购物车包含无法识别的商品");
+//            }
+//            if (shopCartItem.getStatus() != 1 || folwerSkuVo.getStatus() != 1) {
+//                throw new Exception("商品[" + shopCartItem.getProductName() + "]已下架");
+//            }
+//            //订单详情
+//            FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
+//            folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
+//            folwerAppletOrderDetailBo.setProductName(shopCartItem.getProductName());
+//            folwerAppletOrderDetailBo.setProductListPictureUrl(shopCartItem.getProductListPictureUrl());
+//            folwerAppletOrderDetailBo.setOrderPrice(shopCartItem.getOriPrice());
+//            double price = 0.0;
+//            if (!CollectionUtil.isEmpty(orderParam.getBasketIds()) && orderParam.getProductItem() == null) {
+//                FolwerAppletBasketBo folwerAppletBasketBo = new FolwerAppletBasketBo();
+//                folwerAppletBasketBo.setProdId(shopCartItem.getId());
+//                int count = Math.toIntExact(basketService.queryList(folwerAppletBasketBo).get(0).getBasketCount());
+//                price = Arith.mul(shopCartItem.getOriPrice(), count);
+//                totalCount = (int) Arith.add(count, totalCount);
+//                folwerAppletOrderDetailBo.setNumber((long) count);
+//            }else {
+//                price = Arith.mul(shopCartItem.getOriPrice(), orderParam.getProdCount());
+//                totalCount = orderParam.getProdCount();
+//                folwerAppletOrderDetailBo.setNumber(Long.valueOf(orderParam.getProdCount()));
+//            }
+//            folwerAppletOrderDetailBo.setSubtotal((long) price);
+//
+//            // 优惠 （未完）
+//            if( orderParam.getUserChangeCoupon().equals(0)){        //-1:不参与优惠，0:满减，1：花券
+//                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
+//                //查询优惠券信息
+//            }
+//            else if (orderParam.getUserChangeCoupon().equals(1)){
+//                Long CouponId = orderParam.getCouponIds().get(shopCartItem.getId());
+//                //查询优惠券信息
+//
+//            } else if (orderParam.getUserChangeCoupon().equals(-1)) {
+//
+//            }
+//            //运费相加
+//            total = Arith.add(price, shopCartItem.getDeliveryPrice());
+//
+//            //运费
+//            transfee = Arith.add(shopCartItem.getDeliveryPrice(), transfee);
+//
+//            //商品详情插入
+//            Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
+//            if (b){
+//                orderDetailVoList = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
+//            }
+//        }
+//        bo.setTotal((long) total);
+////        bo.setActualTotal((long) derlinePrice);
+//        bo.setRemarks(orderParam.getRemarks());
+//        bo.setStatus(0L);
+//        FolwerDeliveryVo folwerDeliveryVo = deliveryService.queryById(orderParam.getDvyId());
+//        bo.setDeliveryMode(folwerDeliveryVo.getDvyType());
+//        bo.setDvyId(orderParam.getDvyId());
+//        bo.setDvyName(folwerDeliveryVo.getDvyName());
+//        //是否分账
+//        bo.setIsProfitSharing(0L);
+//        //物流单号
+////        bo.setDvyFlowId();
+//        bo.setFreightAmount((long) transfee);
+//        FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(orderParam.getAddrId());
+//        bo.setAddrOrderId(orderParam.getAddrId());
+//
+//        FolwerAppletOrder add = MapstructUtils.convert(bo, FolwerAppletOrder.class);
+//        validEntityBeforeSave(add);
+//        boolean flag = baseMapper.insertOrUpdate(add);
+//
+//        FolwerAppletOrderVo folwerAppletOrderVo = new FolwerAppletOrderVo();
+//        if (flag) {
+//            bo.setOrderId(add.getOrderId());
+//            folwerAppletOrderVo.setOrderDetails(orderDetailVoList);
+//            //放入缓存
+////            this.putConfirmOrderCache(orderParam.toString(), folwerAppletOrderVo);
+//
+//            FolwerAppletOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
+//            if (cacheObject != null){
+//                boolean b = RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId());
+//                if (b){
+//                    RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
+//                }
+//            }else {
+//                RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + orderParam.getUserId(), folwerAppletOrderVo, Duration.ofMinutes(15));
+//            }
+//
+//
+//        }
+//
+//
+//        return folwerAppletOrderVo;
+//    }
 
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {

@@ -33,6 +33,16 @@ public class FolwerAppletCreditOrderDetail extends TenantEntity {
     private String orderId;
 
     /**
+     * 商品ID
+     */
+    private Long productId;
+
+    /**
+     * SKU_ID
+     */
+    private Long skuId;
+
+    /**
      * 商品名称
      */
     private String productName;

@@ -88,10 +88,10 @@ public class FolwerCreditGetrecordsServiceImpl implements IFolwerCreditGetrecord
         lqw.eq(bo.getCreditSourId() != null, FolwerCreditGetrecords::getCreditSourId, bo.getCreditSourId());
         lqw.eq(bo.getMemberLevelId() != null, FolwerCreditGetrecords::getMemberLevelId, bo.getMemberLevelId());
         lqw.eq(StringUtils.isNotBlank(bo.getGetTotal()), FolwerCreditGetrecords::getGetTotal, bo.getGetTotal());
-        lqw.eq(bo.getGetTime() != null, FolwerCreditGetrecords::getGetTime, bo.getGetTime());
+//        lqw.eq(bo.getGetTime() != null, FolwerCreditGetrecords::getGetTime, bo.getGetTime());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerCreditGetrecords::getRemarks, bo.getRemarks());
         lqw.eq(bo.getStatus() != null, FolwerCreditGetrecords::getStatus, bo.getStatus());
-        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditGetrecords::getCreateTime, bo.getStartTime(), bo.getEndTime());
+        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCreditGetrecords::getGetTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }
 

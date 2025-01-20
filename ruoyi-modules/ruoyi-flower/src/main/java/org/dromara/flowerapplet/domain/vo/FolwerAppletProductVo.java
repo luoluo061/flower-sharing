@@ -13,7 +13,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -194,6 +194,12 @@ public class FolwerAppletProductVo implements Serializable {
      */
     @ExcelProperty(value = "商品评论")
     private String remarks;
+
+    /**
+     * 商品规格
+     */
+    @ExcelProperty(value = "商品规格")
+    private List<FolwerAppletSkuVo> skuList;
 
 
 }

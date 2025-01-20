@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
+import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
@@ -31,6 +34,8 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 
     private final FolwerAppletProductMapper baseMapper;
 
+    private final IFolwerAppletSkuService folwerAppletSkuService;
+
     /**
      * 查询小程序端商品管理
      *
@@ -39,7 +44,16 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
      */
     @Override
     public FolwerAppletProductVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        FolwerAppletProductVo folwerAppletProductVo = baseMapper.selectVoById(id);
+        if (folwerAppletProductVo != null) {
+            if (folwerAppletProductVo.getNormsType().equals(1L)) {
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setProdId(folwerAppletProductVo.getId());
+                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                folwerAppletProductVo.setSkuList(folwerAppletSkuVos);
+            }
+        }
+        return folwerAppletProductVo;
     }
 
     /**
@@ -54,6 +68,16 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         stringToLong(bo);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if (!result.getRecords().isEmpty()) {
+            result.getRecords().forEach(item -> {
+                if (item.getNormsType().equals(1L)) {
+                    FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                    folwerAppletSkuBo.setProdId(item.getId());
+                    List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                    item.setSkuList(folwerAppletSkuVos);
+                }
+            });
+        }
         return TableDataInfo.build(result);
     }
 
@@ -67,7 +91,16 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     public List<FolwerAppletProductVo> queryList(FolwerAppletProductBo bo) {
         stringToLong(bo);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletProductVo> productVos = baseMapper.selectVoList(lqw);
+        for (FolwerAppletProductVo productVo : productVos) {
+            if (productVo.getNormsType().equals(1L)) {
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setProdId(productVo.getId());
+                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                productVo.setSkuList(folwerAppletSkuVos);
+            }
+        }
+        return productVos;
     }
 
     private void stringToLong(FolwerAppletProductBo bo) {

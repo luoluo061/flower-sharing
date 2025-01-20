@@ -112,6 +112,7 @@ public class FolwerCreditOrderServiceImpl implements IFolwerCreditOrderService {
     private LambdaQueryWrapper<FolwerCreditOrder> buildQueryWrapper(FolwerCreditOrderBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FolwerCreditOrder> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getOrderId() != null, FolwerCreditOrder::getOrderId, bo.getOrderId());
         lqw.eq(bo.getUserId() != null, FolwerCreditOrder::getUserId, bo.getUserId());
         lqw.like(StringUtils.isNotBlank(bo.getUserName()), FolwerCreditOrder::getUserName, bo.getUserName());
         lqw.eq(bo.getMemberLevelId() != null, FolwerCreditOrder::getMemberLevelId, bo.getMemberLevelId());

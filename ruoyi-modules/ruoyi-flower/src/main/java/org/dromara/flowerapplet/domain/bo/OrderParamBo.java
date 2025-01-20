@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2018-2999 广州市蓝海创新科技有限公司 All rights reserved.
- *
- * https://www.mall4j.com/
- *
- * 未经允许，不可做商业用途！
- *
- * 版权所有，侵权必究！
- */
-
 package org.dromara.flowerapplet.domain.bo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -38,6 +28,9 @@ public class OrderParamBo {
 	@Schema(description = "立即购买时提交的商品项" )
 	private Long productItem;
 
+    @Schema(description = "规格ID" )
+    private Long skuId;
+
 	@Schema(description = "地址ID，0为默认地址" ,required=true)
 //	@NotNull(message = "地址不能为空")
 	private Long addrId;
@@ -54,8 +47,14 @@ public class OrderParamBo {
 	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
 	private Integer userChangeCoupon;
 
-	@Schema(description = "优惠券id数组,商品ID+优惠券ID" )
-	private Map<Long, Long> couponIds;
+    @Schema(description = "满减ID" )
+    private String couponId;
+
+    @Schema(description = "优惠券使用数量" )
+    private Integer couponCount;
+
+    @Schema(description = "优惠券id数组, 商品ID+优惠券ID" )
+	private List<Map<String, String>> couponIds;
 
 //	@Schema(description = "每次订单提交时的uuid" )
 //	private String uuid;

@@ -55,7 +55,7 @@ public interface IFolwerAppletOrderService {
      * @param bo 订单
      * @return 是否新增成功
      */
-    Boolean insertByBo(FolwerAppletOrderBo bo);
+    Boolean insertByBo(OrderParamBo bo) throws Exception;
 
     /**
      * 修改订单
@@ -80,7 +80,7 @@ public interface IFolwerAppletOrderService {
      * @param orderParam
      * @return
      */
-    FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception;
+//    FolwerAppletOrderVo createOrder(OrderParamBo orderParam) throws Exception;
 
     /***
      * 提交订单

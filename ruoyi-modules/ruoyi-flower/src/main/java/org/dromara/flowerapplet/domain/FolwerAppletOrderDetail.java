@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -36,6 +37,16 @@ public class FolwerAppletOrderDetail extends TenantEntity {
      * 商品名称
      */
     private String productName;
+
+    /**
+     * 商品ID
+     */
+    private Long productId;
+
+    /**
+     * SKU_ID
+     */
+    private Long skuId;
 
     /**
      * 商品列表图

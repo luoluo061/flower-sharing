@@ -6,6 +6,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
+
 /**
  * 积分商品管理业务对象 folwer_credit_product
  *
@@ -15,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = FolwerCreditProduct.class, reverseConvertGenerate = false)
-public class FolwerCreditProductBo extends BaseEntity {
+public class FolwerCreditProductBo extends BaseEntity implements Serializable{
 
     /**
      * 主键
@@ -89,6 +91,11 @@ public class FolwerCreditProductBo extends BaseEntity {
     private Long weight;
 
     /**
+     * 重量字符串
+     */
+    private String weightStr;
+
+    /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
     private Long deliveryMode;
@@ -97,6 +104,11 @@ public class FolwerCreditProductBo extends BaseEntity {
      * 快递费
      */
     private Long deliveryPrice;
+
+    /**
+     * 快递费字符串
+     */
+    private String deliveryPriceStr;
 
     /**
      * 默认是1，表示正常状态, -1表示删除, 0下架

@@ -1,5 +1,7 @@
 package org.dromara.flowerapplet.domain.vo;
 
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flowerapplet.domain.FolwerAppletCreditOrderDetail;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -41,6 +43,18 @@ public class FolwerAppletCreditOrderDetailVo implements Serializable {
     private String orderId;
 
     /**
+     * 商品ID
+     */
+    @ExcelProperty(value = "商品ID")
+    private Long productId;
+
+    /**
+     * SKU_ID
+     */
+    @ExcelProperty(value = "SKU_ID")
+    private Long skuId;
+
+    /**
      * 商品名称
      */
     @ExcelProperty(value = "商品名称")
@@ -53,10 +67,21 @@ public class FolwerAppletCreditOrderDetailVo implements Serializable {
     private String productListPictureUrl;
 
     /**
+     * 商品图片
+     */
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productListPictureUrl")
+    private String productPictureUrlUrl;
+
+    /**
      * 积分
      */
     @ExcelProperty(value = "积分")
     private Long orderPrice;
+
+    /**
+     * 商品SKU
+     */
+    private String productSKU;
 
     /**
      * 数量

@@ -75,7 +75,7 @@ public class FolwerCreditProductController extends BaseController {
     @Log(title = "积分商品管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerCreditProductBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerCreditProductBo bo) throws Exception {
         return toAjax(folwerCreditProductService.insertByBo(bo));
     }
 
@@ -86,7 +86,7 @@ public class FolwerCreditProductController extends BaseController {
     @Log(title = "积分商品管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerCreditProductBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerCreditProductBo bo) throws Exception {
         return toAjax(folwerCreditProductService.updateByBo(bo));
     }
 

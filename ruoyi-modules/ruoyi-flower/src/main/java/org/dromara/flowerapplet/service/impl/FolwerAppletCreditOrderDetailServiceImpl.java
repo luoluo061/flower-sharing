@@ -1,5 +1,7 @@
 package org.dromara.flowerapplet.service.impl;
 
+
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +10,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.bo.FolwerSkuBo;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditProductVo;
+import org.dromara.flowerapplet.service.IFolwerAppletCreditProductService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderDetailBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCreditOrderDetailVo;
@@ -31,6 +38,10 @@ public class FolwerAppletCreditOrderDetailServiceImpl implements IFolwerAppletCr
 
     private final FolwerAppletCreditOrderDetailMapper baseMapper;
 
+    private final IFolwerAppletCreditProductService folwerAppletCreditProductService;
+
+    private final IFolwerSkuService folwerSkuService;
+
     /**
      * 查询积分订单详细
      *
@@ -39,7 +50,24 @@ public class FolwerAppletCreditOrderDetailServiceImpl implements IFolwerAppletCr
      */
     @Override
     public FolwerAppletCreditOrderDetailVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        FolwerAppletCreditOrderDetailVo creditOrderDetailVo = baseMapper.selectVoById(id);
+        if (creditOrderDetailVo != null){
+            FolwerAppletCreditProductVo creditProductVo = folwerAppletCreditProductService.queryById(creditOrderDetailVo.getProductId());
+            if (creditProductVo == null){
+                try {
+                    throw new Exception("商品不存在");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (creditProductVo.getNormsType() == 1){
+                FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(creditOrderDetailVo.getSkuId());
+                creditOrderDetailVo.setProductSKU(folwerSkuVo.getColour() + ", " + folwerSkuVo.getWeight() + ", " + folwerSkuVo.getSize());
+            }else {
+                creditOrderDetailVo.setProductSKU("默认规格");
+            }
+        }
+        return creditOrderDetailVo;
     }
 
     /**
@@ -53,6 +81,24 @@ public class FolwerAppletCreditOrderDetailServiceImpl implements IFolwerAppletCr
     public TableDataInfo<FolwerAppletCreditOrderDetailVo> queryPageList(FolwerAppletCreditOrderDetailBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletCreditOrderDetail> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCreditOrderDetailVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        if (result != null){
+            result.getRecords().forEach(item -> {
+                FolwerAppletCreditProductVo folwerAppletCreditProductVo = folwerAppletCreditProductService.queryById(item.getProductId());
+                if (folwerAppletCreditProductVo == null){
+                    try {
+                        throw new Exception("商品不存在");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if (folwerAppletCreditProductVo.getNormsType() == 1){
+                    FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(item.getSkuId());
+                    item.setProductSKU(folwerSkuVo.getColour() + ", " + folwerSkuVo.getWeight() + ", " + folwerSkuVo.getSize());
+                }else {
+                    item.setProductSKU("默认规格");
+                }
+            });
+        }
         return TableDataInfo.build(result);
     }
 
@@ -65,7 +111,26 @@ public class FolwerAppletCreditOrderDetailServiceImpl implements IFolwerAppletCr
     @Override
     public List<FolwerAppletCreditOrderDetailVo> queryList(FolwerAppletCreditOrderDetailBo bo) {
         LambdaQueryWrapper<FolwerAppletCreditOrderDetail> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletCreditOrderDetailVo> creditOrderDetailVos = baseMapper.selectVoList(lqw);
+        if (creditOrderDetailVos != null){
+            creditOrderDetailVos.forEach(item -> {
+                FolwerAppletCreditProductVo folwerAppletCreditProductVo = folwerAppletCreditProductService.queryById(item.getProductId());
+                if (folwerAppletCreditProductVo == null){
+                    try {
+                        throw new Exception("商品不存在");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if (folwerAppletCreditProductVo.getNormsType() == 1){
+                    FolwerSkuVo folwerSkuVo = folwerSkuService.queryById(item.getSkuId());
+                    item.setProductSKU(folwerSkuVo.getColour() + ", " + folwerSkuVo.getWeight() + ", " + folwerSkuVo.getSize());
+                }else {
+                    item.setProductSKU("默认规格");
+                }
+            });
+        }
+        return creditOrderDetailVos;
     }
 
     private LambdaQueryWrapper<FolwerAppletCreditOrderDetail> buildQueryWrapper(FolwerAppletCreditOrderDetailBo bo) {
@@ -88,7 +153,9 @@ public class FolwerAppletCreditOrderDetailServiceImpl implements IFolwerAppletCr
      */
     @Override
     public Boolean insertByBo(FolwerAppletCreditOrderDetailBo bo) {
-        FolwerAppletCreditOrderDetail add = MapstructUtils.convert(bo, FolwerAppletCreditOrderDetail.class);
+//        FolwerAppletCreditOrderDetail add = MapstructUtils.convert(bo, FolwerAppletCreditOrderDetail.class);
+        FolwerAppletCreditOrderDetail add = new FolwerAppletCreditOrderDetail();
+        BeanUtil.copyProperties(bo, add);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
