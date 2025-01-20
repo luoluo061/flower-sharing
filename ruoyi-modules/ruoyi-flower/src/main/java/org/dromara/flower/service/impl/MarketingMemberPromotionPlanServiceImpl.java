@@ -151,7 +151,6 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
             .map(Long::parseLong)
             .collect(Collectors.toList());
 
-
         // 新增的数据
         List<Long> boDetailsId = Arrays.stream(bo.getCategoryDetailsId().split(",")).map(Long::parseLong).collect(Collectors.toList());
 
@@ -229,6 +228,36 @@ public class MarketingMemberPromotionPlanServiceImpl implements IMarketingMember
         MarketingMemberPromotionPlan memberPromotionPlan = baseMapper.selectById(id);
         if (ObjectUtils.isEmpty(memberPromotionPlan))
             throw  new ServiceException("该记录不存在，请刷新");
+
+
+        // 切换为启用状态
+        if (memberPromotionPlan.getStatus().equals(0L)){
+            QueryWrapper<MarketingMemberPromotionPlan> queryWrapper = new QueryWrapper<>();
+            queryWrapper.notIn("id",id);
+            List<MarketingMemberPromotionPlan> marketingMemberPromotionPlans = baseMapper.selectList(queryWrapper);
+
+            // 数据库其他的数据
+            List<Long> collect = marketingMemberPromotionPlans.stream().map(MarketingMemberPromotionPlan::getCategoryDetailsId)
+                .flatMap(x -> Stream.of(x.split(",")))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+
+            List<Long> collect1 = Arrays.stream(memberPromotionPlan.getCategoryDetailsId().split(",")).map(Long::parseLong).collect(Collectors.toList());
+            if (collect1.stream().allMatch(collect::contains)){
+                throw  new ServiceException(memberPromotionPlan.getCategoryDetailsName()+"中已有生效的会员推广计划!!!");
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+
 
         Long status = memberPromotionPlan.getStatus();
         status=((status == 0)?1L:0);

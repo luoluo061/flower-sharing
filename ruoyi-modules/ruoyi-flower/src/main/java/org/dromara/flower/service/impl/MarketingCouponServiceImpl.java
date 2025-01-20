@@ -321,9 +321,6 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
                 baseMapper.update(updateWrapper);
                 continue;
             }
-            //2. 优惠卷份额已领取完了
-   /*         if (marketingCouponVo.getSurplusNumber().equals(0))
-                continue;*/
 
 
 

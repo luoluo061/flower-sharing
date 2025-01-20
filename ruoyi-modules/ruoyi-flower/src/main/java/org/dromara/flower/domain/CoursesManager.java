@@ -101,5 +101,8 @@ public class CoursesManager extends TenantEntity {
      */
     private Long coverUrlId;
 
-
+    /**
+     * 更新集数
+     */
+    private Long updateNum;
 }

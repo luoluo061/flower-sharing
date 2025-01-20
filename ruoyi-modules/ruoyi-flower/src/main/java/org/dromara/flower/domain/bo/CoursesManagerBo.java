@@ -1,6 +1,7 @@
 package org.dromara.flower.domain.bo;
 
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.flower.domain.CoursesManager;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
@@ -125,4 +126,9 @@ public class CoursesManagerBo extends BaseEntity {
      */
     private String endDate;
 
+
+    /**
+     * 更新集数
+     */
+    private Long updateNum;
 }

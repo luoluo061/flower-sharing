@@ -160,4 +160,10 @@ public class CoursesManagerVo implements Serializable {
     @ExcelProperty(value = "课程详情 富文本")
     private CoursesManagerDetailVo detailVo;
 
+    /**
+     * 更新集数
+     */
+    @ExcelProperty(value = "更新集数")
+    private Long updateNum;
+
 }
