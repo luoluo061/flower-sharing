@@ -104,10 +104,15 @@ public class MarketingMemberPromotionPlanController extends BaseController {
     }
 
 
+    /**
+     * 切换推广计划的状态
+     * @param id
+     * @return
+     */
     @SaCheckPermission("flower:memberPromotionPlan:edit")
     @Log(title = "营销推广-会员推广计划",businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
-    public R<Void> editStatus(@NotBlank(message = "id不能为空") @PathVariable Long id){
+    public R<Void> editStatus(@NotNull(message = "id不能为空") @PathVariable Long id){
         return toAjax(marketingMemberPromotionPlanService.updateStatus(id));
     }
 
