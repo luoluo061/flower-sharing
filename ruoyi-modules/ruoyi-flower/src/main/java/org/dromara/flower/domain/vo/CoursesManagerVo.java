@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
@@ -115,7 +116,7 @@ public class CoursesManagerVo implements Serializable {
      * 价格
      */
     @ExcelProperty(value = "价格")
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 状态 0 否(下架) 1 是(上架)

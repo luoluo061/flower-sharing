@@ -367,21 +367,50 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
      */
     @Override
     public R<Map<String, String>> myPoints() {
+        // 获取登录用户信息
         LoginUser loginUser = LoginHelper.getLoginUser();
-        if (loginUser != null){
-            return null;
+        if (loginUser == null) {
+            return R.ok(createEmptyResultMap());
         }
+
+        // 获取用户信息
         AppletUserInformationVo app = this.baseMapper.selectVoById(loginUser.getUserId());
+        if (app == null) {
+            return R.ok(createEmptyResultMap());
+        }
+
         // 统计兑换所有积分
-        Long count = memberPointsExchangeGoldMapper.selectPointsCount(app.getUserId());
-        Long gold = memberExchangeRecordMapper.selectExchangeRecord(app.getUserId());
-        Long credit = folwerCreditGetrecordsMapper.getReditGetrecords(app.getUserId());
+        long count = ZERO;
+        long gold = ZERO;
+        long credit = ZERO;
+
+        try {
+            count = memberPointsExchangeGoldMapper.selectPointsCount(app.getUserId());
+            gold = memberExchangeRecordMapper.selectExchangeRecord(app.getUserId());
+            credit = folwerCreditGetrecordsMapper.getReditGetrecords(app.getUserId());
+        } catch (Exception e) {
+            // 记录错误日志，避免影响主流程
+            log.error("Error fetching points data for user: {}", loginUser.getUserId(), e);
+            // 返回空结果
+            return R.ok(createEmptyResultMap());
+        }
+
+        // 构建结果Map
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("balance", String.valueOf(app.getPoints()));
         resultMap.put("today", String.valueOf(credit));
         resultMap.put("gold", String.valueOf(gold));
 
         return R.ok(resultMap);
+    }
+
+    // 创建空的结果 Map
+    private Map<String, String> createEmptyResultMap() {
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("balance", String.valueOf(ZERO));
+        resultMap.put("today", String.valueOf(ZERO));
+        resultMap.put("gold", String.valueOf(ZERO));
+        return resultMap;
     }
 
     /**
