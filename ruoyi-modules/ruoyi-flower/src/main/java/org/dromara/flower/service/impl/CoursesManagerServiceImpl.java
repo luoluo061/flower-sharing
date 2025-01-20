@@ -28,6 +28,7 @@ import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
 import org.dromara.flower.mapper.CoursesManagerDetailMapper;
 import org.dromara.flower.mapper.CoursesManagerVideoMapper;
 import org.dromara.flower.mapper.CoursesPurchaseRecordsMapper;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.system.mapper.SysOssMapper;
 import org.springframework.stereotype.Service;
@@ -122,6 +123,7 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         Page<CoursesManagerVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         // 根据当前课程类型父级id查询课程类型名称
         if (!result.getRecords().isEmpty()) {
+            LoginUser loginUser = LoginHelper.getLoginUser();
             MapResultHandler<Long, String> map = new MapResultHandler<>();
             List<Long> ids = result.getRecords().stream()
                 .filter(Objects::nonNull)
@@ -159,8 +161,21 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                     vo.setCoverUrl(resultMap.get(vo.getCoverUrlId()));
                 });
             }
+            AppletUserInformationVo app = appletUserInformationMapper.selectVoById(loginUser.getUserId());
+            for (CoursesManagerVo item : result.getRecords()) {
+                // 获取 accessIds 字段（假设是字符串）
+                String accessIds = item.getAccessIds();
 
+                // 判断 accessIds 是否包含 "12345"
+                if (accessIds != null && accessIds.contains(app.getMemberLevelId().toString())) {
+                    // 如果包含，设置 status = 1
+                    item.setAccessStatus(1);
+                }else {
+                    item.setAccessStatus(0);
+                }
+            }
         }
+
         return TableDataInfo.build(result);
     }
 
