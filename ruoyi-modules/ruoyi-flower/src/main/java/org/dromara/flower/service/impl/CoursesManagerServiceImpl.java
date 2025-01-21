@@ -23,6 +23,7 @@ import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.constant.LockKeyString;
 import org.dromara.flower.domain.CoursesManagerDetail;
+import org.dromara.flower.domain.vo.CoursesManagerDetailVo;
 import org.dromara.flower.domain.vo.CoursesManagerVideoVo;
 import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
 import org.dromara.flower.mapper.CoursesManagerDetailMapper;
@@ -183,13 +184,22 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                 .distinct()
                 .toList();
             List<CoursesManagerVideoVo> videoVoList = coursesManagerVideoMapper.selectVoByCoursesManagerIds(list);
-
+            List<CoursesManagerDetailVo> detailVos = coursesManagerDetailMapper.selectVoByCoursesManagerIds(list);
             if (!videoVoList.isEmpty()){
                 Map<Long, List<CoursesManagerVideoVo>> groupedByManagerId = videoVoList.stream()
                     .collect(Collectors.groupingBy(CoursesManagerVideoVo::getCoursesManagerId));
                 result.getRecords().forEach(v->{
                     if (groupedByManagerId.containsKey(v.getId())) {
                         v.setManagerVideos(groupedByManagerId.get(v.getId()));
+                    }
+                });
+            }
+            if (!detailVos.isEmpty()){
+                Map<Long, List<CoursesManagerDetailVo>> groupedByManager = detailVos.stream()
+                    .collect(Collectors.groupingBy(CoursesManagerDetailVo::getCoursesManagerId));
+                result.getRecords().forEach(v->{
+                    if (groupedByManager.containsKey(v.getId())) {
+                        v.setDetailVo(groupedByManager.get(v.getId()));
                     }
                 });
             }
