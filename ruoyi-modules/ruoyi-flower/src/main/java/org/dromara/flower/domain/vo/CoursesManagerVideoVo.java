@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-
 /**
  * 课程管理-视频管理-视频视图对象 courses_manager_video
  *
@@ -82,5 +81,8 @@ public class CoursesManagerVideoVo implements Serializable {
     @ExcelProperty(value = "集数")
     private Integer numberEpisode;
 
-
+    /**
+     * 更新集数
+     */
+    private Long updateNum;
 }
