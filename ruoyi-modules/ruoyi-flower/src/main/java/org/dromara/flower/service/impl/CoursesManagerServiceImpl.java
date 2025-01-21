@@ -161,17 +161,19 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                     vo.setCoverUrl(resultMap.get(vo.getCoverUrlId()));
                 });
             }
-            AppletUserInformationVo app = appletUserInformationMapper.selectVoById(loginUser.getUserId());
-            for (CoursesManagerVo item : result.getRecords()) {
-                // 获取 accessIds 字段（假设是字符串）
-                String accessIds = item.getAccessIds();
+            if ("xcx".equals(loginUser.getUserType())){
+                AppletUserInformationVo app = appletUserInformationMapper.selectVoById(loginUser.getUserId());
+                for (CoursesManagerVo item : result.getRecords()) {
+                    // 获取 accessIds 字段（假设是字符串）
+                    String accessIds = item.getAccessIds();
 
-                // 判断 accessIds 是否包含 "12345"
-                if (accessIds != null && accessIds.contains(app.getMemberLevelId().toString())) {
-                    // 如果包含，设置 status = 1
-                    item.setAccessStatus(1);
-                }else {
-                    item.setAccessStatus(0);
+                    // 判断 accessIds 是否包含 "12345"
+                    if (accessIds != null && accessIds.contains(app.getMemberLevelId().toString())) {
+                        // 如果包含，设置 status = 1
+                        item.setAccessStatus(1);
+                    }else {
+                        item.setAccessStatus(0);
+                    }
                 }
             }
         }

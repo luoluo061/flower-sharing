@@ -280,7 +280,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
 
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
-        MemberPurchaseRecordVo recordVo = this.queryById(payParam.getOrderNumbers());
+        MemberPurchaseRecordVo recordVo = baseMapper.selectVoById(payParam.getOrderNumbers());
         if (recordVo == null) {
             throw new RuntimeException("订单不存在");
         }
@@ -293,7 +293,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
             throw new RuntimeException("用户不存在");
         }
         LoginUser loginUser = LoginHelper.getLoginUser();
-        if (loginUser == null || loginUser.getUserId() != recordVo.getCreateBy()) {
+        if (loginUser == null || !Objects.equals(loginUser.getUserId(), recordVo.getCreateBy())) {
             throw new RuntimeException("支付失败");
         }
         WxPayRequest payJSAPIParam = new WxPayRequest();

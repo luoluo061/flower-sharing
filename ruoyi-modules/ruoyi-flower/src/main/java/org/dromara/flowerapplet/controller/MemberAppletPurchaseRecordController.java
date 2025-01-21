@@ -135,7 +135,7 @@ public class MemberAppletPurchaseRecordController extends BaseController {
     /**
      * 退款
      */
-    @SaCheckPermission("flower:order:refundOrder")
+    @SaCheckPermission("flower:purchaseRecord:refundOrder")
     @Log(title = "退款", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/refundOrder")
