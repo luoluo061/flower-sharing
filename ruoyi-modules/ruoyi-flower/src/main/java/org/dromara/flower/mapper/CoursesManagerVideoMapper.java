@@ -16,4 +16,6 @@ import java.util.List;
 public interface CoursesManagerVideoMapper extends BaseMapperPlus<CoursesManagerVideo, CoursesManagerVideoVo> {
 
     List<CoursesManagerVideoVo> getVideoByCoursesManagerId(@Param("id") Long id);
+
+    List<CoursesManagerVideoVo> selectVoByCoursesManagerIds(@Param("ids") List<Long> list);
 }

@@ -176,6 +176,23 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
                     }
                 }
             }
+            // 获取所有的视频集合
+            List<Long> list = result.getRecords().stream()
+                .map(CoursesManagerVo::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+            List<CoursesManagerVideoVo> videoVoList = coursesManagerVideoMapper.selectVoByCoursesManagerIds(list);
+
+            if (!videoVoList.isEmpty()){
+                Map<Long, List<CoursesManagerVideoVo>> groupedByManagerId = videoVoList.stream()
+                    .collect(Collectors.groupingBy(CoursesManagerVideoVo::getCoursesManagerId));
+                result.getRecords().forEach(v->{
+                    if (groupedByManagerId.containsKey(v.getId())) {
+                        v.setManagerVideos(groupedByManagerId.get(v.getId()));
+                    }
+                });
+            }
         }
 
         return TableDataInfo.build(result);

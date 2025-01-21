@@ -13,6 +13,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.flower.domain.CoursesManagerVideo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -166,4 +167,9 @@ public class CoursesManagerVo implements Serializable {
     @ExcelProperty(value = "更新集数")
     private Long updateNum;
 
+    /**
+     * 视频列表
+     */
+    @ExcelProperty(value = "视频列表")
+    private List<CoursesManagerVideoVo> managerVideos;
 }
