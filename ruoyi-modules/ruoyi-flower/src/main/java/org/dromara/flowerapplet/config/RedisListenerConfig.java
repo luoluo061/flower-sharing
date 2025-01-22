@@ -54,7 +54,7 @@ public class RedisListenerConfig {
     public class RedisKeyChangeSubscriber {
         // 自定义处理方法
         public void myHandleMessage(String message) {
-            System.out.println("RedisKeyChangeSubscriber Received message: " + message);
+//            System.out.println("RedisKeyChangeSubscriber Received message: " + message);
             // 在这里处理收到的消息
             String expiredKey = message.toString();
             log.info("获取数据:"+expiredKey);
@@ -95,7 +95,7 @@ public class RedisListenerConfig {
 
         // message对应redis数据的key
         public void handleMessage(String message) {
-            System.out.println("RedisKeyChangeSubscriber Received message: " + message);
+//            System.out.println("RedisKeyChangeSubscriber Received message: " + message);
             // 在这里处理收到的消息
             String expiredKey = message.toString();
             log.info("获取数据:"+expiredKey);
@@ -104,7 +104,7 @@ public class RedisListenerConfig {
                 String orderId = expiredKey.split(":")[1];
                 FolwerAppletOrderVo folwerAppletOrderVo = folwerAppletOrderService.queryById(Long.valueOf(orderId));
                 if (folwerAppletOrderVo != null){
-                    if(folwerAppletOrderVo.getStatus().equals(0L)){
+                    if(!folwerAppletOrderVo.getStatus().equals(2L)){
                         FolwerAppletOrderBo bo = new FolwerAppletOrderBo();
                         BeanUtils.copyProperties(folwerAppletOrderVo, bo);
                         bo.setStatus(2L);
@@ -122,10 +122,10 @@ public class RedisListenerConfig {
                 String orderId = expiredKey.split(":")[1];
                 FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = folwerAppletCreditOrderService.queryById(Long.valueOf(orderId));
                 if (folwerAppletCreditOrderVo != null){
-                    if(folwerAppletCreditOrderVo.getStatus().equals(0L)){
+                    if(!folwerAppletCreditOrderVo.getStatus().equals(6L)){
                         FolwerAppletCreditOrderBo bo = new FolwerAppletCreditOrderBo();
                         BeanUtils.copyProperties(folwerAppletCreditOrderVo, bo);
-                        bo.setStatus(2L);
+                        bo.setStatus(6L);
                         bo.setCancelTime(new Date());
                         bo.setCancelMsg("订单超时未支付，系统自动取消");
                         Boolean b = folwerAppletCreditOrderService.updateByBo(bo);

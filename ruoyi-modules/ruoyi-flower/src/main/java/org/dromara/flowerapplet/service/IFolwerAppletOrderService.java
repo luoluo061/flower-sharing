@@ -96,6 +96,14 @@ public interface IFolwerAppletOrderService {
      */
     R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception;
 
+
+    /***
+     * 查询订单
+     * @param orderId
+     * @return
+     */
+    FolwerAppletOrderVo queryOrder(String orderId) throws Exception;
+
     /***
      * 分账
      */

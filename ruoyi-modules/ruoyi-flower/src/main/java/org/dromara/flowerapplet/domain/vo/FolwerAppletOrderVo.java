@@ -81,6 +81,12 @@ public class FolwerAppletOrderVo implements Serializable {
     private Long payType;
 
     /**
+     * 支付回调
+     */
+    @ExcelProperty(value = "支付回调")
+    private String payCallback;
+
+    /**
      * 付款时间
      */
     @ExcelProperty(value = "付款时间")

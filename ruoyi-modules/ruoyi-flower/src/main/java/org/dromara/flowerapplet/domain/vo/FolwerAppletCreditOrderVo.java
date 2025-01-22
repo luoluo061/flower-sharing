@@ -75,7 +75,7 @@ public class FolwerAppletCreditOrderVo implements Serializable {
     /**
      * 订单状态 0:待兑换 1：已兑换 2:待发货 3:待收货 4:待评价 5:成功 6:失败
      */
-    @ExcelProperty(value = "订单状态 0:待兑换 1：已兑换 2:待发货 3:待收货 4:待评价 5:成功 6:失败")
+    @ExcelProperty(value = "订单状态 0:待兑换 1：已兑换 2:待发货 3:待收货 4:待评价 5:成功 6:关闭")
     private Long status;
 
     /**

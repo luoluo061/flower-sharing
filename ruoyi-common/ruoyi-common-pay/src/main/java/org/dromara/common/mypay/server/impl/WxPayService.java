@@ -4,7 +4,7 @@ import com.wechat.pay.java.core.exception.ValidationException;
 import com.wechat.pay.java.core.notification.NotificationConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
-import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
+import  com.wechat.pay.java.service.payments.model.Transaction;
 import com.wechat.pay.java.service.payments.jsapi.JsapiService;
 import com.wechat.pay.java.service.payments.jsapi.model.*;
 import com.wechat.pay.java.service.payments.jsapi.model.Amount;
@@ -54,6 +54,22 @@ public class WxPayService implements IPayService {
         WxJsapiResponse build = WxJsapiResponse.build(response.getPrepayId(), properties.getAppId(),
             mypayConfig.getPrivateKey(), request.getOutTradeNo());
         return build;
+    }
+
+    @Override
+    public Transaction transactionsOrder(String outTradeNo) throws Exception {
+
+        QueryOrderByOutTradeNoRequest request = new QueryOrderByOutTradeNoRequest();
+        request.setMchid(properties.getMchId());
+        request.setOutTradeNo(outTradeNo);
+        JsapiService service = mypayConfig.getJsapiService();
+        // 调用下单方法，得到应答
+        Transaction transaction = service.queryOrderByOutTradeNo(request);
+        if (log.isInfoEnabled()) {
+            log.info("账户:{},订单号:{}",
+                properties.getMchId(), request.getOutTradeNo());
+        }
+        return transaction;
     }
 
     @Override

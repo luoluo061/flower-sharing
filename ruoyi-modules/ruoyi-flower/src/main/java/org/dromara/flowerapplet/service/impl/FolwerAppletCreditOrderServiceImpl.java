@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -195,6 +196,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
         add.setRemarks(bo.getRemarks());
         add.setFreightAmount(folwerAppletCreditProductVo.getDeliveryPrice());
         add.setStatus(0L);
+        add.setFreightAmount(folwerAppletCreditProductVo.getDeliveryPrice());
 
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
@@ -215,7 +217,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
             folwerAppletCreditOrderVo.setFolwerAppletCreditOrderDetailList(folwerAppletCreditOrderDetailService.queryList(folwerAppletCreditOrderDetailBo));
 
             //放入缓存
-            RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId(), folwerAppletCreditOrderVo, Duration.ofMinutes(15));
+            RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId(), add.getOrderId(), Duration.ofMinutes(15));
 //            FolwerAppletCreditOrderVo cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + bo.getUserId());
 //            if (cacheObject != null){
 //                boolean deleteObject = RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + add.getOrderId());
@@ -240,6 +242,9 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     public Boolean updateByBo(FolwerAppletCreditOrderBo bo) {
         FolwerAppletCreditOrder update = MapstructUtils.convert(bo, FolwerAppletCreditOrder.class);
         validEntityBeforeSave(update);
+        if (update.getStatus() == 0L && RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + update.getOrderId()) != null){
+            RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + update.getOrderId(), update.getOrderId(), true);
+        }
         return baseMapper.updateById(update) > 0;
     }
 
@@ -269,25 +274,27 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     public String submitOrders(PayParam payParam) throws Exception {
         FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(payParam.getOrderNumbers());
         if(folwerAppletCreditOrderVo == null){
-            throw new Exception("订单不存在");
+            return "订单不存在";
         }
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletCreditOrderVo.getUserId());
         if (appletUserInformationVo == null){
-            throw new Exception("用户不存在");
+            return "用户不存在";
         }
-        if (folwerAppletCreditOrderVo.getStatus() != 0){
-            throw new Exception("订单状态异常");
+        Long cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId());
+        if (cacheObject == null){
+            return "订单状态异常";
         }
         double sub = Arith.sub(appletUserInformationVo.getPoints(), folwerAppletCreditOrderVo.getActualTotal());
         if (sub < 0){
-            throw new Exception("积分不足");
+            return "积分不足";
+
         }
         if (folwerAppletCreditOrderVo.getStatus() == 0){
-            AppletUserInformationBo  appletUserInformationBo = MapstructUtils.convert(folwerAppletCreditOrderVo, AppletUserInformationBo.class);
+            AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
             appletUserInformationBo.setPoints((long) sub);
             Boolean b = appletUserInformationService.updateByBo(appletUserInformationBo);
             if (b){
-                FolwerAppletCreditOrderBo add = MapstructUtils.convert(folwerAppletCreditOrderVo, FolwerAppletCreditOrderBo.class);
+                FolwerAppletCreditOrderBo add = BeanUtil.copyProperties(folwerAppletCreditOrderVo, FolwerAppletCreditOrderBo.class);
                 add.setStatus(1L);
                 add.setPayTime(new Date());
                 Boolean updateCreditOrderByBo = this.updateByBo(add);
@@ -300,6 +307,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
                     folwerAppletCreditGetrecordsBo.setGetTotal(String.valueOf(folwerAppletCreditOrderVo.getActualTotal()));
                     folwerAppletCreditGetrecordsBo.setGetTime(new Date());
                     folwerAppletCreditGetrecordsService.insertByBo(folwerAppletCreditGetrecordsBo);
+                    RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId());
                     return "订单提交成功";
                 }
             }

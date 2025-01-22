@@ -1,6 +1,7 @@
 package org.dromara.common.mypay.server;
 
 
+import com.wechat.pay.java.service.payments.model.Transaction;
 import com.wechat.pay.java.service.refund.model.Refund;
 import com.wechat.pay.java.service.refund.model.RefundNotification;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,14 @@ public interface IPayService {
      * @throws Exception
      */
     WxJsapiResponse JsapiOrder(WxPayRequest request) throws Exception;
+
+    /**
+     * 微商户订单号查询订单
+     * @param
+     * @return
+     * @throws Exception
+     */
+    Transaction transactionsOrder(String outTradeNo) throws Exception;
 
     /**
      * 支付回调确认

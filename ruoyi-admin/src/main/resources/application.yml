@@ -241,7 +241,9 @@ xss:
     - /workflow/model/save
     - /workflow/model/editModelXml
     - /flower/creditProduct
-    - /flowerapplet/creditProduct,/flowerapplet/creditProduct/list,
+    - /flowerapplet/creditProduct
+    - /flower/product
+    - /flowerapplet/product
 
 # 全局线程池相关配置
 # 如使用JDK21请直接使用虚拟线程 不要开启此配置

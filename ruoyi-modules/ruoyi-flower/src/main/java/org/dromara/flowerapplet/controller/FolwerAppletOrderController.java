@@ -156,6 +156,19 @@ public class FolwerAppletOrderController extends BaseController {
     }
 
 
+    /**
+     * 查询订单
+     */
+    @SaCheckPermission("flower:order:queryOrder")
+    @Log(title = "查询订单", businessType = BusinessType.EXPORT)
+    @PostMapping("/queryOrder/{orderId}")
+    public FolwerAppletOrderVo queryOrder(@NotNull(message = "主键不能为空")
+                                              @PathVariable String orderId) throws Exception {
+        return folwerAppletOrderService.queryOrder(orderId);
+    }
+
+
+
 
 //    @SaCheckPermission("flowerapplet:order:submitOrder")
 //    @Log(title = "微信JSAPI预下单", businessType = BusinessType.INSERT)

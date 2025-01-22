@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -62,6 +63,11 @@ public class FolwerAppletOrder extends TenantEntity {
      * 支付方式 0 手动代付 1 微信支付 2 支付宝
      */
     private Long payType;
+
+    /**
+     * 支付回调
+     */
+    private String payCallback;
 
     /**
      * 付款时间

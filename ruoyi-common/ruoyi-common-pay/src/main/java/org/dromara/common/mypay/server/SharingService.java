@@ -5,6 +5,8 @@ import org.dromara.common.mypay.domain.PayProfitsharingParam;
 
 public interface SharingService {
 
+
+
     /***
      * 添加分账接收方
      * @param type

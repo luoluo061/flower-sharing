@@ -77,6 +77,11 @@ public class FolwerAppletOrderBo extends BaseEntity {
     private Long status;
 
     /**
+     * 支付回调
+     */
+    private String payCallback;
+
+    /**
      * 是否分账 默认是0,不分账, 1,分账
      */
     private Long isProfitSharing;

@@ -1,7 +1,11 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Snowflake;
+import com.wechat.pay.java.service.payments.model.Transaction;
+import com.wechat.pay.java.service.profitsharing.model.AddReceiverResponse;
+import com.wechat.pay.java.service.profitsharing.model.OrdersEntity;
 import com.wechat.pay.java.service.refund.model.Refund;
 import com.wechat.pay.java.service.refund.model.Status;
 import jakarta.annotation.Resource;
@@ -18,8 +22,10 @@ import org.dromara.common.mypay.domain.WxJsapiResponse;
 import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.mypay.server.IPayService;
+import org.dromara.common.mypay.server.SharingService;
 import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.flower.domain.bo.MarketingMemberPromotionPecordBo;
 import org.dromara.flower.domain.vo.*;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
@@ -44,6 +50,7 @@ import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 
@@ -58,6 +65,16 @@ import java.util.*;
 public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private static final String CONFIRM_ORDER_CACHE_KEY  = "order:";
+
+    /**
+     * 个人OpenID
+     */
+    public static final String PERSONAL_OPENID = "PERSONAL_OPENID";
+
+    /**
+     * 合作伙伴
+     */
+    public static final String PARTNER = "PARTNER";
 
     @Resource
     private final FolwerAppletOrderMapper baseMapper;
@@ -80,11 +97,16 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private final IOneselfMemberLevelPrivilegeService oneselfMemberLevelPrivilegeService;
 
+    private final IMarketingMemberPromotionPecordService marketingMemberPromotionPecordService;
+
     @Resource
     private Snowflake snowflake;
 
     @Resource
     private final IPayService payService;
+
+    @Resource
+    private final SharingService sharingService;
 
     /**
      * 查询订单
@@ -431,8 +453,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
         FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(payParam.getOrderNumbers());
-        if(folwerAppletOrderVo == null){
-            throw new Exception("订单不存在");
+        if(folwerAppletOrderVo.getStatus().equals(2L)) {
+            throw new Exception("订单已取消");
         }
         if(folwerAppletOrderVo.getStatus() != 0){
             throw new Exception("订单状态错误");
@@ -482,6 +504,67 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             return  R.fail("退款关闭");
         }
         return null;
+    }
+
+    @Override
+    public FolwerAppletOrderVo queryOrder(String orderId) throws Exception {
+        Transaction transaction = payService.transactionsOrder(orderId);
+        if (transaction == null){
+            return null;
+        }
+
+        if (transaction.getTradeState().equals(Transaction.TradeStateEnum.SUCCESS)){
+            FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(orderId));
+            FolwerAppletOrderBo folwerAppletOrderBo = new FolwerAppletOrderBo();
+            BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrderBo);
+            folwerAppletOrderBo.setStatus(1L);
+            folwerAppletOrderBo.setOrderNumber(transaction.getTransactionId());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdf.parse(transaction.getSuccessTime());
+            folwerAppletOrderBo.setPayTime(date);
+            folwerAppletOrderBo.setPayCallback(transaction.toString());
+            Boolean b = this.updateByBo(folwerAppletOrderBo);
+            if (b){
+                //进行分账
+            }
+            return folwerAppletOrderVo;
+        }
+
+        return null;
+    }
+
+    OrdersEntity sharingResult(String outOrderNo, String transactionId, String userId) throws Exception {
+        if (StringUtils.isBlank(outOrderNo) || StringUtils.isBlank(transactionId)){
+            return null;
+        }
+
+        MarketingMemberPromotionPecordBo memberPromotionPecordBo = new MarketingMemberPromotionPecordBo();
+        memberPromotionPecordBo.setMemberId(userId);
+
+        List<MarketingMemberPromotionPecordVo> marketingMemberPromotionPecordVos = marketingMemberPromotionPecordService.queryList(memberPromotionPecordBo);
+        if (CollectionUtil.isEmpty(marketingMemberPromotionPecordVos)){
+            return null;
+        }
+
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(marketingMemberPromotionPecordVos.get(0).getMemberId()));
+
+
+        AddReceiverResponse openid = sharingService.addReceiver(PERSONAL_OPENID, appletUserInformationVo.getOpenid(), PARTNER);
+        if (openid == null){
+            return null;
+        }
+
+        OrdersEntity ordersEntity = sharingService.sharingResult(outOrderNo, transactionId);
+        if (ordersEntity == null){
+            return null;
+        }
+//        if (ordersEntity.getState().equals(OrderStatus.SUCCESS)){
+//            //分账成功
+//            //更新订单状态
+//            FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(outOrderNo));
+//            FolwerAppletOrderBofolwerAppletOrderBo = new FolwerAppletOrderBo();
+//        }
+        return ordersEntity;
     }
 
     @Override
