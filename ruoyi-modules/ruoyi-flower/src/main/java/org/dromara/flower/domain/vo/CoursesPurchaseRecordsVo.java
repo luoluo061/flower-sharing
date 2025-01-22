@@ -87,4 +87,10 @@ public class CoursesPurchaseRecordsVo implements Serializable {
      */
     @ExcelProperty(value = "课程ID")
     private Long coursesManagerId;
+
+    /**
+     * 创建者
+     */
+    @ExcelProperty(value = "创建者")
+    private Long createBy;
 }

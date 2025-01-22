@@ -1,9 +1,13 @@
 package org.dromara.flowerapplet.service;
 
+import org.dromara.common.core.domain.R;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.flower.domain.bo.CoursesPurchaseRecordsBo;
 import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
+import org.dromara.flowerapplet.domain.PayParam;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,4 +69,19 @@ public interface ICoursesAppletPurchaseRecordsService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 微信支付接口
+     *
+     * @param payParam 订单参数
+     * @return 支付信息
+     */
+    R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception;
+
+    /**
+     * 退款
+     * @param wxRefundRequest 请求参数
+     * @return 操作状态
+     */
+    R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception;
 }

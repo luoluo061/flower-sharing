@@ -4,22 +4,38 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wechat.pay.java.service.refund.model.Refund;
+import com.wechat.pay.java.service.refund.model.Status;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxPayRequest;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.common.mypay.server.IPayService;
+import org.dromara.common.mypay.utils.IpUtils;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.CoursesPurchaseRecords;
 import org.dromara.flower.domain.bo.CoursesPurchaseRecordsBo;
 import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
+import org.dromara.flower.domain.vo.MemberPurchaseRecordVo;
 import org.dromara.flower.mapper.CoursesPurchaseRecordsMapper;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.ICoursesPurchaseRecordsService;
+import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.service.ICoursesAppletPurchaseRecordsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 课程管理-课程购买记录Service业务层处理
@@ -32,7 +48,10 @@ import java.util.Map;
 public class CoursesAppletPurchaseRecordsServiceImpl implements ICoursesAppletPurchaseRecordsService {
 
     private final CoursesPurchaseRecordsMapper baseMapper;
+    private final IAppletUserInformationService appletUserInformationService;
 
+    @Resource
+    private final IPayService payService;
     /**
      * 查询课程管理-课程购买记录
      *
@@ -140,4 +159,62 @@ public class CoursesAppletPurchaseRecordsServiceImpl implements ICoursesAppletPu
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+
+    @Override
+    public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
+        CoursesPurchaseRecordsVo recordVo = baseMapper.selectVoById(payParam.getOrderNumbers());
+        if (recordVo == null) {
+            throw new RuntimeException("订单不存在");
+        }
+        if (recordVo.getStatus() != 0) {
+            throw new RuntimeException("订单状态错误");
+        }
+
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(recordVo.getCreateBy());
+        if (appletUserInformationVo == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null || !Objects.equals(loginUser.getUserId(), recordVo.getCreateBy())) {
+            throw new RuntimeException("支付失败");
+        }
+        WxPayRequest payJSAPIParam = new WxPayRequest();
+        payJSAPIParam.setClientIp(IpUtils.getIpAddr());
+        payJSAPIParam.setOutTradeNo(recordVo.getCode());
+        payJSAPIParam.setAmount(recordVo.getPrice());
+        payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
+        payJSAPIParam.setDescription(loginUser.getUserId() + "会员购买");
+        WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
+        if (wxJsapiResponse == null) {
+            R.fail("支付失败");
+        }
+        return R.ok(wxJsapiResponse);
+    }
+
+    @Override
+    public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
+        Refund refund = payService.refundOrder(wxRefundRequest);
+//                log.info("请求退款返回：" + refund);
+        //接收退款返回参数
+        //  Status status = refund.getStatus();
+        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
+            //说明退款成功，开始接下来的业务操作
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款成功");
+        }
+        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.ok("退款中");
+        }
+        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.fail("退款异常");
+        }
+        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            return R.fail("退款关闭");
+        }
+        return null;
+    }
+    
 }
