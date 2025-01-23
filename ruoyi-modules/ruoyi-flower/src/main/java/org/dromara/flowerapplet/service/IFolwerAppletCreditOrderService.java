@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.mypay.domain.WxJsapiResponse;
 import org.dromara.flowerapplet.domain.PayParam;
@@ -76,5 +77,14 @@ public interface IFolwerAppletCreditOrderService {
      * @param payParam
      * @return
      */
-    String submitOrders(PayParam payParam) throws Exception;
+    R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception;
+
+
+    /**
+     * 查询订单
+     *
+     * @param orderCreditId 主键
+     * @return 订单
+     */
+    FolwerAppletCreditOrderVo queryCreditOrder(String orderCreditId) throws Exception;
 }

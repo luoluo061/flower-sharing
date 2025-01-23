@@ -114,9 +114,22 @@ public class FolwerAppletCreditOrderController extends BaseController {
     @Log(title = "提交订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/submitCreditOrder")
-    public R<String> submitCreditOrders(@RequestBody PayParam payParam) throws Exception {
-        String str = folwerAppletCreditOrderService.submitOrders(payParam);
-        return R.ok(str);
+    public R<WxJsapiResponse> submitCreditOrders(@RequestBody PayParam payParam) throws Exception {
+        return folwerAppletCreditOrderService.submitOrders(payParam);
+    }
+
+    /**
+     * 积分订单微信查询
+     * @param orderCreditId
+     * @return
+     * @throws Exception
+     */
+    @SaCheckPermission("flower:creditOrder:queryOrder")
+    @Log(title = "查询订单", businessType = BusinessType.EXPORT)
+    @PostMapping("/queryCreditOrder/{orderCreditId}")
+    public FolwerAppletCreditOrderVo queryCreditOrder(@NotNull(message = "主键不能为空")
+                                          @PathVariable String orderCreditId) throws Exception {
+        return folwerAppletCreditOrderService.queryCreditOrder(orderCreditId);
     }
 
 }

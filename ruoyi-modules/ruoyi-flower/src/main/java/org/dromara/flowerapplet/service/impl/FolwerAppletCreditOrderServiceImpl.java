@@ -1,6 +1,10 @@
 package org.dromara.flowerapplet.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.wechat.pay.java.service.payments.model.Transaction;
+import jakarta.annotation.Resource;
+import org.apache.poi.ss.formula.functions.T;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -9,23 +13,25 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mypay.domain.WxJsapiResponse;
+import org.dromara.common.mypay.domain.WxPayRequest;
+import org.dromara.common.mypay.server.IPayService;
+import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flowerapplet.domain.PayParam;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditGetrecordsBo;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderDetailBo;
-import org.dromara.flowerapplet.domain.bo.OrderParamBo;
+import org.dromara.flowerapplet.domain.bo.*;
 import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.*;
 import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletCreditOrderBo;
 import org.dromara.flowerapplet.domain.FolwerAppletCreditOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletCreditOrderMapper;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 
@@ -39,6 +45,7 @@ import java.util.*;
 @Service
 public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOrderService {
 
+    @Resource
     private final FolwerAppletCreditOrderMapper baseMapper;
 
     private final IAppletUserInformationService appletUserInformationService;
@@ -50,6 +57,9 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     private final IFolwerAppletCreditGetrecordsService folwerAppletCreditGetrecordsService;
 
     private static final String CONFIRM_CREDITORDER_CACHE_KEY  = "CreditOrder:";
+
+    @Resource
+    private final IPayService payService;
 
     /**
      * 查询积分订单
@@ -271,23 +281,22 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     }
 
     @Override
-    public String submitOrders(PayParam payParam) throws Exception {
+    public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
         FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(payParam.getOrderNumbers());
         if(folwerAppletCreditOrderVo == null){
-            return "订单不存在";
+            return R.fail("订单不存在");
         }
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletCreditOrderVo.getUserId());
         if (appletUserInformationVo == null){
-            return "用户不存在";
+            return R.fail("用户不存在");
         }
         Long cacheObject = RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId());
         if (cacheObject == null){
-            return "订单状态异常";
+            return R.fail("订单状态异常");
         }
         double sub = Arith.sub(appletUserInformationVo.getPoints(), folwerAppletCreditOrderVo.getActualTotal());
         if (sub < 0){
-            return "积分不足";
-
+            return R.fail("积分不足");
         }
         if (folwerAppletCreditOrderVo.getStatus() == 0){
             AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
@@ -308,11 +317,45 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
                     folwerAppletCreditGetrecordsBo.setGetTime(new Date());
                     folwerAppletCreditGetrecordsService.insertByBo(folwerAppletCreditGetrecordsBo);
                     RedisUtils.deleteObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId());
-                    return "订单提交成功";
+                    //创建运费订单
+                    WxPayRequest payJSAPIParam = new WxPayRequest();
+                    payJSAPIParam.setClientIp(IpUtils.getIpAddr());
+                    payJSAPIParam.setOutTradeNo(String.valueOf(add.getOrderId()));
+                    payJSAPIParam.setAmount(add.getFreightAmount());
+                    payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
+                    payJSAPIParam.setDescription("运费");
+                    //是否分账
+                    payJSAPIParam.setProfitSharing(false);
+                    //微信支付暂时没有密钥
+                    WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
+                    if (wxJsapiResponse == null){
+                        R.fail("支付失败");
+                    }
+                    return R.ok(wxJsapiResponse);
+//                    return R.ok("wxJsapiResponse");
                 }
             }
         }
+        return null;
+    }
 
-        return "订单提交失败";
+    @Override
+    public FolwerAppletCreditOrderVo queryCreditOrder(String orderCreditId) throws Exception {
+        Transaction transaction = payService.transactionsOrder(orderCreditId);
+        if (transaction == null){
+            return null;
+        }
+        if (transaction.getTradeState().equals(Transaction.TradeStateEnum.SUCCESS)){
+            FolwerAppletCreditOrderVo creditOrderVo = this.queryById(Long.valueOf(orderCreditId));
+            FolwerAppletCreditOrderBo creditOrderBo = BeanUtil.copyProperties(creditOrderVo, FolwerAppletCreditOrderBo.class);
+            creditOrderBo.setStatus(2L);
+            creditOrderBo.setDvyPayId(transaction.getTransactionId());
+            creditOrderBo.setDvyPayStr(transaction.toString());
+            Boolean b = this.updateByBo(creditOrderBo);
+            if (b){
+                return this.queryById(Long.valueOf(orderCreditId));
+            }
+        }
+        return null;
     }
 }

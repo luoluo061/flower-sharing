@@ -66,6 +66,16 @@ public class FolwerAppletCreditOrderBo extends BaseEntity {
     private Long deliveryMode;
 
     /**
+     * 运费支付流水
+     */
+    private String dvyPayId;
+
+    /**
+     * 运费支付回调
+     */
+    private String dvyPayStr;
+
+    /**
      * 物流公司ID
      */
     private Long dvyId;

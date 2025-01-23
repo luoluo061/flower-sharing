@@ -308,7 +308,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             }
             //放入缓存
             FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
-            RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo, Duration.ofMinutes(15));
+            RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo.getOrderId(), Duration.ofMinutes(15));
         }
         return flag;
     }
@@ -323,7 +323,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     public Boolean updateByBo(FolwerAppletOrderBo bo) {
         FolwerAppletOrder update = MapstructUtils.convert(bo, FolwerAppletOrder.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        boolean b = baseMapper.updateById(update) > 0;
+        if(b){
+            if (update.getStatus() == 0L && RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + update.getOrderId()) != null){
+                RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + update.getOrderId(), update.getOrderId(), true);
+            }
+        }
+        return b;
     }
 
 //    @Override
@@ -453,16 +459,16 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
         FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(payParam.getOrderNumbers());
-        if(folwerAppletOrderVo.getStatus().equals(2L)) {
-            throw new Exception("订单已取消");
+        if(folwerAppletOrderVo == null){
+            return R.fail("订单不存在");
         }
-        if(folwerAppletOrderVo.getStatus() != 0){
-            throw new Exception("订单状态错误");
-        }
-
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletOrderVo.getUserId());
         if (appletUserInformationVo == null){
-            throw new Exception("用户不存在");
+            return R.fail("用户不存在");
+        }
+        Long cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
+        if (cacheObject == null){
+            return R.fail("订单状态异常");
         }
 
         WxPayRequest payJSAPIParam = new WxPayRequest();
@@ -475,8 +481,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         payJSAPIParam.setProfitSharing(folwerAppletOrderVo.getIsProfitSharing() == 1?true:false);
         WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
         if (wxJsapiResponse == null){
-            R.fail("支付失败");
+            return R.fail("支付失败");
         }
+        RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
         return R.ok(wxJsapiResponse);
     }
 
