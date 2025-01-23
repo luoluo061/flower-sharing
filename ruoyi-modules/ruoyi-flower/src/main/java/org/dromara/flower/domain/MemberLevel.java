@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 会员等级对象 member_level
@@ -60,7 +61,7 @@ public class MemberLevel extends TenantEntity {
     /**
      * 价格
      */
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 可以花券/张

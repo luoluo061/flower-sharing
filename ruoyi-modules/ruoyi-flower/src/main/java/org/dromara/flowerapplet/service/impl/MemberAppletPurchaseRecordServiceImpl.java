@@ -72,12 +72,14 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     /**
      * 查询会员购买记录
      *
-     * @param createBy 创建用户ID
+     * @param id 创建用户ID
      * @return 会员购买记录
      */
     @Override
     public MemberPurchaseRecordVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        MemberPurchaseRecordVo recordVo = baseMapper.selectVoById(id);
+        recordVo.setMemberLevelVo( memberLevelMapper.selectMemberLevelId(recordVo.getMemberLevelId()));
+        return recordVo;
     }
 
     /**

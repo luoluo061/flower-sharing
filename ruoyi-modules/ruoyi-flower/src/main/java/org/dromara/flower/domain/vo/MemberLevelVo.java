@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class MemberLevelVo implements Serializable {
      * 价格
      */
     @ExcelProperty(value = "价格")
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 可以花券/张

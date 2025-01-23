@@ -25,4 +25,6 @@ public interface MemberLevelMapper extends BaseMapperPlus<MemberLevel, MemberLev
 
 
     List<MemberLevelVo> selectMemberLevelIds(@Param("ids") List<Long> ids);
+
+    MemberLevelVo selectMemberLevelId(@Param("id")Long id);
 }

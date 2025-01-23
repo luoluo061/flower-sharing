@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.flower.mapper.FlowerFriendsCommunityLikeMapper">
+
+    <resultMap id="mapResultCoursesType" type="map">
+        <result property="key" column="id"/>
+        <result property="value" column="name"/>
+    </resultMap>
+    <select id="selectVoListByIdsAndUserId" resultType="java.lang.Long">
+        SELECT
+            flower_friends_community_id
+        FROM
+            flower_friends_community_like
+        WHERE del_flag = 0 AND applet_user_information_id = #{userId} AND
+            flower_friends_community_id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

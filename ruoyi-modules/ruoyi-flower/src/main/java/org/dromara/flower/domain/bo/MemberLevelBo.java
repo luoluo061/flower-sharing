@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class MemberLevelBo extends BaseEntity {
      * 价格
      */
 //    @NotNull(message = "价格不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long price;
+    private BigDecimal price;
 
     /**
      * 可以花券/张

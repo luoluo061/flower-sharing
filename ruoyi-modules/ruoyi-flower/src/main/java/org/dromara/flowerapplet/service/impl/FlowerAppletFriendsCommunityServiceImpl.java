@@ -5,20 +5,27 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.handler.MapResultHandler;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.FlowerFriendsCommunity;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
 import org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper;
+import org.dromara.flower.mapper.FlowerFriendsCommunityLikeMapper;
 import org.dromara.flower.mapper.FlowerFriendsCommunityMapper;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
+import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +47,8 @@ public class FlowerAppletFriendsCommunityServiceImpl implements IFlowerAppletFri
     private final ISysOssService iSysOssService;
     private final FlowerFriendsCommunityCommentMapper communityCommentMapper;
     private final AppletUserInformationMapper appletUserInformationMapper;
+    private final SysOssMapper sysOssMapper;
+    private final FlowerFriendsCommunityLikeMapper flowerFriendsCommunityLikeMapper;
 
 
     /**
@@ -94,6 +103,31 @@ public class FlowerAppletFriendsCommunityServiceImpl implements IFlowerAppletFri
             if (!createByIds.isEmpty()){
                 List<AppletUserInformationVo> aui = appletUserInformationMapper.selectUserInfoByIds(createByIds);
                 setNameAndUrl(result,aui);
+            }
+            result.getRecords().forEach(v->{
+                if (Objects.nonNull(v.getVideoImagesIds())) {
+                    List<Long> list = Arrays.stream(v.getVideoImagesIds().split(","))
+                        .filter(Objects::nonNull)
+                        .map(Long::valueOf) // 将每个字符串元素转换为 Long 类型
+                        .distinct()
+                        .collect(Collectors.toList());
+                    List<String> sysOssVos = sysOssMapper.selectUrlByIdCreateTimeAsc(list);
+                    v.setVideoImagesUrl(sysOssVos);
+                }
+            });
+            // 是否点赞数据查询
+            LoginUser loginUser = LoginHelper.getLoginUser();
+            List<Long> isLike = result.getRecords().stream()
+                .map(FlowerFriendsCommunityVo::getId)
+                .distinct()
+                .toList();
+            List<Long> likes = flowerFriendsCommunityLikeMapper.selectVoListByIdsAndUserId(isLike,loginUser.getUserId());
+            if (!likes.isEmpty()){
+                result.getRecords().forEach(v->{
+                    if (likes.contains(v.getId())){
+                        v.setIsLike(1);
+                    }
+                });
             }
         }
         return TableDataInfo.build(result);

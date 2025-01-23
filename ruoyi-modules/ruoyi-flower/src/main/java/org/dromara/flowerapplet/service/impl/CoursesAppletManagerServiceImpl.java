@@ -1,46 +1,43 @@
-package org.dromara.flower.service.impl;
+package org.dromara.flowerapplet.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.lock.LockInfo;
 import com.baomidou.lock.LockTemplate;
 import com.baomidou.lock.executor.RedissonLockExecutor;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.CodeUtils;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.RequiredArgsConstructor;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.handler.MapResultHandler;
-import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.constant.LockKeyString;
+import org.dromara.flower.domain.CoursesManager;
 import org.dromara.flower.domain.CoursesManagerDetail;
+import org.dromara.flower.domain.bo.CoursesManagerBo;
 import org.dromara.flower.domain.vo.CoursesManagerDetailVo;
 import org.dromara.flower.domain.vo.CoursesManagerVideoVo;
+import org.dromara.flower.domain.vo.CoursesManagerVo;
 import org.dromara.flower.domain.vo.CoursesPurchaseRecordsVo;
 import org.dromara.flower.mapper.CoursesManagerDetailMapper;
+import org.dromara.flower.mapper.CoursesManagerMapper;
 import org.dromara.flower.mapper.CoursesManagerVideoMapper;
 import org.dromara.flower.mapper.CoursesPurchaseRecordsMapper;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.flowerapplet.service.ICoursesAppletManagerService;
 import org.dromara.system.mapper.SysOssMapper;
 import org.springframework.stereotype.Service;
-import org.dromara.flower.domain.bo.CoursesManagerBo;
-import org.dromara.flower.domain.vo.CoursesManagerVo;
-import org.dromara.flower.domain.CoursesManager;
-import org.dromara.flower.mapper.CoursesManagerMapper;
-import org.dromara.flower.service.ICoursesManagerService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +50,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class CoursesManagerServiceImpl implements ICoursesManagerService {
+public class CoursesAppletManagerServiceImpl implements ICoursesAppletManagerService {
 
     private final CoursesManagerMapper baseMapper;
     private final LockTemplate lockTemplate;
@@ -92,6 +89,22 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         // 查询所有的集数信息
         List<CoursesManagerVideoVo> videoVoList = coursesManagerVideoMapper.getVideoByCoursesManagerId(id);
         vo.setVideoVoList(videoVoList);
+        vo.setStatus(STATUS_CLOSE);
+        // 查看当前用户是否购买
+        if (loginUser != null) {
+            CoursesPurchaseRecordsVo purchaseRecordsVo = coursesPurchaseRecordsMapper.getPurchaseRecordsByUserIdAndCoursesId(id, loginUser.getUserId());
+            if (purchaseRecordsVo != null) {
+                vo.setStatus(STATUS_OPEN);
+            }
+            // 会员等级是否达到要求
+            String level = appletUserInformationMapper.getMemberLevelInfoById(loginUser.getUserId());
+            if (level != null && vo.getAccessIds().contains(level)) {
+                vo.setStatus(STATUS_OPEN);
+            }
+        }
+        if (ALL.equals(vo.getAccessIds())){
+            vo.setStatus(STATUS_OPEN);
+        }
         List<CoursesManagerVideoVo> vl = coursesManagerVideoMapper.selectVoByCoursesManagerId(id);
         List<CoursesManagerDetailVo> detailVos = coursesManagerDetailMapper.selectVoByCoursesManagerId(id);
         vo.setDetailVo(detailVos);

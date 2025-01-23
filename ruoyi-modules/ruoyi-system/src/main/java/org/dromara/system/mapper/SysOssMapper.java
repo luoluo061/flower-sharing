@@ -16,4 +16,6 @@ import java.util.List;
 public interface SysOssMapper extends BaseMapperPlus<SysOss, SysOssVo> {
 
     void getIdMapUrlByIds(@Param("resultHandler") MapResultHandler<Long, String> resultHandler, @Param("ids") List<Long> ids);
+
+    List<String> selectUrlByIdCreateTimeAsc(@Param("ids") List<Long> ids);
 }

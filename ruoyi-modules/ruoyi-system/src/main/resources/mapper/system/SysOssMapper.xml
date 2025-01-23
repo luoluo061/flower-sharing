@@ -18,4 +18,14 @@
             #{id}
         </foreach>
     </select>
+    <select id="selectUrlByIdCreateTimeAsc" resultType="java.lang.String">
+        SELECT
+            url
+        FROM sys_oss
+        WHERE oss_id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")" >
+            #{id}
+        </foreach>
+        ORDER BY create_time
+    </select>
 </mapper>

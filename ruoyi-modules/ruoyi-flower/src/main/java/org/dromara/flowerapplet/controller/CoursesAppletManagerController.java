@@ -18,6 +18,7 @@ import org.dromara.common.web.core.BaseController;
 import org.dromara.flower.domain.bo.CoursesManagerBo;
 import org.dromara.flower.domain.vo.CoursesManagerVo;
 import org.dromara.flower.service.ICoursesManagerService;
+import org.dromara.flowerapplet.service.ICoursesAppletManagerService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ import java.util.List;
 @RequestMapping("/flowerApplet/manager")
 public class CoursesAppletManagerController extends BaseController {
 
-    private final ICoursesManagerService coursesManagerService;
+    private final ICoursesAppletManagerService coursesManagerService;
 
     /**
      * 查询视频管理列表

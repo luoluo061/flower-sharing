@@ -9,6 +9,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.system.domain.vo.SysOssVo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -92,6 +93,12 @@ public class FlowerFriendsCommunityVo implements Serializable {
     private Long likes;
 
     /**
+     * 是否点赞
+     */
+    @ExcelProperty(value = "是否点赞")
+    private int isLike;
+
+    /**
      * 发表文本内容
      */
     @ExcelProperty(value = "发表文本内容")
@@ -103,7 +110,7 @@ public class FlowerFriendsCommunityVo implements Serializable {
     @ExcelProperty(value = "视频或图片ID，多个文件逗号(,)分隔")
     private String videoImagesIds;
     /**
-     * 视频或图片URL
+     * 视频或图片URL 时间倒序
      */
     @ExcelProperty(value = "视频或图片URL")
     private List<String> videoImagesUrl;
