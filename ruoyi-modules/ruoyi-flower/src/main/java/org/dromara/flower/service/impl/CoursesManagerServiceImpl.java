@@ -108,6 +108,10 @@ public class CoursesManagerServiceImpl implements ICoursesManagerService {
         if (ALL.equals(vo.getAccessIds())){
             vo.setStatus(STATUS_OPEN);
         }
+        List<CoursesManagerVideoVo> vl = coursesManagerVideoMapper.selectVoByCoursesManagerId(id);
+        List<CoursesManagerDetailVo> detailVos = coursesManagerDetailMapper.selectVoByCoursesManagerId(id);
+        vo.setDetailVo(detailVos);
+        vo.setManagerVideos(vl);
         return vo;
     }
 

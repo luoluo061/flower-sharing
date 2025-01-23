@@ -16,4 +16,6 @@ import java.util.List;
 public interface CoursesManagerDetailMapper extends BaseMapperPlus<CoursesManagerDetail, CoursesManagerDetailVo> {
 
     List<CoursesManagerDetailVo> selectVoByCoursesManagerIds(@Param("ids") List<Long> list);
+
+    List<CoursesManagerDetailVo> selectVoByCoursesManagerId(@Param("id")Long id);
 }

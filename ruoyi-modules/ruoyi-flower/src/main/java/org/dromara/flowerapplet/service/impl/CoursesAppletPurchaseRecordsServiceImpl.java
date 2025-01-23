@@ -216,5 +216,4 @@ public class CoursesAppletPurchaseRecordsServiceImpl implements ICoursesAppletPu
         }
         return null;
     }
-    
 }

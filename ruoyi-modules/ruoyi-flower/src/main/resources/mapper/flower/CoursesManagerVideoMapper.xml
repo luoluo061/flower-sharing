@@ -24,4 +24,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </select>
+    <select id="selectVoByCoursesManagerId" resultType="org.dromara.flower.domain.vo.CoursesManagerVideoVo">
+        SELECT
+        *
+        FROM
+        courses_manager_video
+        WHERE del_flag = 0 AND courses_manager_id = #{id}
+    </select>
 </mapper>

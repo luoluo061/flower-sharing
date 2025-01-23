@@ -18,4 +18,6 @@ public interface CoursesManagerVideoMapper extends BaseMapperPlus<CoursesManager
     List<CoursesManagerVideoVo> getVideoByCoursesManagerId(@Param("id") Long id);
 
     List<CoursesManagerVideoVo> selectVoByCoursesManagerIds(@Param("ids") List<Long> list);
+
+    List<CoursesManagerVideoVo> selectVoByCoursesManagerId(@Param("id")Long id);
 }
