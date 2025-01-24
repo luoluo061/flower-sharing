@@ -93,7 +93,7 @@ public class FlowerFriendsCommunityVo implements Serializable {
     private Long likes;
 
     /**
-     * 是否点赞
+     * 是否点赞 0 否 1 是
      */
     @ExcelProperty(value = "是否点赞")
     private int isLike;
