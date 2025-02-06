@@ -95,5 +95,10 @@ public class FolwerAppletSkuVo implements Serializable {
     @ExcelProperty(value = "0 禁用 1 启用")
     private Long status;
 
+    /**
+     * 规格名称
+     */
+    @ExcelProperty(value = "规格名称")
+    private String skuName;
 
 }

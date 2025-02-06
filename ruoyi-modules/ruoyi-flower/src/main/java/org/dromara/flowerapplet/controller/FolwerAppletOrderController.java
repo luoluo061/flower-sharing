@@ -80,8 +80,8 @@ public class FolwerAppletOrderController extends BaseController {
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
-        return toAjax(folwerAppletOrderService.insertByBo(bo));
+    public R<String> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
+        return R.ok(folwerAppletOrderService.insertByBo(bo));
     }
 
     /**

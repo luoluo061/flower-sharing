@@ -25,6 +25,7 @@ import org.dromara.common.mypay.server.IPayService;
 import org.dromara.common.mypay.server.SharingService;
 import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.flower.domain.bo.FolwerPickAddrBo;
 import org.dromara.flower.domain.bo.MarketingMemberPromotionPecordBo;
 import org.dromara.flower.domain.vo.*;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
@@ -40,6 +41,7 @@ import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderDetailService;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.flowerapplet.util.Arith;
+import org.dromara.flowerapplet.util.SnowflakeIdGenerator;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -179,8 +181,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean insertByBo(OrderParamBo bo) throws Exception {
-        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(bo.getUserId());
+    public String insertByBo(OrderParamBo bo) throws Exception {
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(bo.getUserId()));
         if (appletUserInformationVo == null){
             throw new Exception("用户不存在");
         }
@@ -198,7 +200,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         List<FolwerAppletOrderDetailBo> folwerAppletOrderDetailBos = new ArrayList<>();
         //立即购买
         if(bo.getProductItem() != null){
-            FolwerAppletProductVo folwerAppletProductVo = productService.queryById(bo.getProductItem());
+            FolwerAppletProductVo folwerAppletProductVo = productService.queryById(Long.valueOf(bo.getProductItem()));
             if (folwerAppletProductVo == null){
                 throw new Exception("商品不存在");
             }
@@ -229,8 +231,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         }
         //购物车购买
         if(bo.getBasketIds() != null){
-            for (Long basketId : bo.getBasketIds()) {
-                FolwerAppletBasketVo basketVo = basketService.queryById(basketId);
+            for (String basketId : bo.getBasketIds()) {
+                FolwerAppletBasketVo basketVo = basketService.queryById(Long.valueOf(basketId));
                 if (basketVo == null){
                     throw new Exception("购物车不存在");
                 }
@@ -276,7 +278,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         }
 
         FolwerAppletOrderBo orderBo = new FolwerAppletOrderBo();
-        orderBo.setUserId(bo.getUserId());
+        orderBo.setUserId(Long.valueOf(bo.getUserId()));
         orderBo.setUserName(appletUserInformationVo.getName());
         orderBo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
 
@@ -284,18 +286,31 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setActualTotal((long)Arith.sub(total, derlinePrice));
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
-        FolwerDeliveryVo folwerDeliveryVo = deliveryService.queryById(bo.getDvyId());
-        orderBo.setDeliveryMode(folwerDeliveryVo.getDvyType());
-        orderBo.setDvyId(bo.getDvyId());
-        orderBo.setDvyName(folwerDeliveryVo.getDvyName());
+
+        //物流信息
+//        FolwerDeliveryVo folwerDeliveryVo = deliveryService.queryById(bo.getDvyId());
+//        orderBo.setDeliveryMode(folwerDeliveryVo.getDvyType());
+//        orderBo.setDvyId(bo.getDvyId());
+//        orderBo.setDvyName(folwerDeliveryVo.getDvyName());
         //是否分账
         orderBo.setIsProfitSharing(0L);
         //物流单号
-//        bo.setDvyFlowId();
-        orderBo.setFreightAmount((long) transfee);
-        FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(bo.getAddrId());
-        orderBo.setAddrOrderId(bo.getAddrId());
+        long dataCenterId = 1L;  // 数据中心标识
+        long machineId = 1L;     // 机器标识
 
+        SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(dataCenterId, machineId);
+        // 使用 idGenerator 生成唯一ID
+        long uniqueId = idGenerator.generateId();
+        orderBo.setDvyFlowId(String.valueOf(uniqueId));
+
+        orderBo.setFreightAmount((long) transfee);
+
+        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
+        folwerPickAddrBo.setUserId(bo.getUserId());
+        List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
+        if (folwerPickAddrVos != null){
+            orderBo.setAddrOrderId(folwerPickAddrVos.get(0).getAddrId());
+        }
         FolwerAppletOrder add = MapstructUtils.convert(orderBo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
@@ -310,7 +325,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
             RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo.getOrderId(), Duration.ofMinutes(15));
         }
-        return flag;
+        return add.getOrderId().toString();
     }
 
     /**

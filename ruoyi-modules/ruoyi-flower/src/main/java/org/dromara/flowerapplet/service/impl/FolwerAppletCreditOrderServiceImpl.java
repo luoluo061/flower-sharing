@@ -182,11 +182,11 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
 //            return cacheObject;
 //        }
 
-        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(bo.getUserId());
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(bo.getUserId()));
         if (appletUserInformationVo == null){
             throw new Exception("用户不存在");
         }
-        FolwerAppletCreditProductVo folwerAppletCreditProductVo = folwerAppletCreditProductService.queryById(bo.getProductItem());
+        FolwerAppletCreditProductVo folwerAppletCreditProductVo = folwerAppletCreditProductService.queryById(Long.valueOf(bo.getProductItem()));
         if (folwerAppletCreditProductVo == null){
             throw new Exception("商品不存在");
         }
@@ -198,7 +198,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
 
 //        FolwerAppletCreditOrder add = MapstructUtils.convert(bo, FolwerAppletCreditOrder.class);
         FolwerAppletCreditOrder add = new FolwerAppletCreditOrder();
-        add.setUserId(bo.getUserId());
+        add.setUserId(Long.valueOf(bo.getUserId()));
         add.setUserName(appletUserInformationVo.getName());
         add.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
         add.setActualTotal((long) points);
@@ -213,9 +213,9 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
         if (flag) {
             FolwerAppletCreditOrderDetailBo folwerAppletCreditOrderDetailBo = new FolwerAppletCreditOrderDetailBo();
             folwerAppletCreditOrderDetailBo.setOrderId(String.valueOf(add.getOrderId()));
-            folwerAppletCreditOrderDetailBo.setProductId(bo.getProductItem());
+            folwerAppletCreditOrderDetailBo.setProductId(Long.valueOf(bo.getProductItem()));
             if(bo.getSkuId() != null){
-                folwerAppletCreditOrderDetailBo.setSkuId(bo.getSkuId());
+                folwerAppletCreditOrderDetailBo.setSkuId(Long.valueOf(bo.getSkuId()));
             }
             folwerAppletCreditOrderDetailBo.setProductName(folwerAppletCreditProductVo.getProductName());
             folwerAppletCreditOrderDetailBo.setProductListPictureUrl(folwerAppletCreditProductVo.getProductListPictureUrl());
