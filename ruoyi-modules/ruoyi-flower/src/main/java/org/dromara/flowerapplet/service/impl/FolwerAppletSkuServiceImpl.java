@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
@@ -39,7 +40,9 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
      */
     @Override
     public FolwerAppletSkuVo queryById(Long skuId){
-        return baseMapper.selectVoById(skuId);
+        FolwerAppletSkuVo folwerAppletSkuVo = baseMapper.selectVoById(skuId);
+        folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+        return folwerAppletSkuVo;
     }
 
     /**
@@ -53,6 +56,10 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
     public TableDataInfo<FolwerAppletSkuVo> queryPageList(FolwerAppletSkuBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletSku> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletSkuVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.getRecords().forEach(record ->{
+            record.setSkuName(getSkuName(record));
+        });
+
         return TableDataInfo.build(result);
     }
 
@@ -65,7 +72,18 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
     @Override
     public List<FolwerAppletSkuVo> queryList(FolwerAppletSkuBo bo) {
         LambdaQueryWrapper<FolwerAppletSku> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletSkuVo> folwerAppletSkuVos = baseMapper.selectVoList(lqw);
+        folwerAppletSkuVos.forEach(skuVos ->{
+            skuVos.setSkuName(getSkuName(skuVos));
+        });
+        return folwerAppletSkuVos;
+    }
+
+    private String getSkuName(FolwerAppletSkuVo folwerAppletSkuVo){
+        if(StringUtils.isNotBlank(folwerAppletSkuVo.getColour()) && StringUtils.isNotBlank(folwerAppletSkuVo.getSize())){
+            return folwerAppletSkuVo.getColour() + " " + folwerAppletSkuVo.getSize();
+        }
+        return folwerAppletSkuVo.getColour() + " " + folwerAppletSkuVo.getSize();
     }
 
     private LambdaQueryWrapper<FolwerAppletSku> buildQueryWrapper(FolwerAppletSkuBo bo) {

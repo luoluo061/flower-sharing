@@ -20,20 +20,20 @@ public class OrderParamBo {
 
     @Schema(description = "用户ID" )
     @NotNull(message = "用户ID")
-    private Long UserId;
+    private String UserId;
 
 	@Schema(description = "购物车id 数组" )
-	private List<Long> basketIds;
+	private List<String> basketIds;
 
 	@Schema(description = "立即购买时提交的商品项" )
-	private Long productItem;
+	private String productItem;
 
     @Schema(description = "规格ID" )
-    private Long skuId;
+    private String skuId;
 
 	@Schema(description = "地址ID，0为默认地址" ,required=true)
 //	@NotNull(message = "地址不能为空")
-	private Long addrId;
+	private String addrId;
 
     @Schema(description = "订单备注" ,required=true)
     private String remarks;
@@ -42,7 +42,7 @@ public class OrderParamBo {
     private Integer prodCount;
 
     @Schema(description = "物流公司ID" ,required=true)
-    private Long dvyId;
+    private String dvyId;
 
 	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
 	private Integer userChangeCoupon;
