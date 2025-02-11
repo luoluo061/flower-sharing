@@ -473,7 +473,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
-        FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(payParam.getOrderNumbers());
+        FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(payParam.getOrderNumbers()));
         if(folwerAppletOrderVo == null){
             return R.fail("订单不存在");
         }
@@ -481,14 +481,14 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         if (appletUserInformationVo == null){
             return R.fail("用户不存在");
         }
-        Long cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
-        if (cacheObject == null){
-            return R.fail("订单状态异常");
-        }
+//        Long cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
+//        if (cacheObject == null){
+//            return R.fail("订单状态异常");
+//        }
 
         WxPayRequest payJSAPIParam = new WxPayRequest();
         payJSAPIParam.setClientIp(IpUtils.getIpAddr());
-        payJSAPIParam.setOutTradeNo(folwerAppletOrderVo.getOrderNumber());
+        payJSAPIParam.setOutTradeNo(String.valueOf(folwerAppletOrderVo.getOrderId()));
         payJSAPIParam.setAmount(folwerAppletOrderVo.getActualTotal());
         payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
         payJSAPIParam.setDescription(folwerAppletOrderVo.getRemarks());
@@ -498,7 +498,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         if (wxJsapiResponse == null){
             return R.fail("支付失败");
         }
-        RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
+//        RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
         return R.ok(wxJsapiResponse);
     }
 

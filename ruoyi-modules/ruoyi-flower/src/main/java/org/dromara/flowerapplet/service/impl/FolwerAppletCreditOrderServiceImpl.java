@@ -282,7 +282,7 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
 
     @Override
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
-        FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(payParam.getOrderNumbers());
+        FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(Long.valueOf(payParam.getOrderNumbers()));
         if(folwerAppletCreditOrderVo == null){
             return R.fail("订单不存在");
         }

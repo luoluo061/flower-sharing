@@ -277,16 +277,16 @@ wx:
     #应用id（小程序id）
     app-id: wxa1e0edcbbe684f4f
     #商户号
-    mch-id: 1695346142
+    mch-id: 1706206019
     #商户API私钥路径
     path: cert/apiclient_key.pem
     #商户证书序列号
-    serial-number: 64760D1BAAF6BA7E592BF8EE35080CF70F33FF47
+    serial-number: 78BBC372FFE14E305D390F8D5B23764FE3F1EC25
     #商户APIV3密钥
-    key: QLUQB4ZWi5H6HJuwTdUrvsYMPnJEQnCD
+    key: xBRtIhqmDDECnyitXpjSbz8XJKFUWi5h
     #支付通知地址
     notify-url: http://bixp4h.natappfree.cc/wxpayback/pay/wxCallback
     #退款通知地址
     refun-notify-url: http://3df521505ar6.vicp.fun/wx/refundNotify
     #微信平台证书
-    wechatpay-Certificate-Path: cert/wechatpay_3996637EF4984ABC0796E6CED627793085E8C41F.pem
+#    wechatpay-Certificate-Path: cert/wechatpay_3996637EF4984ABC0796E6CED627793085E8C41F.pem
