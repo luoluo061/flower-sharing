@@ -1,5 +1,7 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.BeanUtils;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -15,9 +17,11 @@ import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletBasketMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
+import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -34,6 +38,8 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
 
     private final FolwerAppletBasketMapper baseMapper;
 
+    private final IFolwerAppletSkuService folwerAppletSkuService;
+
     @Override
     public FolwerShopCartItem getShopCartItems(Long userId) {
         // 在这个类里面要调用这里的缓存信息，并没有使用aop，所以不使用注解
@@ -45,6 +51,12 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
         FolwerShopCartItem folwerShopCartItem = new FolwerShopCartItem();
         List<FolwerAppletBasketVo> folwerBasketVos = baseMapper.getShopCartItems(userId);
         if(folwerBasketVos != null){
+            folwerBasketVos.forEach(folwerAppletBasketVo -> {
+                if(folwerAppletBasketVo.getSkuId() != null){
+                    folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+                }
+            });
+
             for (FolwerAppletBasketVo folwerBasketVo : folwerBasketVos) {
                 folwerBasketVo.setTotalAmount((long) Arith.mul(folwerBasketVo.getBasketCount(), folwerBasketVo.getPrice()));
             }
@@ -66,7 +78,11 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
      */
     @Override
     public FolwerAppletBasketVo queryById(Long basketId){
-        return baseMapper.selectVoById(basketId);
+        FolwerAppletBasketVo folwerAppletBasketVo = baseMapper.selectVoById(basketId);
+        if(folwerAppletBasketVo.getSkuId() != null){
+            folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+        }
+        return folwerAppletBasketVo;
     }
 
     /**
@@ -80,6 +96,11 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
     public TableDataInfo<FolwerAppletBasketVo> queryPageList(FolwerAppletBasketBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletBasket> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletBasketVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.getRecords().forEach(item -> {
+            if(item.getSkuId() != null){
+                item.setPrice(folwerAppletSkuService.queryById(item.getSkuId()).getPrice());
+            }
+        });
         return TableDataInfo.build(result);
     }
 
@@ -114,7 +135,25 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
      */
     @Override
     public Boolean insertByBo(FolwerAppletBasketBo bo) {
+        FolwerAppletBasketBo folwerAppletBasketBo = new FolwerAppletBasketBo();
+        folwerAppletBasketBo.setUserId(bo.getUserId());
+        folwerAppletBasketBo.setProdId(bo.getProdId());
+        if (bo.getSkuId() != null){
+            folwerAppletBasketBo.setSkuId(bo.getSkuId());
+        }
+        List<FolwerAppletBasketVo> folwerAppletBasketVos = this.queryList(folwerAppletBasketBo);
+        if(folwerAppletBasketVos != null && folwerAppletBasketVos.size() > 0){
+            for (FolwerAppletBasketVo folwerAppletBasketVo : folwerAppletBasketVos) {
+                folwerAppletBasketVo.setBasketCount(folwerAppletBasketVo.getBasketCount() + bo.getBasketCount());
+                BeanUtil.copyProperties(folwerAppletBasketVo, bo);
+                bo.setBasketDate(new Date());
+                Boolean b = this.updateByBo(bo);
+                return b;
+            }
+        }
+
         FolwerAppletBasket add = MapstructUtils.convert(bo, FolwerAppletBasket.class);
+        add.setBasketDate(new Date());
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

@@ -20,7 +20,7 @@ public class PayParam {
 	 */
 	@NotBlank(message="订单号不能为空")
 	@Schema(description = "订单号" ,required=true)
-	private Long orderNumbers;
+	private String orderNumbers;
 
 
 	/**
