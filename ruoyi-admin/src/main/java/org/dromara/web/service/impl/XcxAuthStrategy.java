@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import javassist.expr.NewArray;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.dromara.common.core.constant.UserConstants;
 import org.dromara.common.core.domain.model.XcxLoginBody;
 import org.dromara.common.core.domain.model.XcxLoginUser;
@@ -90,17 +91,25 @@ public class XcxAuthStrategy implements IAuthStrategy {
     public LoginVo login(String body, SysClientVo client) {
         XcxLoginBody loginBody = JsonUtils.parseObject(body, XcxLoginBody.class);
         ValidatorUtils.validate(loginBody);
+        // accessToken 为 小程序调用 wx.login 授权后获取
+        String bodyAccessToken = loginBody.getAccessToken();
+
         // xcxCode 为 小程序调用 wx.login 授权后获取
         String xcxCode = loginBody.getXcxCode();
         // 多个小程序识别使用
         String appid = loginBody.getAppid();
 
-//        //获取小程序 accessToken
-//        String accessToken = loginService.getAccessToken();
-//        //获取手机号信息
-//        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(xcxCode, accessToken);
-        XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
-        phoneInfo.setPhoneNumber("15912341234");
+        if (StringUtils.isBlank(xcxCode)) {
+            throw new ServiceException("code 不能为空");
+        }
+
+        //获取小程序 accessToken
+        String accessToken = loginService.getAccessToken();
+        //获取手机号信息
+        XcxPhoneInfoVo phoneInfo = loginService.getUserPhone(bodyAccessToken, accessToken);
+//        XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
+//        phoneInfo.setPhoneNumber("15912341234");
+
         //暂无code来使用，使用模拟数据
         /*XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
         phoneInfo.setPhoneNumber("15912341234");*/
@@ -189,12 +198,13 @@ public class XcxAuthStrategy implements IAuthStrategy {
             log.info("登录用户：{} 不存在...准备插入用户信息", phone);
             AppletUserInformationBo aib = new AppletUserInformationBo();
             // 获取小程序 openid
-//            try {
-//                WxLoginVo wxLoginVo = loginService.wxLogin(loginBody.getCode());
-//                aib.setOpenid(wxLoginVo.getOpenid());
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
+            try {
+                WxLoginVo wxLoginVo = loginService.wxLogin(loginBody.getXcxCode());
+                aib.setOpenid(wxLoginVo.getOpenid());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             aib.setPhone(phone);
             aib.setUserType("xcx");
             aib.setMemberId(createMemberId());

@@ -26,6 +26,11 @@ public class XcxLoginBody extends LoginBody {
     private String xcxCode;
 
     /**
+     * 凭证-动态令牌
+     */
+    private String accessToken;
+
+    /**
      * 推荐人ID 如果不是扫别人二维码登录的 传 0
      */
     private Long parentId;

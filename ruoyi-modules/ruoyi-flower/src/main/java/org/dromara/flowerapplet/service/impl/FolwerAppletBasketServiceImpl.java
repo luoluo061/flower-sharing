@@ -15,6 +15,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletBasket;
 import org.dromara.flowerapplet.domain.FolwerShopCartItem;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletBasketMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
@@ -53,7 +54,10 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
         if(folwerBasketVos != null){
             folwerBasketVos.forEach(folwerAppletBasketVo -> {
                 if(folwerAppletBasketVo.getSkuId() != null){
-                    folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId());
+                    if (folwerAppletSkuVo != null){
+                        folwerAppletBasketVo.setPrice(folwerAppletSkuVo.getPrice());
+                    }
                 }
             });
 
