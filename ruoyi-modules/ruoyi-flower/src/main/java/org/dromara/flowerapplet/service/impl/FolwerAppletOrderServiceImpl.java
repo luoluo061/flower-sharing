@@ -37,9 +37,7 @@ import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
 import org.dromara.flowerapplet.domain.vo.*;
-import org.dromara.flowerapplet.service.IFolwerAppletBasketService;
-import org.dromara.flowerapplet.service.IFolwerAppletOrderDetailService;
-import org.dromara.flowerapplet.service.IFolwerAppletProductService;
+import org.dromara.flowerapplet.service.*;
 import org.dromara.flowerapplet.util.Arith;
 import org.dromara.flowerapplet.util.SnowflakeIdGenerator;
 import org.springframework.cache.annotation.CacheEvict;
@@ -49,7 +47,6 @@ import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
 import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
-import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
@@ -91,8 +88,6 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private final IAppletUserInformationService appletUserInformationService;
 
-    private final IFolwerSkuService folwerSkuService;
-
     private final IFolwerDeliveryService deliveryService;
 
     private final IMarketingCouponService marketingCouponService;
@@ -100,6 +95,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final IOneselfMemberLevelPrivilegeService oneselfMemberLevelPrivilegeService;
 
     private final IMarketingMemberPromotionPecordService marketingMemberPromotionPecordService;
+
+    private final IFolwerAppletSkuService folwerAppletSkuService;
 
     @Resource
     private Snowflake snowflake;
@@ -204,7 +201,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             if (folwerAppletProductVo == null){
                 throw new Exception("商品不存在");
             }
-            total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+            if (bo.getSkuId().isEmpty()){
+                total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+            } else {
+                FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
+                total = Arith.mul(folwerAppletSkuVo.getPrice() ,bo.getProdCount());
+            }
+//            total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
             transfee = folwerAppletProductVo.getDeliveryPrice();
             if(bo.getUserChangeCoupon() != null){
                 //0:满减
@@ -241,8 +244,17 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                     throw new Exception("商品不存在");
                 }
 //                productVos.add(productVo);
-                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
-                total = Arith.add(total,price);
+                if (basketVo.getSkuId() == null){
+                    double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
+                    total = Arith.add(total,price);
+                } else {
+                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
+                    double price = Arith.mul(folwerAppletSkuVo.getPrice() ,basketVo.getBasketCount());
+                    total = Arith.add(total,price);
+                }
+
+//                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
+//                total = Arith.add(total,price);
                 transfee = Arith.add(transfee, Arith.mul(productVo.getDeliveryPrice(), basketVo.getBasketCount()));
 
                 //订单详情
