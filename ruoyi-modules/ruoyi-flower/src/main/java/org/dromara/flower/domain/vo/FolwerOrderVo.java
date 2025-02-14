@@ -98,6 +98,12 @@ public class FolwerOrderVo implements Serializable {
     private String remarks;
 
     /**
+     * 商家备注
+     */
+    @ExcelProperty(value = "商家备注")
+    private String merchRemarks;
+
+    /**
      * 订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败
      */
     @ExcelProperty(value = "订单状态 0:待付款 1：已支付 2:已取消 3：已退款 4：拒绝退款 5：待发货 6:待收货 7:待评价 8:成功 9:失败", converter = ExcelDictConvert.class)
