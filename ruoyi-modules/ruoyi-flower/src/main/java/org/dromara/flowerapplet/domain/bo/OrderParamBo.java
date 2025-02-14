@@ -23,7 +23,7 @@ public class OrderParamBo {
     private String UserId;
 
 	@Schema(description = "购物车id 数组" )
-	private List<String> basketIds;
+    private List<String> basketIds;
 
 	@Schema(description = "立即购买时提交的商品项" )
 	private String productItem;

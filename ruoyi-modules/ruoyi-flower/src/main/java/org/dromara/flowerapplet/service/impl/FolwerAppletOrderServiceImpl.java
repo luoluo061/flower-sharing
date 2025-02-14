@@ -239,6 +239,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 if (basketVo == null){
                     throw new Exception("购物车不存在");
                 }
+                if (!basketVo.getStatus().equals(1L)){
+                    throw new Exception("购物车状态为下架");
+                }
+
                 FolwerAppletProductVo productVo = productService.queryById(basketVo.getProdId());
                 if (productVo == null){
                     throw new Exception("商品不存在");
@@ -248,7 +252,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                     double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
                     total = Arith.add(total,price);
                 } else {
-                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
+                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(basketVo.getSkuId()));
                     double price = Arith.mul(folwerAppletSkuVo.getPrice() ,basketVo.getBasketCount());
                     total = Arith.add(total,price);
                 }
@@ -305,7 +309,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //        orderBo.setDvyId(bo.getDvyId());
 //        orderBo.setDvyName(folwerDeliveryVo.getDvyName());
         //是否分账
-        orderBo.setIsProfitSharing(0L);
+        if(!appletUserInformationVo.getParentId().equals(0) && appletUserInformationVo.getParentId() != null){
+            orderBo.setIsProfitSharing(1L);
+        }
+
         //物流单号
         long dataCenterId = 1L;  // 数据中心标识
         long machineId = 1L;     // 机器标识
@@ -503,7 +510,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         payJSAPIParam.setOutTradeNo(String.valueOf(folwerAppletOrderVo.getOrderId()));
         payJSAPIParam.setAmount(folwerAppletOrderVo.getActualTotal());
         payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
-        payJSAPIParam.setDescription(folwerAppletOrderVo.getRemarks());
+        payJSAPIParam.setDescription("购买鲜花");
         //是否分账
         payJSAPIParam.setProfitSharing(folwerAppletOrderVo.getIsProfitSharing() == 1?true:false);
         WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
@@ -560,6 +567,32 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             Boolean b = this.updateByBo(folwerAppletOrderBo);
             if (b){
                 //进行分账
+                if(folwerAppletOrderVo.getIsProfitSharing() == 1L){
+                    AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
+                    if (appletUserInformationVo == null){
+                        throw new Exception("用户不存在");
+                    }
+                    if(appletUserInformationVo.getParentId() != 0L && appletUserInformationVo.getParentId() != null){
+                        AppletUserInformationVo informationParentVo = appletUserInformationService.queryById(appletUserInformationVo.getParentId());
+                        AddReceiverResponse addReceiverResponse = sharingService.addReceiver("PERSONAL_OPENID", informationParentVo.getOpenid(), "USER");
+                        if (addReceiverResponse.getAccount() != null){
+                            PayProfitsharingParam profitSharingParam = new PayProfitsharingParam();
+                            profitSharingParam.setOutOrderNo(String.valueOf(folwerAppletOrderVo.getOrderId()));
+                            profitSharingParam.setType("PERSONAL_OPENID");
+                            profitSharingParam.setTransactionId(transaction.getTransactionId());
+                            profitSharingParam.setAccount(informationParentVo.getOpenid());
+                            double mul = Arith.mul(folwerAppletOrderVo.getActualTotal(), 0.06);
+                            profitSharingParam.setAmount((long) mul);
+                            profitSharingParam.setDescription("分账");
+
+                            OrdersEntity ordersEntity = sharingService.ordersSharing(profitSharingParam, "0");
+                            if (ordersEntity.getState().equals("FINISHED")){
+                                //分账成功
+
+                            }
+                        }
+                    }
+                }
             }
             return folwerAppletOrderVo;
         }
