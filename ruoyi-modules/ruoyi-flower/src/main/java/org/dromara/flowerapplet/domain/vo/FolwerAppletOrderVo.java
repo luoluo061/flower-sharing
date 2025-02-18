@@ -68,6 +68,12 @@ public class FolwerAppletOrderVo implements Serializable {
     private Long total;
 
     /**
+     * 积分
+     */
+    @ExcelProperty(value = "积分")
+    private Long rebate;
+
+    /**
      * 实际金额
      */
     @ExcelProperty(value = "实际金额")

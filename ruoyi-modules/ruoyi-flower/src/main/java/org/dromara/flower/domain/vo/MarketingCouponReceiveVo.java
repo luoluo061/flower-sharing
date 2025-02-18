@@ -106,12 +106,4 @@ public class MarketingCouponReceiveVo implements Serializable {
      * 优惠券数量
      */
     private Long num;
-
-
-
-
-
-
-
-
 }

@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.EditGroup;
@@ -50,6 +51,11 @@ public class FolwerAppletOrderBo extends BaseEntity {
      * 商品总价
      */
     private Long total;
+
+    /**
+     * 积分
+     */
+    private Long rebate;
 
     /**
      * 实际金额

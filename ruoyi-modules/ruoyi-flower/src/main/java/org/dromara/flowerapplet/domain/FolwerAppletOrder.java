@@ -55,6 +55,11 @@ public class FolwerAppletOrder extends TenantEntity {
     private Long total;
 
     /**
+     * 积分
+     */
+    private Long rebate;
+
+    /**
      * 实际金额
      */
     private Long actualTotal;

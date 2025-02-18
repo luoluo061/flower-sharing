@@ -299,6 +299,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setMemberLevelId(appletUserInformationVo.getMemberLevelId());
 
         orderBo.setTotal((long) total);
+        orderBo.setRebate(Math.round(total));
         orderBo.setActualTotal((long)Arith.sub(total, derlinePrice));
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
