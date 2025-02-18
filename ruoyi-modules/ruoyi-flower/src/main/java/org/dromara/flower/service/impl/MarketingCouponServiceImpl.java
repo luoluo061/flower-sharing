@@ -248,7 +248,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
     @Override
     public boolean updateState(Long id) {
         MarketingCoupon marketingCoupon = baseMapper.selectById(id);
-        if (ObjectUtils.isEmpty(marketingCoupon)) throw new ServiceException("优惠券不存在，删除失败");
+        if (ObjectUtils.isEmpty(marketingCoupon)) throw new ServiceException("优惠券不存在，修改失败");
 
 
         // 设置 优惠券为开放领取中
