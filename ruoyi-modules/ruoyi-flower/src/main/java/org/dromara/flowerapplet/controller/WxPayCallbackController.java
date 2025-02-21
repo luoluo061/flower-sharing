@@ -1,6 +1,7 @@
 package org.dromara.flowerapplet.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.wechat.pay.java.service.payments.model.Transaction;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -9,11 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.HttpStatus;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.mypay.server.IPayService;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
+import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @Validated
 @RestController
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WxPayCallbackController {
 
     private final IPayService payService;
+
+    private final IFolwerAppletOrderService folwerAppletOrderService;
 
     /***
      * 微信小程序支付回调
@@ -32,12 +36,13 @@ public class WxPayCallbackController {
      */
     @SaIgnore
     @PostMapping("/pay/payCallback")
-    public R<String> callBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public R<FolwerAppletOrderVo> callBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             Object ret = payService.confirmOrder(request,response);
-            return R.ok("操作成功",ret.toString());
+            FolwerAppletOrderVo folwerAppletOrderVo = folwerAppletOrderService.payCallbackOrder((Transaction) ret);
+            return R.ok("操作成功",folwerAppletOrderVo);
         } catch (Exception ex) {
-            return R.fail("操作失败", ex.getLocalizedMessage());
+            return R.fail("操作失败", null);
         }
     }
 

@@ -252,10 +252,15 @@ public class FolwerAppletCreditOrderServiceImpl implements IFolwerAppletCreditOr
     public Boolean updateByBo(FolwerAppletCreditOrderBo bo) {
         FolwerAppletCreditOrder update = MapstructUtils.convert(bo, FolwerAppletCreditOrder.class);
         validEntityBeforeSave(update);
-        if (update.getStatus() == 0L && RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + update.getOrderId()) != null){
-            RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + update.getOrderId(), update.getOrderId(), true);
+        boolean b = baseMapper.updateById(update) > 0;
+        if (b){
+            FolwerAppletCreditOrderVo folwerAppletCreditOrderVo = this.queryById(update.getOrderId());
+            if (folwerAppletCreditOrderVo.getStatus() == 0L && RedisUtils.getCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId()) != null){
+                RedisUtils.setCacheObject(CONFIRM_CREDITORDER_CACHE_KEY + folwerAppletCreditOrderVo.getOrderId(), folwerAppletCreditOrderVo.getOrderId(), true);
+            }
         }
-        return baseMapper.updateById(update) > 0;
+
+        return b;
     }
 
     /**

@@ -1,5 +1,7 @@
 package org.dromara.flowerapplet.domain.vo;
 
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flowerapplet.domain.FolwerAppletOrderDetail;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -47,10 +49,29 @@ public class FolwerAppletOrderDetailVo implements Serializable {
     private String productName;
 
     /**
+     * 规格ID
+     */
+    @ExcelProperty(value = "规格ID")
+    private Long skuId;
+
+    /**
+     * 规格ID
+     */
+    @ExcelProperty(value = "规格ID")
+    private String skuName;
+
+    /**
      * 商品列表图
      */
+
     @ExcelProperty(value = "商品列表图")
     private String productListPictureUrl;
+
+    /**
+     * 商品列表图Url
+     */
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productListPictureUrl")
+    private String productListPictureUrlUrl;
 
     /**
      * 单价

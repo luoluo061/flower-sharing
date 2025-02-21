@@ -33,6 +33,11 @@ public class FolwerAppletOrderDetailBo extends BaseEntity {
     private String productName;
 
     /**
+     * 规格ID
+     */
+    private Long skuId;
+
+    /**
      * 商品列表图
      */
     private String productListPictureUrl;

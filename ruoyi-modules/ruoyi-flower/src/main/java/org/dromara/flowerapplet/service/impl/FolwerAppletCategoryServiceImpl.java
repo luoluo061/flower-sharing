@@ -119,7 +119,6 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     @Override
     public List<FolwerAppletCategoryVo> queryList(FolwerAppletCategoryBo bo) {
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
-
         List<FolwerAppletCategoryVo> folwerAppletCategoryVos = baseMapper.selectVoList(lqw);
         if (!folwerAppletCategoryVos.isEmpty()){
             Map<String, String> longStringMap = sysOssService.listUrlByIds(

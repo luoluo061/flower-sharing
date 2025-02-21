@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service;
 
+import com.wechat.pay.java.service.payments.model.Transaction;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.mypay.domain.WxJsapiResponse;
 import org.dromara.common.mypay.domain.WxPayRequest;
@@ -96,13 +97,19 @@ public interface IFolwerAppletOrderService {
      */
     R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception;
 
-
     /***
      * 查询订单
      * @param orderId
      * @return
      */
     FolwerAppletOrderVo queryOrder(String orderId) throws Exception;
+
+    /***
+     * 支付回调订单
+     * @param transaction
+     * @return
+     */
+    FolwerAppletOrderVo payCallbackOrder(Transaction transaction) throws Exception;
 
     /***
      * 分账

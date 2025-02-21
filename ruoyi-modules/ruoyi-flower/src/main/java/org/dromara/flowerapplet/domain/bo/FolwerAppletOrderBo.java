@@ -25,12 +25,12 @@ public class FolwerAppletOrderBo extends BaseEntity {
      * 订单ID
      */
     @NotNull(message = "订单ID不能为空", groups = { EditGroup.class })
-    private Long orderId;
+    private String orderId;
 
     /**
      * 会员ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 会员名称
@@ -40,7 +40,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 会员类型
      */
-    private Long memberLevelId;
+    private String memberLevelId;
 
     /**
      * 订单流水号
@@ -100,7 +100,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 物流公司ID
      */
-    private Long dvyId;
+    private String dvyId;
 
     /**
      * 物流公司
@@ -120,7 +120,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 用户订单地址Id
      */
-    private Long addrOrderId;
+    private String addrOrderId;
 
     /**
      * 发货时间

@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -26,7 +27,7 @@ import java.util.List;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = FolwerAppletOrder.class)
-public class FolwerAppletOrderVo implements Serializable {
+public class FolwerAppletOrderVo extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -66,6 +67,12 @@ public class FolwerAppletOrderVo implements Serializable {
      */
     @ExcelProperty(value = "商品总价")
     private Long total;
+
+    /**
+     * 商品总数量
+     */
+    @ExcelProperty(value = "商品总数量")
+    private Long totalNum;
 
     /**
      * 积分
@@ -115,7 +122,7 @@ public class FolwerAppletOrderVo implements Serializable {
      * 是否分账 0：否，1：是
      */
     @ExcelProperty(value = "是否分账 0：否，1：是")
-    private long isProfitSharing;
+    private Long isProfitSharing;
 
     /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
@@ -177,6 +184,9 @@ public class FolwerAppletOrderVo implements Serializable {
     @ExcelProperty(value = "取消原因")
     private String cancelMsg;
 
+    /**
+     * 订单详情
+     */
     @ExcelProperty(value = "订单详情")
     private List<FolwerAppletOrderDetailVo> orderDetails;
 
