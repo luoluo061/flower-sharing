@@ -10,6 +10,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.FolwerOrderRefund;
 import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
+import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
+import org.dromara.flower.service.IMemberLevelService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
 import org.dromara.flower.domain.vo.FolwerOrderVo;
@@ -32,6 +37,10 @@ import java.util.Collection;
 public class FolwerOrderServiceImpl implements IFolwerOrderService {
 
     private final FolwerOrderMapper baseMapper;
+
+    private final IMemberLevelService memberLevelService;
+
+    private final IAppletUserInformationService appletUserInformationService;
 
     /**
      * 查询订单
@@ -66,6 +75,16 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
     public TableDataInfo<FolwerOrderVo> queryPageList(FolwerOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerOrder> lqw = buildQueryWrapper(bo);
         Page<FolwerOrderVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.getRecords().forEach(FolwerOrderVo -> {
+            MemberLevelVo memberLevelVo = memberLevelService.queryById(FolwerOrderVo.getMemberLevelId());
+            if (memberLevelVo != null) {
+                FolwerOrderVo.setMemberLevelName(memberLevelVo.getGradeName());
+            }
+            AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(FolwerOrderVo.getUserId());
+            if (appletUserInformationVo != null){
+                FolwerOrderVo.setUserName(appletUserInformationVo.getNickName());
+            }
+        });
         return TableDataInfo.build(result);
     }
 

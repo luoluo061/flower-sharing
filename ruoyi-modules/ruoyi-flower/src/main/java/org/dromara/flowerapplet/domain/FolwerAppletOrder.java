@@ -90,6 +90,11 @@ public class FolwerAppletOrder extends TenantEntity {
     private Long status;
 
     /**
+     * 是否分账 默认是0,不分账, 1,分账
+     */
+    private Long isProfitSharing;
+
+    /**
      * 配送方式 默认是1，表示物流配送, 0，商家配送
      */
     private Long deliveryMode;

@@ -55,6 +55,12 @@ public class FolwerOrderVo implements Serializable {
     private Long memberLevelId;
 
     /**
+     * 会员类型名称
+     */
+    @ExcelProperty(value = "会员类型")
+    private String memberLevelName;
+
+    /**
      * 订单流水号
      */
     @ExcelProperty(value = "订单流水号")

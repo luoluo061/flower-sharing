@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderDetailVo;
@@ -31,6 +32,8 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
 
     private final FolwerAppletOrderDetailMapper baseMapper;
 
+    private final IFolwerAppletSkuService folwerAppletSkuService;
+
     /**
      * 查询订单详细
      *
@@ -39,7 +42,11 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
      */
     @Override
     public FolwerAppletOrderDetailVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        FolwerAppletOrderDetailVo folwerAppletOrderDetailVo = baseMapper.selectVoById(id);
+        if(folwerAppletOrderDetailVo.getSkuId() != null){
+            folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.queryById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
+        }
+        return folwerAppletOrderDetailVo;
     }
 
     /**
@@ -65,7 +72,13 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
     @Override
     public List<FolwerAppletOrderDetailVo> queryList(FolwerAppletOrderDetailBo bo) {
         LambdaQueryWrapper<FolwerAppletOrderDetail> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = baseMapper.selectVoList(lqw);
+        for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos) {
+            if(folwerAppletOrderDetailVo.getSkuId() != null){
+                folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.queryById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
+            }
+        }
+        return folwerAppletOrderDetailVos;
     }
 
     private LambdaQueryWrapper<FolwerAppletOrderDetail> buildQueryWrapper(FolwerAppletOrderDetailBo bo) {

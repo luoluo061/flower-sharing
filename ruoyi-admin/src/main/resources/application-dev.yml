@@ -285,7 +285,7 @@ wx:
     #商户APIV3密钥
     key: xBRtIhqmDDECnyitXpjSbz8XJKFUWi5h
     #支付通知地址
-    notify-url: http://bixp4h.natappfree.cc/wxpayback/pay/wxCallback
+    notify-url: http://d9cryu.natappfree.cc/wxpayback/pay/payCallback
     #退款通知地址
     refun-notify-url: http://3df521505ar6.vicp.fun/wx/refundNotify
     #微信平台证书
