@@ -25,6 +25,7 @@ import org.dromara.common.mypay.server.IPayService;
 import org.dromara.common.mypay.server.SharingService;
 import org.dromara.common.mypay.utils.IpUtils;
 import org.dromara.common.redis.utils.RedisUtils;
+import org.dromara.flower.domain.bo.FolwerCreditSetBo;
 import org.dromara.flower.domain.bo.FolwerOrderSetBo;
 import org.dromara.flower.domain.bo.FolwerPickAddrBo;
 import org.dromara.flower.domain.bo.MarketingMemberPromotionPecordBo;
@@ -100,6 +101,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final IFolwerAppletSkuService folwerAppletSkuService;
 
     private final IFolwerOrderSetService folwerOrderSetService;
+
+    private final IFolwerCreditSetService folwerCreditSetService;
 
     @Resource
     private Snowflake snowflake;
@@ -349,7 +352,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setMemberLevelId(String.valueOf(appletUserInformationVo.getMemberLevelId()));
 
         orderBo.setTotal((long) total);
-        orderBo.setRebate(Math.round(total));
+        FolwerCreditSetBo folwerCreditSetBo = new FolwerCreditSetBo();
+        List<FolwerCreditSetVo> folwerCreditSetVos = folwerCreditSetService.queryList(folwerCreditSetBo);
+        double points = Arith.div(folwerCreditSetVos.get(0).getGoodsCredit(), folwerCreditSetVos.get(0).getGoodsPurchase(), 2);
+        orderBo.setRebate((long) Arith.mul(orderBo.getTotal(), points));
         orderBo.setActualTotal((long)Arith.sub(total, derlinePrice));
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
