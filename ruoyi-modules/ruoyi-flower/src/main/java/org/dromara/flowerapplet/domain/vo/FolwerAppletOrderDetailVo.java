@@ -55,9 +55,9 @@ public class FolwerAppletOrderDetailVo implements Serializable {
     private Long skuId;
 
     /**
-     * 规格ID
+     * 规格名称
      */
-    @ExcelProperty(value = "规格ID")
+    @ExcelProperty(value = "规格名称")
     private String skuName;
 
     /**
