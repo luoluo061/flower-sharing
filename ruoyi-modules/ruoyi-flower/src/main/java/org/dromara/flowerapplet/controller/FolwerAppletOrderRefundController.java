@@ -75,8 +75,8 @@ public class FolwerAppletOrderRefundController extends BaseController {
     @Log(title = "订单退款", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerAppletOrderRefundBo bo) {
-        return toAjax(folwerAppletOrderRefundService.insertByBo(bo));
+    public R<String> add(@Validated(AddGroup.class) @RequestBody FolwerAppletOrderRefundBo bo) throws Exception {
+        return R.ok(folwerAppletOrderRefundService.insertByBo(bo));
     }
 
     /**

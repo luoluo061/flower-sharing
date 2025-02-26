@@ -45,6 +45,9 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     @Override
     public FolwerAppletProductVo queryById(Long id){
         FolwerAppletProductVo folwerAppletProductVo = baseMapper.selectVoById(id);
+        if (folwerAppletProductVo == null){
+            return null;
+        }
         if (folwerAppletProductVo != null) {
             if (folwerAppletProductVo.getNormsType().equals(1L)) {
                 FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();

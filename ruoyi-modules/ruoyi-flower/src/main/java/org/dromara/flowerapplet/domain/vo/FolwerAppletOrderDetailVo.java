@@ -43,6 +43,12 @@ public class FolwerAppletOrderDetailVo implements Serializable {
     private String orderId;
 
     /**
+     * 商品ID
+     */
+    @ExcelProperty(value = "商品ID")
+    private Long productId;
+
+    /**
      * 商品名称
      */
     @ExcelProperty(value = "商品名称")

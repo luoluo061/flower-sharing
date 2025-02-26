@@ -34,6 +34,11 @@ public class FolwerAppletOrderDetail extends TenantEntity {
     private String orderId;
 
     /**
+     * 商品ID
+     */
+    private Long productId;
+
+    /**
      * 商品名称
      */
     private String productName;

@@ -12,6 +12,7 @@ import com.baomidou.lock.LockTemplate;
 import com.baomidou.lock.executor.RedissonLockExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jakarta.annotation.Resource;
 import javassist.expr.NewArray;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,11 +78,20 @@ public class XcxAuthStrategy implements IAuthStrategy {
 
     private final InitialMemberLevelProperties initialMemberLevelProperties;
 
+    @Resource
     private final AppletUserInformationMapper appletUserInformationMapper;
+
+    @Resource
     private final SysRoleMapper roleMapper;
+
+    @Resource
     private final SysUserRoleMapper userRoleMapper;
+
     private final LockTemplate lockTemplate;
+
+    @Resource
     private final MarketingMemberPromotionPecordMapper memberPromotionPecordMapper;
+
     private final ISysPermissionService permissionService;
 
     private final static Long ZERO = 0L;

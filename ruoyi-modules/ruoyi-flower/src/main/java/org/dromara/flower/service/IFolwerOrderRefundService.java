@@ -1,5 +1,6 @@
 package org.dromara.flower.service;
 
+import org.dromara.common.core.domain.R;
 import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.dromara.flower.domain.vo.FolwerOrderRefundVo;
 import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
@@ -74,4 +75,12 @@ public interface IFolwerOrderRefundService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 提交退款订单
+     *
+     * @param refundId
+     * @return
+     */
+    R<String> submitRefundOrders(Long refundId) throws Exception;
 }

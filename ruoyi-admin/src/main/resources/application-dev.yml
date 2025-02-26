@@ -50,6 +50,11 @@ spring:
           url: jdbc:mysql://8.155.23.156:3306/flower_sharing?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
           password: mlhxjflower9527.
+
+#          url: jdbc:mysql://172.16.1.17:3306/flower_sharing?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+#          username: root
+#          password: 123456
+
         # 从库数据源
 #        slave:
 #          lazy: true

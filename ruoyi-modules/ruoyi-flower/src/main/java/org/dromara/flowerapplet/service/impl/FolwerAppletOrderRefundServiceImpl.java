@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
+import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderRefundBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderRefundVo;
@@ -30,6 +34,8 @@ import java.util.Collection;
 public class FolwerAppletOrderRefundServiceImpl implements IFolwerAppletOrderRefundService {
 
     private final FolwerAppletOrderRefundMapper baseMapper;
+
+    private final IFolwerAppletOrderService folwerAppletOrderService;
 
     /**
      * 查询订单退款
@@ -95,14 +101,18 @@ public class FolwerAppletOrderRefundServiceImpl implements IFolwerAppletOrderRef
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(FolwerAppletOrderRefundBo bo) {
+    public String insertByBo(FolwerAppletOrderRefundBo bo) throws Exception {
         FolwerAppletOrderRefund add = MapstructUtils.convert(bo, FolwerAppletOrderRefund.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setRefundId(add.getRefundId());
+            FolwerAppletOrderVo folwerAppletOrderVo = folwerAppletOrderService.queryOrder(bo.getOrderId());
+            FolwerAppletOrderBo folwerAppletOrderBo = BeanUtil.copyProperties(folwerAppletOrderVo, FolwerAppletOrderBo.class);
+            folwerAppletOrderBo.setIsRefund(2L);
+            Boolean b = folwerAppletOrderService.updateByBo(folwerAppletOrderBo);
         }
-        return flag;
+        return add.getRefundId().toString();
     }
 
     /**

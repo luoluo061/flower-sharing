@@ -119,6 +119,12 @@ public class FolwerAppletOrderVo extends BaseEntity implements Serializable {
     private Long status;
 
     /**
+     *   是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败
+     */
+    @ExcelProperty(value = "是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败")
+    private Long isRefund;
+
+    /**
      * 是否分账 0：否，1：是
      */
     @ExcelProperty(value = "是否分账 0：否，1：是")

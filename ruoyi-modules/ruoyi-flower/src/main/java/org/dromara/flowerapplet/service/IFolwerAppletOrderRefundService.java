@@ -47,7 +47,7 @@ public interface IFolwerAppletOrderRefundService {
      * @param bo 订单退款
      * @return 是否新增成功
      */
-    Boolean insertByBo(FolwerAppletOrderRefundBo bo);
+    String insertByBo(FolwerAppletOrderRefundBo bo) throws Exception;
 
     /**
      * 修改订单退款

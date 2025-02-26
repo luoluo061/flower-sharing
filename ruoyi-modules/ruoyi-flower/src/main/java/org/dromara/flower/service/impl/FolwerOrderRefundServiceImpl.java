@@ -1,5 +1,11 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.wechat.pay.java.service.refund.model.Amount;
+import com.wechat.pay.java.service.refund.model.Refund;
+import com.wechat.pay.java.service.refund.model.Status;
+import jakarta.annotation.Resource;
+import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +14,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.mypay.domain.RefundAmount;
+import org.dromara.common.mypay.domain.WxRefundRequest;
+import org.dromara.common.mypay.server.IPayService;
 import org.dromara.flower.domain.FolwerDelivery;
 import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
 import org.springframework.stereotype.Service;
@@ -33,6 +42,9 @@ import java.util.Collection;
 public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
 
     private final FolwerOrderRefundMapper baseMapper;
+
+    @Resource
+    private final IPayService payService;
 
     /**
      * 查询订单退款
@@ -207,5 +219,53 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public R<String> submitRefundOrders(Long refundId) throws Exception {
+        FolwerOrderRefundInfoVo folwerOrderRefundInfoVo = queryInfoById(refundId);
+        WxRefundRequest wxRefundRequest = new WxRefundRequest();
+        wxRefundRequest.setTransactionId(String.valueOf(folwerOrderRefundInfoVo.getOrderId()));
+        wxRefundRequest.setOutRefundNo(String.valueOf(refundId));
+        RefundAmount refundAmount = new RefundAmount();
+        refundAmount.setRefund(folwerOrderRefundInfoVo.getRefundAmount());
+        refundAmount.setTotal(folwerOrderRefundInfoVo.getTotal());
+        refundAmount.setCurrency("CNY");
+        wxRefundRequest.setAmount(refundAmount);
+        Refund refund = payService.refundOrder(wxRefundRequest);
+//                log.info("请求退款返回：" + refund);
+        //接收退款返回参数
+        //  Status status = refund.getStatus();
+        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
+            //说明退款成功，开始接下来的业务操作
+            //你的业务代码，根据请求返回状态修改对应订单状态
+
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            bo.setRefundStatus(1L);
+            updateByBo(bo);
+            return R.ok("退款成功");
+        }
+        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            bo.setRefundStatus(2L);
+            updateByBo(bo);
+            return R.ok("退款中");
+        }
+        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            bo.setRefundStatus(3L);
+            updateByBo(bo);
+            return R.fail("退款异常");
+        }
+        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
+            //你的业务代码，根据请求返回状态修改对应订单状态
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            bo.setRefundStatus(4L);
+            updateByBo(bo);
+            return  R.fail("退款关闭");
+        }
+        return null;
     }
 }
