@@ -83,6 +83,9 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
     @Override
     public FolwerAppletBasketVo queryById(Long basketId){
         FolwerAppletBasketVo folwerAppletBasketVo = baseMapper.selectVoById(basketId);
+        if (folwerAppletBasketVo == null){
+            return null;
+        }
         if(folwerAppletBasketVo.getSkuId() != null){
             folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
         }

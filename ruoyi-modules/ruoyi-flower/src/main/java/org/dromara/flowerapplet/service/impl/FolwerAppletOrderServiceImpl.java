@@ -240,6 +240,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             if (folwerAppletProductVo == null){
                 throw new Exception("商品不存在");
             }
+            if (bo.getProdCount() == null){
+                throw new Exception("商品数量不能为空");
+            }
             //订单详情
             FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
             if (bo.getSkuId().isEmpty()){
@@ -267,13 +270,14 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             }
 
 //                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
+            folwerAppletOrderDetailBo.setProductId(folwerAppletProductVo.getId());
             folwerAppletOrderDetailBo.setProductName(folwerAppletProductVo.getProductName());
             folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletProductVo.getProductListPictureUrl());
 
             folwerAppletOrderDetailBo.setNumber(Long.valueOf(bo.getProdCount()));
             folwerAppletOrderDetailBo.setSubtotal((long)Arith.mul(folwerAppletProductVo.getOriPrice(), Long.valueOf(bo.getProdCount())));
-            if (folwerAppletProductVo.getSkuId() != null){
-                folwerAppletOrderDetailBo.setSkuId(folwerAppletProductVo.getSkuId());
+            if (bo.getSkuId() != null){
+                folwerAppletOrderDetailBo.setSkuId(Long.valueOf(bo.getSkuId()));
             }
             folwerAppletOrderDetailBos.add(folwerAppletOrderDetailBo);
         }
@@ -312,6 +316,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
 
 //                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
+                folwerAppletOrderDetailBo.setProductId(productVo.getId());
                 folwerAppletOrderDetailBo.setProductName(productVo.getProductName());
                 folwerAppletOrderDetailBo.setProductListPictureUrl(productVo.getProductListPictureUrl());
 

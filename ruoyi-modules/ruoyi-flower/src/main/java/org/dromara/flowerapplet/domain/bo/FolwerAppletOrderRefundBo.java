@@ -20,7 +20,7 @@ import java.util.Date;
 public class FolwerAppletOrderRefundBo extends BaseEntity {
 
     /**
-     * 订单ID
+     * 退款ID
      */
     private Long refundId;
 
