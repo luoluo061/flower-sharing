@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 单品SKU对象 folwer_sku
@@ -58,9 +59,14 @@ public class FolwerSku extends TenantEntity {
     private String size;
 
     /**
-     * 价格
+     * 最大价格
      */
-    private Long price;
+    private BigDecimal price;
+
+    /**
+     * 最小价格
+     */
+    private BigDecimal minPrice;
 
     /**
      * 库存

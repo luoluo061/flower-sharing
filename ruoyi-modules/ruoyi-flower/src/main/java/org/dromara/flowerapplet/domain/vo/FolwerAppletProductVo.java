@@ -12,6 +12,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -81,13 +82,13 @@ public class FolwerAppletProductVo implements Serializable {
      * 原价
      */
     @ExcelProperty(value = "原价")
-    private Long oriPrice;
+    private BigDecimal oriPrice;
 
     /**
      * 划线价
      */
     @ExcelProperty(value = "划线价")
-    private Long derlinePrice;
+    private BigDecimal derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格

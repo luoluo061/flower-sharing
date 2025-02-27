@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.exception.NotPermissionException;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -37,6 +38,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/flowerapplet/order")
+@RestControllerAdvice
 public class FolwerAppletOrderController extends BaseController {
 
     private final IFolwerAppletOrderService folwerAppletOrderService;
@@ -80,6 +82,7 @@ public class FolwerAppletOrderController extends BaseController {
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
+    @ExceptionHandler(NotPermissionException.class)
     public R<String> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
         return R.ok(folwerAppletOrderService.insertByBo(bo));
     }

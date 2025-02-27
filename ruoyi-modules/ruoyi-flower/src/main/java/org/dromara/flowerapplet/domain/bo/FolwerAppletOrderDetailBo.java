@@ -6,6 +6,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
+
 /**
  * 订单详细业务对象 folwer_order_detail
  *
@@ -51,7 +53,7 @@ public class FolwerAppletOrderDetailBo extends BaseEntity {
     /**
      * 单价
      */
-    private Long orderPrice;
+    private BigDecimal orderPrice;
 
     /**
      * 数量
@@ -61,7 +63,7 @@ public class FolwerAppletOrderDetailBo extends BaseEntity {
     /**
      * 小计
      */
-    private Long subtotal;
+    private BigDecimal subtotal;
 
 
 }

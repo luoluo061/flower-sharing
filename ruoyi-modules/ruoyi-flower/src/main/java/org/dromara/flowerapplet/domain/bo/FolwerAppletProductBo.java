@@ -12,6 +12,8 @@ import jakarta.validation.constraints.*;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 
+import java.math.BigDecimal;
+
 /**
  * 小程序端商品管理业务对象 folwer_product
  *
@@ -61,12 +63,12 @@ public class FolwerAppletProductBo extends BaseEntity {
     /**
      * 原价
      */
-    private Long oriPrice;
+    private BigDecimal oriPrice;
 
     /**
      * 划线价
      */
-    private Long derlinePrice;
+    private BigDecimal derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格

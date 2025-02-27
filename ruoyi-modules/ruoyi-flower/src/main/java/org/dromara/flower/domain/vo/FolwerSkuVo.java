@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -77,10 +78,16 @@ public class FolwerSkuVo implements Serializable {
     private String size;
 
     /**
-     * 价格
+     * 最大价格
      */
     @ExcelProperty(value = "价格")
-    private Long price;
+    private BigDecimal price;
+
+    /**
+     * 最小价格
+     */
+    @ExcelProperty(value = "最小价格")
+    private BigDecimal minPrice;
 
     /**
      * 库存

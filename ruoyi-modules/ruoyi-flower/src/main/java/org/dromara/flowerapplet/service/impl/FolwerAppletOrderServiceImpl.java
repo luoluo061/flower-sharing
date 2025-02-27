@@ -37,6 +37,7 @@ import org.dromara.flower.service.*;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.bo.OrderParamBo;
 import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.*;
@@ -51,6 +52,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -103,6 +105,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final IFolwerOrderSetService folwerOrderSetService;
 
     private final IFolwerCreditSetService folwerCreditSetService;
+
+    private final IFolwerAppletProductService folwerAppletProductService;
 
     @Resource
     private Snowflake snowflake;
@@ -224,13 +228,20 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         }
 
         //总价
-        double total = 0.0;
-        //折扣价
-        double derlinePrice = 0.0;
-        //运费
-        double transfee = 0.0;
+//        double total = 0.0;
+//        //折扣价
+//        double derlinePrice = 0.0;
+//        //运费
+//        double transfee = 0.0;
         //购物车商品总数
         int totalCount = 0;
+
+        //总价
+        BigDecimal total = new BigDecimal(0);
+        //折扣价
+        BigDecimal derlinePrice  = new BigDecimal(0);
+        //运费
+        double transfee = 0.0;
 
 //        List<FolwerAppletProductVo> productVos = new ArrayList<>();
         List<FolwerAppletOrderDetailBo> folwerAppletOrderDetailBos = new ArrayList<>();
@@ -245,14 +256,15 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             }
             //订单详情
             FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
-            if (bo.getSkuId().isEmpty()){
-                total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
-                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletProductVo.getOriPrice());
-            } else {
+            //单规格和多规格（目前不要单规格了）
+//            if (bo.getSkuId().isEmpty()){
+//                total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+//                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletProductVo.getOriPrice());
+//            } else {
                 FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
-                total = Arith.mul(folwerAppletSkuVo.getPrice(),bo.getProdCount());
+                total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
                 folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
-            }
+//            }
 //            total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
             transfee = folwerAppletProductVo.getDeliveryPrice();
             if(bo.getUserChangeCoupon() != null){
@@ -260,12 +272,14 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 if(bo.getUserChangeCoupon().equals(0)){
 //                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
                     MarketingCouponVo marketingCouponVo = marketingCouponService.queryById(Long.valueOf(bo.getCouponId()));
-                    derlinePrice = marketingCouponVo.getCouponSum().doubleValue();
+//                    derlinePrice = marketingCouponVo.getCouponSum().doubleValue();
+
+                    derlinePrice = derlinePrice.add(BigDecimal.valueOf(marketingCouponVo.getCouponSum().doubleValue()));
 
                 }else if(bo.getUserChangeCoupon().equals(1)){       //1：花券
 //                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
-                    OneselfMemberLevelPrivilegeVo oneselfMemberLevelPrivilegeVo = oneselfMemberLevelPrivilegeService.queryById(Long.valueOf(bo.getCouponId()));
-                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
+//                    OneselfMemberLevelPrivilegeVo oneselfMemberLevelPrivilegeVo = oneselfMemberLevelPrivilegeService.queryById(Long.valueOf(bo.getCouponId()));
+//                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
                 }
             }
 
@@ -275,7 +289,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletProductVo.getProductListPictureUrl());
 
             folwerAppletOrderDetailBo.setNumber(Long.valueOf(bo.getProdCount()));
-            folwerAppletOrderDetailBo.setSubtotal((long)Arith.mul(folwerAppletProductVo.getOriPrice(), Long.valueOf(bo.getProdCount())));
+            BigDecimal subtotal = folwerAppletProductVo.getOriPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
+            folwerAppletOrderDetailBo.setSubtotal(subtotal);
             if (bo.getSkuId() != null){
                 folwerAppletOrderDetailBo.setSkuId(Long.valueOf(bo.getSkuId()));
             }
@@ -299,16 +314,21 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //                productVos.add(productVo);
                 //订单详情
                 FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
-                if (basketVo.getSkuId() == null){
-                    double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
-                    total = Arith.add(total,price);
-                    folwerAppletOrderDetailBo.setOrderPrice(productVo.getOriPrice());
-                } else {
-                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(basketVo.getSkuId()));
-                    double price = Arith.mul(folwerAppletSkuVo.getPrice(),basketVo.getBasketCount());
-                    total = Arith.add(total,price);
-                    folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
-                }
+//                if (basketVo.getSkuId() == null){
+//                    double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
+//                    total = Arith.add(total,price);
+//                    folwerAppletOrderDetailBo.setOrderPrice(productVo.getOriPrice());
+//                } else {
+//                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(basketVo.getSkuId()));
+//                    double price = Arith.mul(folwerAppletSkuVo.getPrice(),basketVo.getBasketCount());
+//                    total = Arith.add(total,price);
+//                    folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
+//                }
+
+                FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(basketVo.getSkuId()));
+                BigDecimal price = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
+                total = total.add(price);
+                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
 
 //                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
 //                total = Arith.add(total,price);
@@ -321,7 +341,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 folwerAppletOrderDetailBo.setProductListPictureUrl(productVo.getProductListPictureUrl());
 
                 folwerAppletOrderDetailBo.setNumber(basketVo.getBasketCount());
-                folwerAppletOrderDetailBo.setSubtotal((long)Arith.mul(productVo.getOriPrice(), basketVo.getBasketCount()));
+                BigDecimal subtotal = productVo.getOriPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
+                folwerAppletOrderDetailBo.setSubtotal(subtotal);
                 if (basketVo.getSkuId() != null){
                     folwerAppletOrderDetailBo.setSkuId(basketVo.getSkuId());
                 }
@@ -333,20 +354,20 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 //0:满减
                 if(bo.getUserChangeCoupon().equals(0)){
                     MarketingCouponVo marketingCouponVo = marketingCouponService.queryById(Long.valueOf(bo.getCouponId()));
-                    derlinePrice = marketingCouponVo.getCouponSum().doubleValue();
+                    derlinePrice = BigDecimal.valueOf(marketingCouponVo.getCouponSum().doubleValue());
                 }else if(bo.getUserChangeCoupon().equals(1)){       //1：花券
 //                    total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
 //                    OneselfMemberLevelPrivilegeVo oneselfMemberLevelPrivilegeVo = oneselfMemberLevelPrivilegeService.queryById(Long.valueOf(bo.getCouponId()));
 //                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
-                    List<Map<String, String> > couponIds = bo.getCouponIds();
-                    int count = 0;
-                    for (Map<String, String> map : couponIds) {
-                        for (String key: map.keySet()){
-                            FolwerAppletProductVo productVo = productService.queryById(Long.valueOf(key));
-                            derlinePrice = Arith.add(derlinePrice, productVo.getOriPrice());
-                        }
-                        count += 1;
-                    }
+//                    List<Map<String, String> > couponIds = bo.getCouponIds();
+//                    int count = 0;
+//                    for (Map<String, String> map : couponIds) {
+//                        for (String key: map.keySet()){
+//                            FolwerAppletProductVo productVo = productService.queryById(Long.valueOf(key));
+//                            derlinePrice = Arith.add(derlinePrice, productVo.getOriPrice());
+//                        }
+//                        count += 1;
+//                    }
                 }
             }
         }
@@ -356,12 +377,12 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setUserName(appletUserInformationVo.getName());
         orderBo.setMemberLevelId(String.valueOf(appletUserInformationVo.getMemberLevelId()));
 
-        orderBo.setTotal((long) total);
+        orderBo.setTotal(total);
         FolwerCreditSetBo folwerCreditSetBo = new FolwerCreditSetBo();
         List<FolwerCreditSetVo> folwerCreditSetVos = folwerCreditSetService.queryList(folwerCreditSetBo);
         double points = Arith.div(folwerCreditSetVos.get(0).getGoodsCredit(), folwerCreditSetVos.get(0).getGoodsPurchase(), 2);
-        orderBo.setRebate((long) Arith.mul(orderBo.getTotal(), points));
-        orderBo.setActualTotal((long)Arith.sub(total, derlinePrice));
+        orderBo.setRebate(orderBo.getTotal().multiply(BigDecimal.valueOf(points)).longValue());
+        orderBo.setActualTotal(total);
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
 
@@ -390,9 +411,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
         if (folwerOrderSetVos != null){
             if(folwerOrderSetVos.get(0).getFreeShippingPrice() != null){
-                if(total >= folwerOrderSetVos.get(0).getFreeShippingPrice()){
+                if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
                     transfee = 0;
                     orderBo.setFreightAmount((long) transfee);
+                }
+
+                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
+                    throw new Exception("订单金额小于起步价，请重新下单");
                 }
             }
         }
@@ -696,9 +721,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 SimpleDateFormat simpleDateFormat = new  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 folwerAppletOrderBo.setPayTime(simpleDateFormat.parse(transaction.getSuccessTime()));
                 folwerAppletOrderBo.setPayCallback(transaction.toString());
+                AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
                 //进行分账
                 if(folwerAppletOrderVo.getIsProfitSharing() == 1L){
-                    AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
+
                     if (appletUserInformationVo == null){
                         throw new Exception("用户不存在");
                     }
@@ -722,12 +748,24 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                             }
                         }
                     }
+
+                }
+                Boolean b = this.updateByBo(folwerAppletOrderBo);
+                if (b){
                     //更新用户积分
                     AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
                     appletUserInformationBo.setPoints((long)Arith.add(appletUserInformationVo.getPoints(),folwerAppletOrderVo.getRebate()));
                     appletUserInformationService.updateByBo(appletUserInformationBo);
+                    //修改库存和销量
+                    for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderVo.getOrderDetails()){
+                        FolwerAppletProductVo folwerAppletProductVo = folwerAppletProductService.queryById(folwerAppletOrderDetailVo.getProductId());
+                        FolwerAppletProductBo folwerAppletProductBo = BeanUtil.copyProperties(folwerAppletProductVo, FolwerAppletProductBo.class);
+                        folwerAppletProductBo.setTotalStocks((long) Arith.mul(folwerAppletProductVo.getTotalStocks(), folwerAppletOrderDetailVo.getNumber()));
+                        folwerAppletProductBo.setSoldNum((long) Arith.add(folwerAppletProductVo.getSoldNum(), folwerAppletOrderDetailVo.getNumber()));
+                        folwerAppletProductService.updateByBo(folwerAppletProductBo);
+                    }
                 }
-                Boolean b = this.updateByBo(folwerAppletOrderBo);
+
             }
             return folwerAppletOrderVo;
         }

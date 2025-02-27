@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -39,6 +40,12 @@ public class FolwerOrderSetVo implements Serializable {
      */
     @ExcelProperty(value = "满额包邮")
     private Long freeShippingPrice;
+
+    /**
+     * 起步价
+     */
+    @ExcelProperty(value = "起步价")
+    private BigDecimal startPrice;
 
     /**
      * 退货收货人姓名

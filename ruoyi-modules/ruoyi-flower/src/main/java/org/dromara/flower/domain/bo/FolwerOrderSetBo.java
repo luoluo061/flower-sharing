@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
+
 /**
  * 订单设置业务对象 folwer_order_set
  *
@@ -30,7 +32,12 @@ public class FolwerOrderSetBo extends BaseEntity {
      * 满额包邮
      */
 //    @NotNull(message = "满额包邮不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long freeShippingPrice;
+    private BigDecimal freeShippingPrice;
+
+    /**
+     * 起步价
+     */
+    private BigDecimal startPrice;
 
     /**
      * 退货收货人姓名

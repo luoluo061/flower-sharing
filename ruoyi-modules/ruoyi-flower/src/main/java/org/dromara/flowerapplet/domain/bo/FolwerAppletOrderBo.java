@@ -8,6 +8,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -50,7 +52,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 商品总价
      */
-    private Long total;
+    private BigDecimal total;
 
     /**
      * 积分
@@ -60,7 +62,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 实际金额
      */
-    private Long actualTotal;
+    private BigDecimal actualTotal;
 
     /**
      * 支付方式 0 手动代付 1 微信支付 2 支付宝

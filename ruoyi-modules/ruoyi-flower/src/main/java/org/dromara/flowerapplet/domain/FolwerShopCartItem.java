@@ -6,6 +6,7 @@ import lombok.Data;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class FolwerShopCartItem implements Serializable {
      * 商品总金额
      */
     @ExcelProperty(value = "商品总金额")
-    private Double productTotalAmount;
+    private BigDecimal productTotalAmount;
 
     /**
      * 购物车产品个数
