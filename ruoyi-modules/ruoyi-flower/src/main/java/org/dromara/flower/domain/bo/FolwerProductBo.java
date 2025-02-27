@@ -63,13 +63,13 @@ public class FolwerProductBo extends BaseEntity {
      * 原价
      */
 //    @NotNull(message = "原价不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long oriPrice;
+    private BigDecimal oriPrice;
 
     /**
      * 划线价
      */
 //    @NotNull(message = "划线价不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long derlinePrice;
+    private BigDecimal derlinePrice;
 
     /**
      * 规格类型 默认是0，表示单规格，1表示多规格

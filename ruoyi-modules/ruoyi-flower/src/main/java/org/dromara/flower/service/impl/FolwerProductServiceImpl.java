@@ -19,6 +19,7 @@ import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
@@ -92,6 +93,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 
             if (folwerProductVo.getNormsType().equals(1L)) {
                 List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
+//                List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(folwerProductVo.getId());
                 folwerProductVo.setProdSKU(folwerSkuVos);
             }
         }
@@ -138,6 +140,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 //多规格
                 if (record.getNormsType().equals(1L)){
                     List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(record.getId());
+//                    List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(record.getId());
                     record.setProdSKU(folwerSkuVos);
                 }
             });
@@ -237,8 +240,13 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     public Boolean insertByBo(FolwerProductBo bo) {
         FolwerProduct FolwerProduct = new FolwerProduct();
         BeanUtils.copyProperties(bo,FolwerProduct);
-        FolwerProduct.setWeight(Double.parseDouble(bo.getWeight()));
-        FolwerProduct.setDeliveryPrice(new BigDecimal(bo.getDeliveryPrice()));
+//        FolwerProduct.setWeight(Double.parseDouble(bo.getWeight()));
+        if (bo.getDeliveryPrice() != null){
+            FolwerProduct.setDeliveryPrice(new BigDecimal(bo.getDeliveryPrice()));
+        }else {
+            FolwerProduct.setDeliveryPrice(new BigDecimal(0));
+        }
+
         validEntityBeforeSave(FolwerProduct);
         boolean flag = baseMapper.insert(FolwerProduct) > 0;
         if (flag) {

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 订单设置对象 folwer_order_set
@@ -30,7 +31,12 @@ public class FolwerOrderSet extends TenantEntity {
     /**
      * 满额包邮
      */
-    private Long freeShippingPrice;
+    private BigDecimal freeShippingPrice;
+
+    /**
+     * 起步价
+     */
+    private BigDecimal startPrice;
 
     /**
      * 退货收货人姓名

@@ -2,6 +2,7 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.exception.NotPermissionException;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -32,6 +33,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/flower/product")
+@RestControllerAdvice
 public class FolwerProductController extends BaseController {
 
     private final IFolwerProductService folwerProductService;
@@ -81,6 +83,7 @@ public class FolwerProductController extends BaseController {
     /**
      * 新增商品管理
      */
+    @ExceptionHandler(NotPermissionException.class)
     @SaCheckPermission("flower:product:add")
     @Log(title = "商品管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()

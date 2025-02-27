@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
+
 /**
  * 单品SKU业务对象 folwer_sku
  *
@@ -57,9 +59,14 @@ public class FolwerSkuBo extends BaseEntity {
     private String size;
 
     /**
-     * 价格
+     * 最大价格
      */
-    private Long price;
+    private BigDecimal price;
+
+    /**
+     * 最小价格
+     */
+    private BigDecimal minPrice;
 
     /**
      * 库存

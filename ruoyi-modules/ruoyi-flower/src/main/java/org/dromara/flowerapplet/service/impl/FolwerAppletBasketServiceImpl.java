@@ -22,6 +22,7 @@ import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,11 +62,14 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
                 }
             });
 
+            BigDecimal amounts = new BigDecimal(0);
             for (FolwerAppletBasketVo folwerBasketVo : folwerBasketVos) {
-                folwerBasketVo.setTotalAmount((long) Arith.mul(folwerBasketVo.getBasketCount(), folwerBasketVo.getPrice()));
+                BigDecimal amount = folwerBasketVo.getPrice().multiply(BigDecimal.valueOf(folwerBasketVo.getBasketCount()));
+                folwerBasketVo.setTotalAmount(amount);
+                amounts = amounts.add(amount);
             }
             folwerShopCartItem.setFolwerBasketVos(folwerBasketVos);
-            folwerShopCartItem.setProductTotalAmount(folwerBasketVos.stream().mapToDouble(FolwerAppletBasketVo::getTotalAmount).sum());
+            folwerShopCartItem.setProductTotalAmount(amounts);
             folwerShopCartItem.setBasketCount(folwerBasketVos.stream().mapToLong(FolwerAppletBasketVo::getBasketCount).sum());
             //加入缓存 不过期
 //            RedisUtils.setCacheObject(key, folwerShopCartItem);

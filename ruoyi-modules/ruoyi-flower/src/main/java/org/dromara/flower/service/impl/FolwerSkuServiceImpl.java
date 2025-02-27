@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -9,7 +10,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.FolwerProductComm;
+import org.dromara.flower.domain.bo.FolwerProductBo;
+import org.dromara.flower.domain.vo.FolwerProductVo;
+import org.dromara.flower.service.IFolwerProductService;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerSkuBo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
@@ -17,6 +26,7 @@ import org.dromara.flower.domain.FolwerSku;
 import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerSkuService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +45,11 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     private final FolwerSkuMapper baseMapper;
 
     private final ISysOssService sysOssService;
+
+    private final IFolwerAppletProductService folwerProductService;
+
+//    private final IFolwerAppletProductService folwerAppletProductService;
+
 
     /**
      * 查询单品SKU
@@ -176,6 +191,30 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setSkuId(add.getSkuId());
+
+//            intermediateBean.updateProductInfo(add.getProdId());
+
+            List<FolwerSkuVo> folwerSkuVos = this.queryListByProdId(add.getProdId());
+            BigDecimal maxPrace = new BigDecimal(0);
+            BigDecimal minPrace = new BigDecimal(0);
+            Long maxStocks = 0L;
+            if (folwerSkuVos.size() > 0){
+                for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
+                    if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
+                        maxPrace = folwerSkuVo.getPrice();
+                    }
+                    if (folwerSkuVo.getMinPrice().compareTo(minPrace) < 0) {
+                        minPrace = folwerSkuVo.getMinPrice();
+                    }
+                    maxStocks =+ folwerSkuVo.getActualStocks();
+                }
+            }
+            FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(add.getProdId());
+            FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
+            folwerProductBo.setOriPrice(maxPrace);
+            folwerProductBo.setDerlinePrice(minPrace);
+            folwerProductBo.setTotalStocks(maxStocks);
+            folwerProductService.updateByBo(folwerProductBo);
         }
         return flag;
     }
@@ -203,7 +242,34 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     public Boolean updateByBo(FolwerSkuBo bo) {
         FolwerSku update = MapstructUtils.convert(bo, FolwerSku.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        boolean b = baseMapper.updateById(update) > 0;
+        if (b){
+            if (update.getProdId() != null){
+                List<FolwerSkuVo> folwerSkuVos = this.queryListByProdId(update.getProdId());
+                BigDecimal maxPrace = new BigDecimal(0);
+                BigDecimal minPrace = new BigDecimal(0);
+                Long maxStocks = 0L;
+                if (folwerSkuVos.size() > 0){
+                    for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
+                        if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
+                            maxPrace = folwerSkuVo.getPrice();
+                        }
+                        if (folwerSkuVo.getMinPrice().compareTo(minPrace) < 0) {
+                            minPrace = folwerSkuVo.getMinPrice();
+                        }
+                        maxStocks =+ folwerSkuVo.getActualStocks();
+                    }
+                }
+                FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(update.getProdId());
+                FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
+                folwerProductBo.setOriPrice(maxPrace);
+                folwerProductBo.setDerlinePrice(minPrace);
+                folwerProductBo.setTotalStocks(maxStocks);
+                folwerProductService.updateByBo(folwerProductBo);
+            }
+        }
+
+        return b;
     }
 
     /**

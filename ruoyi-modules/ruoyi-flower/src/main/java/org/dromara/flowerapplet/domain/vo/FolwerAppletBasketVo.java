@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.dromara.common.translation.annotation.Translation;
@@ -62,7 +63,7 @@ public class FolwerAppletBasketVo implements Serializable {
      * 产品价格
      */
     @ExcelProperty(value = "产品价格")
-    private Long price;
+    private BigDecimal price;
 
     /**
      * SkuID
@@ -124,6 +125,6 @@ public class FolwerAppletBasketVo implements Serializable {
      * 产品价格
      */
     @ExcelProperty(value = "产品价格")
-    private Long totalAmount;
+    private BigDecimal totalAmount;
 
 }
