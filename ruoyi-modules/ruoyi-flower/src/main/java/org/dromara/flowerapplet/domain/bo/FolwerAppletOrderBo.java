@@ -122,7 +122,7 @@ public class FolwerAppletOrderBo extends BaseEntity {
     /**
      * 订单运费
      */
-    private Long freightAmount;
+    private BigDecimal freightAmount;
 
     /**
      * 用户订单地址Id
