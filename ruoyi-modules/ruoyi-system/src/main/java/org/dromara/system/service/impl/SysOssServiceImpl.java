@@ -220,7 +220,11 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     @NotNull
     private SysOssVo buildResultEntity(String originalfileName, String suffix, String configKey, UploadResult uploadResult) {
         SysOss oss = new SysOss();
-        oss.setUrl(uploadResult.getUrl());
+        if (!uploadResult.getUrl().isEmpty()){
+            String string = uploadResult.getUrl().replaceFirst("http", "https");
+            oss.setUrl(string);
+        }
+//        oss.setUrl(uploadResult.getUrl());
         oss.setFileSuffix(suffix);
         oss.setFileName(uploadResult.getFilename());
         oss.setOriginalName(originalfileName);

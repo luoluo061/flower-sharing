@@ -27,6 +27,7 @@ import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerSkuService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -195,16 +196,16 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
 //            intermediateBean.updateProductInfo(add.getProdId());
 
             List<FolwerSkuVo> folwerSkuVos = this.queryListByProdId(add.getProdId());
-            BigDecimal maxPrace = new BigDecimal(0);
-            BigDecimal minPrace = new BigDecimal(0);
+            BigDecimal maxPrace = new BigDecimal(-999999999);
+            BigDecimal minPrace = new BigDecimal(999999999);
             Long maxStocks = 0L;
             if (folwerSkuVos.size() > 0){
                 for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
                     if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
-                        maxPrace = folwerSkuVo.getPrice();
+                        maxPrace = folwerSkuVo.getPrice().setScale(2, RoundingMode.HALF_UP);
                     }
                     if (folwerSkuVo.getMinPrice().compareTo(minPrace) < 0) {
-                        minPrace = folwerSkuVo.getMinPrice();
+                        minPrace = folwerSkuVo.getMinPrice().setScale(2, RoundingMode.HALF_UP);
                     }
                     maxStocks =+ folwerSkuVo.getActualStocks();
                 }

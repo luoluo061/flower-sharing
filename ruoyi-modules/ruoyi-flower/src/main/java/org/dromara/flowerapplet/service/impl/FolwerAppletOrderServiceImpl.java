@@ -53,6 +53,7 @@ import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -241,7 +242,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         //折扣价
         BigDecimal derlinePrice  = new BigDecimal(0);
         //运费
-        double transfee = 0.0;
+        BigDecimal transfee  = new BigDecimal(0);
 
 //        List<FolwerAppletProductVo> productVos = new ArrayList<>();
         List<FolwerAppletOrderDetailBo> folwerAppletOrderDetailBos = new ArrayList<>();
@@ -254,6 +255,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             if (bo.getProdCount() == null){
                 throw new Exception("商品数量不能为空");
             }
+            if (bo.getSkuId() == null){
+                throw new Exception("规格ID不能为空");
+            }
             //订单详情
             FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
             //单规格和多规格（目前不要单规格了）
@@ -261,11 +265,14 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //                total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
 //                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletProductVo.getOriPrice());
 //            } else {
-                FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
-                total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
-                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
+//                FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
+//                total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
+//                folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
 //            }
 //            total = Arith.mul(folwerAppletProductVo.getOriPrice() ,bo.getProdCount());
+            FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
+            total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
+            folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
             transfee = folwerAppletProductVo.getDeliveryPrice();
             if(bo.getUserChangeCoupon() != null){
                 //0:满减
@@ -332,7 +339,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
 //                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
 //                total = Arith.add(total,price);
-                transfee = Arith.add(transfee, Arith.mul(productVo.getDeliveryPrice(), basketVo.getBasketCount()));
+                BigDecimal priceDel = productVo.getDeliveryPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
+                transfee = transfee.add(priceDel);
+//                transfee = Arith.add(transfee, Arith.mul(productVo.getDeliveryPrice(), basketVo.getBasketCount()));
 
 
 //                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
@@ -406,14 +415,14 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setDvyFlowId(String.valueOf(uniqueId));
 
         //满额包邮
-        orderBo.setFreightAmount((long) transfee);
+        orderBo.setFreightAmount(transfee);
         FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
         List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
         if (folwerOrderSetVos != null){
             if(folwerOrderSetVos.get(0).getFreeShippingPrice() != null){
                 if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
-                    transfee = 0;
-                    orderBo.setFreightAmount((long) transfee);
+                    transfee = BigDecimal.valueOf(0);
+                    orderBo.setFreightAmount( transfee);
                 }
 
                 if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){

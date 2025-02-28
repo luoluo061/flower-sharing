@@ -136,7 +136,7 @@ public class FolwerAppletProductVo implements Serializable {
      * 快递费
      */
     @ExcelProperty(value = "快递费")
-    private Long deliveryPrice;
+    private BigDecimal deliveryPrice;
 
     /**
      * 默认是1，表示正常状态, -1表示删除, 0下架
