@@ -2,8 +2,6 @@ package org.dromara.web.service.impl;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -13,7 +11,6 @@ import com.baomidou.lock.executor.RedissonLockExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
-import javassist.expr.NewArray;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,32 +19,23 @@ import org.dromara.common.core.domain.model.XcxLoginBody;
 import org.dromara.common.core.domain.model.XcxLoginUser;
 import org.dromara.common.core.enums.Status;
 import org.dromara.common.core.exception.ServiceException;
-import org.dromara.common.core.utils.CodeUtils;
-import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.constant.LockKeyString;
-import org.dromara.flower.domain.CoursesManager;
 import org.dromara.flower.domain.MarketingMemberPromotionPecord;
 import org.dromara.flower.mapper.MarketingMemberPromotionPecordMapper;
-import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
-import org.dromara.system.domain.SysRole;
 import org.dromara.system.domain.SysUserRole;
-import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
-import org.dromara.system.domain.vo.SysRoleVo;
 import org.dromara.system.mapper.SysRoleMapper;
-import org.dromara.system.mapper.SysUserPostMapper;
 import org.dromara.system.mapper.SysUserRoleMapper;
 import org.dromara.system.service.ISysPermissionService;
-import org.dromara.system.service.impl.SysUserServiceImpl;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.WxLoginVo;
 import org.dromara.web.domain.vo.XcxPhoneInfoVo;
@@ -60,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 小程序认证策略
@@ -124,7 +111,7 @@ public class XcxAuthStrategy implements IAuthStrategy {
         /*XcxPhoneInfoVo phoneInfo = new XcxPhoneInfoVo();
         phoneInfo.setPhoneNumber("15912341234");*/
         //加载用户信息
-        XcxLoginUser loginUser = loadUserByPhone(phoneInfo.getPhoneNumber(), loginBody);
+         XcxLoginUser loginUser = loadUserByPhone(phoneInfo.getPhoneNumber(), loginBody);
 
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());

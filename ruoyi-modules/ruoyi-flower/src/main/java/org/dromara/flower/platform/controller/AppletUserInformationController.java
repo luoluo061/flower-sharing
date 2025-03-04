@@ -3,6 +3,7 @@ package org.dromara.flower.platform.controller;
 import java.util.List;
 import java.util.Map;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -76,7 +77,7 @@ public class AppletUserInformationController extends BaseController {
      *
      * @return 小程序用户登陆信息
      */
-    @SaCheckPermission("system:userInformation:query")
+    @SaCheckPermission("system:userInformation:queryInfo")
     @GetMapping()
     public R<AppletUserInformationVo> getInfo() {
         return R.ok(appletUserInformationService.queryUserInfo());

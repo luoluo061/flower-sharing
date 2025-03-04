@@ -84,6 +84,7 @@ public class FolwerAppletPickAddrServiceImpl implements IFolwerAppletPickAddrSer
         lqw.eq(StringUtils.isNotBlank(bo.getCity()), FolwerPickAddr::getCity, bo.getCity());
         lqw.eq(bo.getAreaId() != null, FolwerPickAddr::getAreaId, bo.getAreaId());
         lqw.eq(StringUtils.isNotBlank(bo.getArea()), FolwerPickAddr::getArea, bo.getArea());
+        lqw.eq(bo.getUserId() != null, FolwerPickAddr::getUserId, bo.getUserId());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerPickAddr::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }

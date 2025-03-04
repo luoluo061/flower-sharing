@@ -107,7 +107,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     }
 
     private void stringToLong(FolwerAppletProductBo bo) {
-        if (StringUtils.isNotBlank(bo.getCategoryIdStr())) {
+        if (bo.getCategoryIdStr() != null) {
             bo.setCategoryId(Long.parseLong(bo.getCategoryIdStr()));
         }
     }

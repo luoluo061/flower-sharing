@@ -36,6 +36,7 @@ import org.dromara.system.service.ISysTenantService;
 import org.dromara.web.domain.vo.LoginTenantVo;
 import org.dromara.web.domain.vo.LoginVo;
 import org.dromara.web.domain.vo.TenantListVo;
+import org.dromara.web.service.AppletLogin;
 import org.dromara.web.service.IAuthStrategy;
 import org.dromara.web.service.SysLoginService;
 import org.dromara.web.service.SysRegisterService;
@@ -70,6 +71,8 @@ public class AuthController {
     private final ISysSocialService socialUserService;
     private final ISysClientService clientService;
     private final ScheduledExecutorService scheduledExecutorService;
+
+    private final AppletLogin appletLogin;
 
 
     /**
@@ -115,8 +118,6 @@ public class AuthController {
 
     @PostMapping("/applet/login")
     public R<LoginVo> appletLogin(@RequestBody String body) {
-
-        log.info("小程序登录请求信息：{}",body);
         WxLoginBody loginBody = JsonUtils.parseObject(body, WxLoginBody.class);
         ValidatorUtils.validate(loginBody);
         // 授权类型和客户端id
@@ -124,7 +125,7 @@ public class AuthController {
         String grantType = loginBody.getGrantType();
 
         SysClientVo client = clientService.queryByClientId(clientId);
-        log.info("客户端信息：{}",client);
+        log.info("小程序客户端登录信息：{}",client);
         // 查询不到 client
         if (ObjectUtil.isNull(client)|| !StringUtils.contains(client.getGrantType(), grantType)) {
             log.info("客户端id: {} grantType：{} 异常!.", clientId, grantType);
@@ -132,7 +133,10 @@ public class AuthController {
         } else if (!UserConstants.NORMAL.equals(client.getStatus())) {
             return R.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
-        LoginVo loginVo = IAuthStrategy.login(body, client, grantType);
+        LoginVo loginVo1 = IAuthStrategy.login(body, client, grantType);
+
+        LoginVo loginVo =  appletLogin.getLoginVo(loginVo1.getPhone(), client);
+
         return R.ok(loginVo);
     }
 

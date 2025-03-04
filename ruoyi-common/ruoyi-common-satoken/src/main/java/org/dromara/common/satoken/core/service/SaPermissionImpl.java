@@ -5,8 +5,7 @@ import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.common.satoken.utils.LoginHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * sa-token 权限管理实现类
@@ -21,12 +20,18 @@ public class SaPermissionImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null) {
+            return new ArrayList<>();
+        }
         UserType userType = UserType.getUserType(loginUser.getUserType());
         if (userType == UserType.SYS_USER) {
             return new ArrayList<>(loginUser.getMenuPermission());
         } else if (userType == UserType.APP_USER) {
             // 其他端 自行根据业务编写
         }else if (userType == UserType.XCX) {
+            if (loginUser.getMenuPermission() == null){
+                return new ArrayList<>();
+            }
             return new ArrayList<>(loginUser.getMenuPermission());
         }
 
@@ -39,11 +44,16 @@ public class SaPermissionImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
+        if (loginUser == null) {
+            return new ArrayList<>();
+        }
         UserType userType = UserType.getUserType(loginUser.getUserType());
         if (userType == UserType.SYS_USER) {
             return new ArrayList<>(loginUser.getRolePermission());
         } else if (userType == UserType.APP_USER) {
             // 其他端 自行根据业务编写
+        }else if (userType == UserType.XCX) {
+            return new ArrayList<>(loginUser.getRolePermission());
         }
         return new ArrayList<>();
     }
