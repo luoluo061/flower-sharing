@@ -300,7 +300,7 @@ public class SysLoginService {
         map.put("grant_type","client_credential");
 
         String json = HttpClientUtil.doGet(WxConstant.GET_ACCESS_TOKEN, map);
-        log.info("微信接口响应数据:{}",json);
+        log.info("获取AccessToken微信接口响应数据:{}",json);
         JSONObject jsonObject = JSON.parseObject(json);
         String expiresIn = jsonObject.get("expires_in").toString();
         accessToken = jsonObject.get("access_token").toString();
@@ -329,7 +329,7 @@ public class SysLoginService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("微信接口响应数据:{}",json);
+        log.info("获取手机号微信接口响应数据:{}",json);
         JSONObject jsonObject = JSON.parseObject(json);
         //获取电话信息
         JSONObject phoneInfo = jsonObject.getJSONObject("phone_info");

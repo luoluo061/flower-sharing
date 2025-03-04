@@ -355,9 +355,12 @@ public class AppletUserInformationServiceImpl implements IAppletUserInformationS
         // 查询购买记录
         if (vo.getMemberLevelId() != null){
             LambdaQueryWrapper<MemberPurchaseRecord> lqw = new LambdaQueryWrapper<>();
-            lqw.eq(MemberPurchaseRecord::getCreateBy, vo.getUserId());
+            lqw.eq(MemberPurchaseRecord::getMemberId, vo.getMemberId());
             lqw.eq(MemberPurchaseRecord::getStatus, 1);
-            vo.setPurchaseRecordVo(memberPurchaseRecordMapper.selectVoOne(lqw));
+            MemberPurchaseRecordVo memberPurchaseRecordVo = memberPurchaseRecordMapper.selectVoOne(lqw);
+            if (memberPurchaseRecordVo != null && memberPurchaseRecordVo.getMemberLevelId() != null){
+                vo.setPurchaseRecordVo(memberPurchaseRecordVo);
+            }
         }
         return vo;
     }

@@ -391,7 +391,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         List<FolwerCreditSetVo> folwerCreditSetVos = folwerCreditSetService.queryList(folwerCreditSetBo);
         double points = Arith.div(folwerCreditSetVos.get(0).getGoodsCredit(), folwerCreditSetVos.get(0).getGoodsPurchase(), 2);
         orderBo.setRebate(orderBo.getTotal().multiply(BigDecimal.valueOf(points)).longValue());
-        orderBo.setActualTotal(total);
+
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
 
@@ -426,11 +426,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 }
 
                 if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
-                    throw new Exception("订单金额小于起步价，请重新下单");
+                    throw new Exception("您的支付金额未达" + folwerOrderSetVos.get(0).getStartPrice() +"元以上，未满足支付需求");
                 }
             }
         }
-
+        orderBo.setActualTotal(total.add(transfee));
         FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
         folwerPickAddrBo.setUserId(bo.getUserId());
         List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
