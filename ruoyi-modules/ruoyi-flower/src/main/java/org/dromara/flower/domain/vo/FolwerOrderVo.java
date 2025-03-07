@@ -2,6 +2,7 @@ package org.dromara.flower.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.flower.domain.FolwerOrder;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -25,7 +26,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = FolwerOrder.class)
-public class FolwerOrderVo implements Serializable {
+public class FolwerOrderVo  extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -47,6 +48,30 @@ public class FolwerOrderVo implements Serializable {
      */
     @ExcelProperty(value = "会员名称")
     private String userName;
+
+    /**
+     * 联系电话
+     */
+    @ExcelProperty(value = "联系电话")
+    private String userPhone;
+
+    /**
+     * 收货人
+     */
+    @ExcelProperty(value = "收货人")
+    private String addrName;
+
+    /**
+     * 收货电话
+     */
+    @ExcelProperty(value = "收货电话")
+    private String mobile;
+
+    /**
+     * 收货地址
+     */
+    @ExcelProperty(value = "收货地址")
+    private String addr;
 
     /**
      * 会员类型
@@ -77,6 +102,12 @@ public class FolwerOrderVo implements Serializable {
      */
     @ExcelProperty(value = "返点")
     private Long rebate;
+
+    /**
+     * 是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败
+     */
+    @ExcelProperty(value = "是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败")
+    private Long isRefund;
 
     /**
      * 实际金额

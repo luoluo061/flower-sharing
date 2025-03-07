@@ -19,6 +19,8 @@ import org.dromara.common.mypay.domain.WxRefundRequest;
 import org.dromara.common.mypay.server.IPayService;
 import org.dromara.flower.domain.FolwerDelivery;
 import org.dromara.flower.domain.vo.FolwerOrderRefundInfoVo;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
 import org.dromara.flower.domain.vo.FolwerOrderRefundVo;
@@ -26,6 +28,7 @@ import org.dromara.flower.domain.FolwerOrderRefund;
 import org.dromara.flower.mapper.FolwerOrderRefundMapper;
 import org.dromara.flower.service.IFolwerOrderRefundService;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,9 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
     @Resource
     private final IPayService payService;
 
+    private final IAppletUserInformationService appletUserInformationService;
+
+
     /**
      * 查询订单退款
      *
@@ -54,7 +60,14 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
      */
     @Override
     public FolwerOrderRefundVo queryById(Long refundId){
-        return baseMapper.selectVoById(refundId);
+        FolwerOrderRefundVo folwerOrderRefundVo = baseMapper.selectVoById(refundId);
+        if (folwerOrderRefundVo != null){
+            AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerOrderRefundVo.getUserId());
+            if (appletUserInformationVo != null){
+                folwerOrderRefundVo.setUserPhone(appletUserInformationVo.getPhone());
+            }
+        }
+        return folwerOrderRefundVo;
     }
 
     /**
@@ -113,13 +126,19 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
                     folwerOrderRefundInfoVo.setApplyTypeStr("同意退款");
                     break;
             }
+            FolwerOrderRefundVo folwerOrderRefundVo = this.queryById(refundId);
+            AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerOrderRefundVo.getUserId());
+            folwerOrderRefundInfoVo.setUserPhone(appletUserInformationVo.getPhone());
         }
         // 使用split方法按逗号分割字符串
-        String[] splitArray = folwerOrderRefundInfoVo.getRefundPic().split(",");
-        // 将String数组转换为List
-        List<String> splitList = Arrays.asList(splitArray);
-        folwerOrderRefundInfoVo.setRefundMsgPic(splitList);
-        folwerOrderRefundInfoVo.setRefundPic(null);
+        if (folwerOrderRefundInfoVo.getRefundPic() != null){
+            String[] splitArray = folwerOrderRefundInfoVo.getRefundPic().split(",");
+            // 将String数组转换为List
+            List<String> splitList = Arrays.asList(splitArray);
+            folwerOrderRefundInfoVo.setRefundMsgPic(splitList);
+            folwerOrderRefundInfoVo.setRefundPic(null);
+        }
+
         return folwerOrderRefundInfoVo;
     }
 
@@ -222,14 +241,14 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
     }
 
     @Override
-    public R<String> submitRefundOrders(Long refundId) throws Exception {
+    public FolwerOrderRefundVo submitRefundOrders(Long refundId) throws Exception {
         FolwerOrderRefundInfoVo folwerOrderRefundInfoVo = queryInfoById(refundId);
         WxRefundRequest wxRefundRequest = new WxRefundRequest();
-        wxRefundRequest.setTransactionId(String.valueOf(folwerOrderRefundInfoVo.getOrderId()));
+        wxRefundRequest.setOutTradeNo(String.valueOf(folwerOrderRefundInfoVo.getOrderId()));
         wxRefundRequest.setOutRefundNo(String.valueOf(refundId));
         RefundAmount refundAmount = new RefundAmount();
         refundAmount.setRefund(folwerOrderRefundInfoVo.getRefundAmount());
-        refundAmount.setTotal(folwerOrderRefundInfoVo.getTotal());
+        refundAmount.setTotal(folwerOrderRefundInfoVo.getActualTotal());
         refundAmount.setCurrency("CNY");
         wxRefundRequest.setAmount(refundAmount);
         Refund refund = payService.refundOrder(wxRefundRequest);
@@ -239,32 +258,56 @@ public class FolwerOrderRefundServiceImpl implements IFolwerOrderRefundService {
         if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
             //说明退款成功，开始接下来的业务操作
             //你的业务代码，根据请求返回状态修改对应订单状态
-
-            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            FolwerOrderRefundVo folwerOrderRefundVo = this.queryById(refundId);
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundVo, FolwerOrderRefundBo.class);
             bo.setRefundStatus(1L);
-            updateByBo(bo);
-            return R.ok("退款成功");
+//            if (refund.getSuccessTime() != null){
+//                SimpleDateFormat simpleDateFormat = new  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//                bo.setRefundTime(simpleDateFormat.parse(refund.getSuccessTime()));
+//            }
+            bo.setRefundTime(refund.getSuccessTime());
+            Boolean b = updateByBo(bo);
+            if (b){
+                folwerOrderRefundVo.setRefundStatus(bo.getRefundStatus());
+                return folwerOrderRefundVo;
+            }
+//            return R.ok("退款成功");
         }
         if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
             //你的业务代码，根据请求返回状态修改对应订单状态
-            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            FolwerOrderRefundVo folwerOrderRefundVo = this.queryById(refundId);
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundVo, FolwerOrderRefundBo.class);
             bo.setRefundStatus(2L);
-            updateByBo(bo);
-            return R.ok("退款中");
+            Boolean b = updateByBo(bo);
+            if (b){
+                folwerOrderRefundVo.setRefundStatus(bo.getRefundStatus());
+                return folwerOrderRefundVo;
+            }
+//            return R.ok("退款中");
         }
         if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
             //你的业务代码，根据请求返回状态修改对应订单状态
-            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            FolwerOrderRefundVo folwerOrderRefundVo = this.queryById(refundId);
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundVo, FolwerOrderRefundBo.class);
             bo.setRefundStatus(3L);
-            updateByBo(bo);
-            return R.fail("退款异常");
+            Boolean b = updateByBo(bo);
+            if (b){
+                folwerOrderRefundVo.setRefundStatus(bo.getRefundStatus());
+                return folwerOrderRefundVo;
+            }
+//            return R.fail("退款异常");
         }
         if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
             //你的业务代码，根据请求返回状态修改对应订单状态
-            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundInfoVo, FolwerOrderRefundBo.class);
+            FolwerOrderRefundVo folwerOrderRefundVo = this.queryById(refundId);
+            FolwerOrderRefundBo bo = BeanUtil.copyProperties(folwerOrderRefundVo, FolwerOrderRefundBo.class);
             bo.setRefundStatus(4L);
-            updateByBo(bo);
-            return  R.fail("退款关闭");
+            Boolean b = updateByBo(bo);
+            if (b){
+                folwerOrderRefundVo.setRefundStatus(bo.getRefundStatus());
+                return folwerOrderRefundVo;
+            }
+//            return  R.fail("退款关闭");
         }
         return null;
     }

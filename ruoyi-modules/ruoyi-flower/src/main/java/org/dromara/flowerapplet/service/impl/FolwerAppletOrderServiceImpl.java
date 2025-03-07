@@ -43,6 +43,8 @@ import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.*;
 import org.dromara.flowerapplet.util.Arith;
 import org.dromara.flowerapplet.util.SnowflakeIdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -79,6 +81,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
      * 合作伙伴
      */
     public static final String PARTNER = "PARTNER";
+    private static final Logger log = LoggerFactory.getLogger(FolwerAppletOrderServiceImpl.class);
 
     @Resource
     private final FolwerAppletOrderMapper baseMapper;
@@ -273,6 +276,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(Long.valueOf(bo.getSkuId()));
             total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
             folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
+            folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletSkuVo.getSkuPicid());
             transfee = folwerAppletProductVo.getDeliveryPrice();
             if(bo.getUserChangeCoupon() != null){
                 //0:满减
@@ -289,14 +293,12 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //                    derlinePrice = Arith.mul(folwerAppletProductVo.getOriPrice(), bo.getCouponCount());
                 }
             }
-
 //                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
             folwerAppletOrderDetailBo.setProductId(folwerAppletProductVo.getId());
             folwerAppletOrderDetailBo.setProductName(folwerAppletProductVo.getProductName());
-            folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletProductVo.getProductListPictureUrl());
 
             folwerAppletOrderDetailBo.setNumber(Long.valueOf(bo.getProdCount()));
-            BigDecimal subtotal = folwerAppletProductVo.getOriPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
+            BigDecimal subtotal = total;//folwerAppletProductVo.getOriPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
             folwerAppletOrderDetailBo.setSubtotal(subtotal);
             if (bo.getSkuId() != null){
                 folwerAppletOrderDetailBo.setSkuId(Long.valueOf(bo.getSkuId()));
@@ -336,7 +338,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 BigDecimal price = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
                 total = total.add(price);
                 folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
-
+                folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletSkuVo.getSkuPicid());
 //                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
 //                total = Arith.add(total,price);
                 BigDecimal priceDel = productVo.getDeliveryPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
@@ -347,10 +349,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //                folwerAppletOrderDetailBo.setOrderId(bo.getOrderId().toString());
                 folwerAppletOrderDetailBo.setProductId(productVo.getId());
                 folwerAppletOrderDetailBo.setProductName(productVo.getProductName());
-                folwerAppletOrderDetailBo.setProductListPictureUrl(productVo.getProductListPictureUrl());
+//                folwerAppletOrderDetailBo.setProductListPictureUrl(productVo.getProductListPictureUrl());
 
                 folwerAppletOrderDetailBo.setNumber(basketVo.getBasketCount());
-                BigDecimal subtotal = productVo.getOriPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
+                BigDecimal subtotal = price;//productVo.getOriPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
                 folwerAppletOrderDetailBo.setSubtotal(subtotal);
                 if (basketVo.getSkuId() != null){
                     folwerAppletOrderDetailBo.setSkuId(basketVo.getSkuId());
@@ -431,12 +433,15 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             }
         }
         orderBo.setActualTotal(total.add(transfee));
-        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
-        folwerPickAddrBo.setUserId(bo.getUserId());
-        List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
-        if (folwerPickAddrVos != null){
-            orderBo.setAddrOrderId(String.valueOf(folwerPickAddrVos.get(0).getAddrId()));
-        }
+//        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
+//        folwerPickAddrBo.setUserId(bo.getUserId());
+//        List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
+//        if (folwerPickAddrVos != null){
+//            orderBo.setAddrOrderId(String.valueOf(folwerPickAddrVos.get(0).getAddrId()));
+//        }else {
+//            throw new Exception("请选择收货地址");
+//        }
+        orderBo.setAddrOrderId(bo.getAddrId());
         FolwerAppletOrder add = MapstructUtils.convert(orderBo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
@@ -461,6 +466,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
      * @return 是否修改成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateByBo(FolwerAppletOrderBo bo) {
 //        FolwerAppletOrder update = MapstructUtils.convert(bo, FolwerAppletOrder.class);
 
@@ -601,6 +607,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //    }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R<WxJsapiResponse> submitOrders(PayParam payParam) throws Exception {
         FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(payParam.getOrderNumbers()));
         if(folwerAppletOrderVo == null){
@@ -660,6 +667,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     }
 
     @Override
+    @Transactional
     public FolwerAppletOrderVo queryOrder(String orderId) throws Exception {
         if (orderId.isEmpty()){
             return null;
@@ -674,14 +682,15 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             if (folwerAppletOrderVo.getStatus().equals(0L)){
                 FolwerAppletOrderBo folwerAppletOrderBo = new FolwerAppletOrderBo();
                 BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrderBo);
-                folwerAppletOrderBo.setStatus(1L);
+                folwerAppletOrderBo.setStatus(5L);
                 folwerAppletOrderBo.setOrderNumber(transaction.getTransactionId());
                 SimpleDateFormat simpleDateFormat = new  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 folwerAppletOrderBo.setPayTime(simpleDateFormat.parse(transaction.getSuccessTime()));
                 folwerAppletOrderBo.setPayCallback(transaction.toString());
+                AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
                 //进行分账
                 if(folwerAppletOrderVo.getIsProfitSharing() == 1L){
-                    AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
+
                     if (appletUserInformationVo == null){
                         throw new Exception("用户不存在");
                     }
@@ -705,12 +714,24 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                             }
                         }
                     }
+
+                }
+                Boolean b = this.updateByBo(folwerAppletOrderBo);
+                if (b){
                     //更新用户积分
                     AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
                     appletUserInformationBo.setPoints((long)Arith.add(appletUserInformationVo.getPoints(),folwerAppletOrderVo.getRebate()));
                     appletUserInformationService.updateByBo(appletUserInformationBo);
+
+                    //修改库存和销量
+                    for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderVo.getOrderDetails()){
+                        FolwerAppletProductVo folwerAppletProductVo = folwerAppletProductService.queryById(folwerAppletOrderDetailVo.getProductId());
+                        FolwerAppletProductBo folwerAppletProductBo = BeanUtil.copyProperties(folwerAppletProductVo, FolwerAppletProductBo.class);
+                        folwerAppletProductBo.setTotalStocks((long) Arith.mul(folwerAppletProductVo.getTotalStocks(), folwerAppletOrderDetailVo.getNumber()));
+                        folwerAppletProductBo.setSoldNum((long) Arith.add(folwerAppletProductVo.getSoldNum(), folwerAppletOrderDetailVo.getNumber()));
+                        folwerAppletProductService.updateByBo(folwerAppletProductBo);
+                    }
                 }
-                Boolean b = this.updateByBo(folwerAppletOrderBo);
             }
             return folwerAppletOrderVo;
         }
@@ -720,6 +741,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     @Override
     public FolwerAppletOrderVo payCallbackOrder(Transaction transaction) throws Exception {
+        log.info("支付回调===>{}", transaction);
         if (transaction.getTradeState().equals(Transaction.TradeStateEnum.SUCCESS)){
             FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(transaction.getOutTradeNo()));
             if (folwerAppletOrderVo.getStatus().equals(0L)){

@@ -78,6 +78,7 @@ public class FolwerPickAddrServiceImpl implements IFolwerPickAddrService {
         lqw.eq(bo.getProvinceId() != null, FolwerPickAddr::getProvinceId, bo.getProvinceId());
         lqw.eq(StringUtils.isNotBlank(bo.getProvince()), FolwerPickAddr::getProvince, bo.getProvince());
         lqw.eq(bo.getCityId() != null, FolwerPickAddr::getCityId, bo.getCityId());
+        lqw.eq(bo.getUserId() != null, FolwerPickAddr::getUserId, bo.getUserId());
         lqw.eq(StringUtils.isNotBlank(bo.getCity()), FolwerPickAddr::getCity, bo.getCity());
         lqw.eq(bo.getAreaId() != null, FolwerPickAddr::getAreaId, bo.getAreaId());
         lqw.eq(StringUtils.isNotBlank(bo.getArea()), FolwerPickAddr::getArea, bo.getArea());

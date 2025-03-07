@@ -225,13 +225,17 @@ public class WxPayService implements IPayService {
     private CreateRequest getRefundOrderRequest(WxRefundRequest wxRefundRequest) {
         //构建退款请求
         CreateRequest request = new CreateRequest();
+
+//        request.setOutRefundNo(wxRefundRequest.getOutRefundNo());
+//        request.setOutTradeNo(wxRefundRequest.getOutTradeNo());
+
         // request.setXxx(val)设置所需参数，具体参数可见Request定义
         //构建订单金额信息
         AmountReq amountReq = new AmountReq();
         //退款金额
-        amountReq.setRefund(Long.valueOf((int) (wxRefundRequest.getAmount().getRefund() * 100)));
+        amountReq.setRefund(Long.valueOf((int) wxRefundRequest.getAmount().getRefund()));// (wxRefundRequest.getAmount().getRefund() * 100)));
         //原订单金额
-        amountReq.setTotal(Long.valueOf((int) (wxRefundRequest.getAmount().getTotal() * 100)));
+        amountReq.setTotal(Long.valueOf((int)wxRefundRequest.getAmount().getTotal())); // (wxRefundRequest.getAmount().getTotal() * 100)));
         //货币类型(默认人民币)
         amountReq.setCurrency("CNY");
         request.setAmount(amountReq);

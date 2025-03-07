@@ -2,6 +2,7 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -121,6 +122,7 @@ public class MarketingAdvertisementController extends BaseController {
      */
     @SaCheckPermission("flower:advertisement:query")
     @GetMapping("/listByType")
+    @SaIgnore
     public R<List<MarketingAdvertisementVo>> getInfoByType(@NotBlank(message = "类型名不能为空") String type){
         return R.ok(marketingAdvertisementService.selectByType(type));
 

@@ -9,6 +9,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -24,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class FolwerOrderRefundBo extends BaseEntity {
 
     /**
-     * 订单ID
+     * 退款订单ID
      */
 //    @NotNull(message = "订单ID不能为空", groups = { EditGroup.class })
     private Long refundId;
@@ -57,10 +59,10 @@ public class FolwerOrderRefundBo extends BaseEntity {
      * 实际金额
      */
 //    @NotNull(message = "实际金额不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long actualTotal;
+    private BigDecimal actualTotal;
 
     /**
-     * 退款状态 0:拒绝退款 1：已退款
+     * 退款状态 0:拒绝退款 1：已退款 2：退款中 3：退款异常 4：退款关闭
      */
 //    @NotNull(message = "退款状态 0:拒绝退款 1：已退款 不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long refundStatus;
@@ -87,13 +89,13 @@ public class FolwerOrderRefundBo extends BaseEntity {
      * 退款金额
      */
 //    @NotNull(message = "退款金额不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long refundAmount;
+    private BigDecimal refundAmount;
 
     /**
      * 退款时间
      */
 //    @NotNull(message = "退款时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Date refundTime;
+    private String refundTime;
 
     /**
      * 拒绝退款原因

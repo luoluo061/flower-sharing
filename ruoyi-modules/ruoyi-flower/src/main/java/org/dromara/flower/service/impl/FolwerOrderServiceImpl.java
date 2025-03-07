@@ -1,5 +1,6 @@
 package org.dromara.flower.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,12 +9,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.translation.annotation.Translation;
 import org.dromara.flower.domain.FolwerOrderRefund;
+import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
+import org.dromara.flower.domain.bo.FolwerPickAddrBo;
 import org.dromara.flower.domain.vo.FolwerOrderInfoVo;
+import org.dromara.flower.domain.vo.FolwerPickAddrVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
+import org.dromara.flower.service.IFolwerOrderRefundService;
+import org.dromara.flower.service.IFolwerPickAddrService;
 import org.dromara.flower.service.IMemberLevelService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
@@ -21,7 +28,9 @@ import org.dromara.flower.domain.vo.FolwerOrderVo;
 import org.dromara.flower.domain.FolwerOrder;
 import org.dromara.flower.mapper.FolwerOrderMapper;
 import org.dromara.flower.service.IFolwerOrderService;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -42,6 +51,10 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
 
     private final IAppletUserInformationService appletUserInformationService;
 
+    private final IFolwerPickAddrService folwerPickAddrService;
+
+    private final IFolwerOrderRefundService folwerOrderRefundService;
+
     /**
      * 查询订单
      *
@@ -50,7 +63,22 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
      */
     @Override
     public FolwerOrderVo queryById(Long orderId){
-        return baseMapper.selectVoById(orderId);
+        FolwerOrderVo folwerOrderVo = baseMapper.selectVoById(orderId);
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerOrderVo.getUserId());
+        if (appletUserInformationVo != null){
+            folwerOrderVo.setUserName(appletUserInformationVo.getNickName());
+            folwerOrderVo.setUserPhone(appletUserInformationVo.getPhone());
+        }
+        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
+        folwerPickAddrBo.setUserId(String.valueOf(folwerOrderVo.getUserId()));
+        List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
+        if (folwerPickAddrVos != null && folwerPickAddrVos.size() > 0){
+            FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrVos.get(0);
+            folwerOrderVo.setAddr(folwerPickAddrVo.getAddr());
+            folwerOrderVo.setMobile(folwerPickAddrVo.getMobile());
+            folwerOrderVo.setAddrName(folwerPickAddrVo.getAddrName());
+        }
+        return folwerOrderVo;
     }
 
     /**
@@ -177,5 +205,44 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    /***
+     * 创建退款
+     * @param orderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public String createRefund(Long orderId) {
+        FolwerOrderVo folwerOrderVo = this.queryById(orderId);
+        if (folwerOrderVo != null) {
+            if (folwerOrderVo.getStatus() == 5L) {
+                FolwerOrderBo folwerOrderBo = BeanUtil.copyProperties(folwerOrderVo, FolwerOrderBo.class);
+                folwerOrderBo.setStatus(2L);
+                Boolean b = this.updateByBo(folwerOrderBo);
+                if (b) {
+                    FolwerOrderRefundBo folwerOrderRefundBo = new FolwerOrderRefundBo();
+                    folwerOrderRefundBo.setOrderId(String.valueOf(folwerOrderVo.getOrderId()));
+                    folwerOrderRefundBo.setUserId(folwerOrderVo.getUserId());
+                    folwerOrderRefundBo.setUserName(folwerOrderVo.getUserName());
+                    folwerOrderRefundBo.setMemberLevelId(folwerOrderVo.getMemberLevelId());
+//                    folwerOrderRefundBo.setApplyType(1L);
+                    BigDecimal actualTotal = new BigDecimal(folwerOrderVo.getActualTotal());
+                    folwerOrderRefundBo.setRefundAmount(actualTotal);
+                    folwerOrderRefundBo.setActualTotal(actualTotal);
+                    folwerOrderRefundBo.setRefundMsg("平台退款");
+                    folwerOrderRefundBo.setRefundStatus(2L);
+                    folwerOrderRefundBo.setStatus(folwerOrderVo.getStatus());
+                    folwerOrderRefundBo.setApplyType(2L);
+
+                    Boolean insertByBo = folwerOrderRefundService.insertByBo(folwerOrderRefundBo);
+                    return folwerOrderRefundBo.getRefundId().toString();
+                }
+            }
+        }
+
+
+        return null;
     }
 }

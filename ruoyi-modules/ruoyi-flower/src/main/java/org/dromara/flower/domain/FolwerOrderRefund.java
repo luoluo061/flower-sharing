@@ -82,7 +82,7 @@ public class FolwerOrderRefund extends TenantEntity {
     /**
      * 退款时间
      */
-    private Date refundTime;
+    private String refundTime;
 
     /**
      * 拒绝退款原因

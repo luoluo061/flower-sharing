@@ -1,6 +1,7 @@
 package org.dromara.flower.service.impl;
 
 import org.dromara.common.core.domain.model.LoginUser;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -11,8 +12,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.FolwerProduct;
+import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
+import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerCategoryBo;
@@ -37,6 +41,8 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     private final FolwerCategoryMapper baseMapper;
 
     private final ISysOssService sysOssService;
+
+    private final IFolwerAppletProductService folwerProductService;
 
     /**
      * 查询产品类目
@@ -214,6 +220,14 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        for (Long id : ids){
+            FolwerAppletProductBo folwerProductBo = new FolwerAppletProductBo();
+            folwerProductBo.setCategoryId(id);
+            if (folwerProductService.queryList(folwerProductBo).size() > 0){
+                FolwerCategoryVo folwerCategoryVo = this.queryById(id);
+                throw new ServiceException("请先删除"+folwerCategoryVo.getCategoryName()+"该类目下的产品");
+            }
         }
         return baseMapper.deleteByIds(ids) > 0;
     }

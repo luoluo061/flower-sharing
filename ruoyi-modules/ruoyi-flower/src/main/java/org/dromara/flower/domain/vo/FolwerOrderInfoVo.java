@@ -6,6 +6,7 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.flower.domain.FolwerOrder;
 
 import java.io.Serial;
@@ -22,7 +23,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = FolwerOrder.class)
-public class FolwerOrderInfoVo implements Serializable {
+public class FolwerOrderInfoVo implements Serializable  {
 
     @Serial
     private static final long serialVersionUID = 1L;

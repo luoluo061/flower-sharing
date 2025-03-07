@@ -14,6 +14,7 @@ import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.flowerapplet.domain.FolwerAppletBasket;
 import org.dromara.flowerapplet.domain.FolwerShopCartItem;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletBasketBo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletBasketMapper;
@@ -23,10 +24,7 @@ import org.dromara.flowerapplet.util.Arith;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 小程序购物车Service业务层处理
@@ -53,14 +51,39 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
         FolwerShopCartItem folwerShopCartItem = new FolwerShopCartItem();
         List<FolwerAppletBasketVo> folwerBasketVos = baseMapper.getShopCartItems(userId);
         if(folwerBasketVos != null){
+
+            List<FolwerAppletBasketVo> listBasket = new ArrayList<>();
+
             folwerBasketVos.forEach(folwerAppletBasketVo -> {
                 if(folwerAppletBasketVo.getSkuId() != null){
-                    FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId());
-                    if (folwerAppletSkuVo != null){
-                        folwerAppletBasketVo.setPrice(folwerAppletSkuVo.getPrice());
+
+                    FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                    folwerAppletSkuBo.setSkuId(folwerAppletBasketVo.getSkuId());
+                    folwerAppletSkuBo.setStatus(1L);
+                    List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                    if (folwerAppletSkuVos.size() != 0){
+                        FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId());
+                        if (folwerAppletSkuVo != null){
+                            folwerAppletBasketVo.setPrice(folwerAppletSkuVo.getPrice());
+                        }else {
+                            throw new RuntimeException("商品规格信息不存在");
+                        }
+                    }else {
+                        listBasket.add(folwerAppletBasketVo);
+//                        folwerBasketVos.remove(folwerAppletBasketVo);
                     }
                 }
             });
+
+            if (listBasket.size() != 0){
+                listBasket.forEach(folwerAppletBasketVo -> {
+                    folwerBasketVos.remove(folwerAppletBasketVo);
+                });
+
+                if (folwerBasketVos.size() == 0){
+                    return folwerShopCartItem;
+                }
+            }
 
             BigDecimal amounts = new BigDecimal(0);
             for (FolwerAppletBasketVo folwerBasketVo : folwerBasketVos) {
@@ -91,7 +114,15 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
             return null;
         }
         if(folwerAppletBasketVo.getSkuId() != null){
-            folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+            FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+            folwerAppletSkuBo.setSkuId(folwerAppletBasketVo.getSkuId());
+            folwerAppletSkuBo.setStatus(1L);
+            List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+            if (folwerAppletSkuVos != null) {
+                folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+            }else {
+                return null;
+            }
         }
         return folwerAppletBasketVo;
     }
@@ -109,7 +140,15 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
         Page<FolwerAppletBasketVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         result.getRecords().forEach(item -> {
             if(item.getSkuId() != null){
-                item.setPrice(folwerAppletSkuService.queryById(item.getSkuId()).getPrice());
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setSkuId(item.getSkuId());
+                folwerAppletSkuBo.setStatus(1L);
+                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                if (folwerAppletSkuVos != null){
+                    item.setPrice(folwerAppletSkuService.queryById(item.getSkuId()).getPrice());
+                }else {
+                    result.getRecords().remove(item);
+                }
             }
         });
         return TableDataInfo.build(result);

@@ -117,6 +117,9 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                     // 设置分类名称
                     String categoryName = null;
                     FolwerCategoryVo folwerCategoryVo = folwerCategoryService.queryById(vo.getCategoryId());
+                    if(folwerCategoryVo == null){
+                        throw new RuntimeException(vo.getCategoryId() + "分类不存在");
+                    }
                     if(!folwerCategoryVo.getParentId().equals(0L) && folwerCategoryVo.getParentId() != null && folwerCategoryVo.getParentId().toString().length() >= 19){
                         FolwerCategoryVo ParentFolwerCategoryVo = folwerCategoryService.queryById(folwerCategoryVo.getParentId());
                         categoryName = ParentFolwerCategoryVo.getCategoryName();

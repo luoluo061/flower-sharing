@@ -115,4 +115,17 @@ public class FolwerOrderController extends BaseController {
                           @PathVariable Long[] orderIds) {
         return toAjax(folwerOrderService.deleteWithValidByIds(List.of(orderIds), true));
     }
+
+    /**
+     * 生成退款订单
+     *
+     * @param orderId 主键串
+     */
+    @SaCheckPermission("flower:order:createRefund")
+    @Log(title = "订单", businessType = BusinessType.DELETE)
+    @PostMapping("/createRefund/{orderId}")
+    public R<String> createRefund(@NotNull(message = "主键不能为空")
+                                    @PathVariable Long orderId) {
+        return R.ok(folwerOrderService.createRefund(orderId));
+    }
 }

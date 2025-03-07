@@ -61,6 +61,11 @@ public class FolwerOrder extends TenantEntity {
     private Long rebate;
 
     /**
+     * 是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败
+     */
+    private Long isRefund;
+
+    /**
      * 实际金额
      */
     private Long actualTotal;

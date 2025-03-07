@@ -291,8 +291,8 @@ wx:
     #商户APIV3密钥
     key: xBRtIhqmDDECnyitXpjSbz8XJKFUWi5h
     #支付通知地址
-    notify-url: http://www.mlhxjxcx.cn/wxpayback/pay/payCallback
+    notify-url: https://www.mlhxjxcx.cn/wxpayback/pay/payCallback
     #退款通知地址
-    refun-notify-url: http://www.mlhxjxcx.cn/wx/refundNotify
+    refun-notify-url: https://www.mlhxjxcx.cn/wx/refundNotify
     #微信平台证书
 #    wechatpay-Certificate-Path: cert/wechatpay_3996637EF4984ABC0796E6CED627793085E8C41F.pem
