@@ -139,6 +139,9 @@ public class FolwerOrderSetServiceImpl implements IFolwerOrderSetService {
         if (bo.getAutoDvy() != null){
             update.setAutoDvy(bo.getAutoDvy());
         }
+        if (bo.getStartPrice() != null){
+            update.setStartPrice(bo.getStartPrice());
+        }
 
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;

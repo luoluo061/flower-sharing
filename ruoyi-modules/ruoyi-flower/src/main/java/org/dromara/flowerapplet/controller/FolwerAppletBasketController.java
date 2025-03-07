@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.exception.NotPermissionException;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -34,6 +35,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/flowerapplet/basket")
+@RestControllerAdvice
 public class FolwerAppletBasketController extends BaseController {
 
     private final IFolwerAppletBasketService folwerBasketService;
@@ -112,6 +114,7 @@ public class FolwerAppletBasketController extends BaseController {
      */
     @SaCheckPermission("flower:basket:query")
     @GetMapping("/CartItem/{userId}")
+//    @ExceptionHandler(Exception.class)
     public R<FolwerShopCartItem> getFolwerShopCartItem(@NotNull(message = "主键不能为空")
                                            @PathVariable Long userId) {
         return R.ok(folwerBasketService.getShopCartItems(userId));

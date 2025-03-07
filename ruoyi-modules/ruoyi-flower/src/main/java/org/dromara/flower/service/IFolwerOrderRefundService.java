@@ -82,5 +82,5 @@ public interface IFolwerOrderRefundService {
      * @param refundId
      * @return
      */
-    R<String> submitRefundOrders(Long refundId) throws Exception;
+    FolwerOrderRefundVo submitRefundOrders(Long refundId) throws Exception;
 }

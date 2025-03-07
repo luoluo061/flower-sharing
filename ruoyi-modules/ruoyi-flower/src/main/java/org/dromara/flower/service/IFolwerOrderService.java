@@ -74,4 +74,13 @@ public interface IFolwerOrderService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
+    /***
+     * orderId
+     * @param orderId
+     * @return
+     */
+    String createRefund(Long orderId);
+
 }

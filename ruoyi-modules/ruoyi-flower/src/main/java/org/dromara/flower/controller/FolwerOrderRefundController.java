@@ -126,9 +126,9 @@ public class FolwerOrderRefundController extends BaseController {
     @Log(title = "提交退款订单", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/submitRefundOrder/{refundId}")
-    public R<String> submitOrders(@NotNull(message = "主键不能为空")
+    public R<FolwerOrderRefundVo> submitOrders(@NotNull(message = "主键不能为空")
                                                @PathVariable Long refundId) throws Exception {
-        R<String> wxJsapiResponseR = folwerOrderRefundService.submitRefundOrders(refundId);
-        return wxJsapiResponseR;
+        FolwerOrderRefundVo wxJsapiResponseR = folwerOrderRefundService.submitRefundOrders(refundId);
+        return R.ok(wxJsapiResponseR);
     }
 }

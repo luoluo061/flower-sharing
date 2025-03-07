@@ -26,7 +26,7 @@ public class FolwerOrderBo extends BaseEntity {
     /**
      * 订单ID
      */
-    @NotNull(message = "订单ID不能为空", groups = { EditGroup.class })
+//    @NotNull(message = "订单ID不能为空", groups = { EditGroup.class })
     private Long orderId;
 
     /**
@@ -58,6 +58,11 @@ public class FolwerOrderBo extends BaseEntity {
      * 返点
      */
     private Long rebate;
+
+    /**
+     * 是否退款 默认是0:未退款,1:已退款, 2:退款中, 3:取消退款 4:退款失败
+     */
+    private Long isRefund;
 
     /**
      * 实际金额
@@ -102,7 +107,7 @@ public class FolwerOrderBo extends BaseEntity {
     /**
      * 物流公司
      */
-    @NotBlank(message = "物流公司不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "物流公司不能为空", groups = { AddGroup.class, EditGroup.class })
     private String dvyName;
 
     /**
@@ -138,7 +143,7 @@ public class FolwerOrderBo extends BaseEntity {
     /**
      * 取消原因
      */
-    @NotBlank(message = "取消原因不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "取消原因不能为空", groups = { AddGroup.class, EditGroup.class })
     private String cancelMsg;
 
     /**

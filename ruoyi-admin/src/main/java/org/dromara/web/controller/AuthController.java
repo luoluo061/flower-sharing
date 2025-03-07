@@ -133,9 +133,9 @@ public class AuthController {
         } else if (!UserConstants.NORMAL.equals(client.getStatus())) {
             return R.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
-        LoginVo loginVo1 = IAuthStrategy.login(body, client, grantType);
+        LoginVo wxLoginVo = IAuthStrategy.login(body, client, grantType);
 
-        LoginVo loginVo =  appletLogin.getLoginVo(loginVo1.getPhone(), client);
+        LoginVo loginVo =  appletLogin.getLoginVo(wxLoginVo.getPhone(), client);
 
         return R.ok(loginVo);
     }

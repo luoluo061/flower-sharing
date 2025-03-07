@@ -2,6 +2,7 @@ package org.dromara.flower.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.flower.domain.FolwerOrderRefund;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -25,7 +26,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = FolwerOrderRefund.class)
-public class FolwerOrderRefundVo implements Serializable {
+public class FolwerOrderRefundVo extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -47,6 +48,12 @@ public class FolwerOrderRefundVo implements Serializable {
      */
     @ExcelProperty(value = "会员名称")
     private String userName;
+
+    /**
+     * 会员电话
+     */
+    @ExcelProperty(value = "会员电话")
+    private String userPhone;
 
     /**
      * 会员类型
@@ -100,7 +107,7 @@ public class FolwerOrderRefundVo implements Serializable {
      * 退款时间
      */
     @ExcelProperty(value = "退款时间")
-    private Date refundTime;
+    private String refundTime;
 
     /**
      * 拒绝退款原因

@@ -41,7 +41,9 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
     @Override
     public FolwerAppletSkuVo queryById(Long skuId){
         FolwerAppletSkuVo folwerAppletSkuVo = baseMapper.selectVoById(skuId);
-        folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+        if(folwerAppletSkuVo != null){
+            folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+        }
         return folwerAppletSkuVo;
     }
 
@@ -98,6 +100,7 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         lqw.eq(bo.getPrice() != null, FolwerAppletSku::getPrice, bo.getPrice());
         lqw.eq(bo.getActualStocks() != null, FolwerAppletSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerAppletSku::getStatus, bo.getStatus());
+        lqw.eq(bo.getSkuId() != null, FolwerAppletSku::getSkuId, bo.getSkuId());
         return lqw;
     }
 

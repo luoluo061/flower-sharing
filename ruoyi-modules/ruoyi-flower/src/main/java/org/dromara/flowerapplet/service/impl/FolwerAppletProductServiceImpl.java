@@ -52,6 +52,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
             if (folwerAppletProductVo.getNormsType().equals(1L)) {
                 FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
                 folwerAppletSkuBo.setProdId(folwerAppletProductVo.getId());
+                folwerAppletSkuBo.setStatus(1L);
                 List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
                 folwerAppletProductVo.setSkuList(folwerAppletSkuVos);
             }
@@ -69,6 +70,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     @Override
     public TableDataInfo<FolwerAppletProductVo> queryPageList(FolwerAppletProductBo bo, PageQuery pageQuery) {
         stringToLong(bo);
+        bo.setStatus(1L);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()) {
@@ -76,6 +78,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
                 if (item.getNormsType().equals(1L)) {
                     FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
                     folwerAppletSkuBo.setProdId(item.getId());
+                    folwerAppletSkuBo.setStatus(1L);
                     List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
                     item.setSkuList(folwerAppletSkuVos);
                 }
@@ -99,6 +102,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
             if (productVo.getNormsType().equals(1L)) {
                 FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
                 folwerAppletSkuBo.setProdId(productVo.getId());
+                folwerAppletSkuBo.setStatus(1L);
                 List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
                 productVo.setSkuList(folwerAppletSkuVos);
             }
