@@ -11,6 +11,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.bo.AppletUserAuthBo;
 import org.dromara.flower.domain.vo.AppletUserAuthVo;
+import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
+import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
+import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IAppletUserAuthService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.AppletUserAuthlogBo;
@@ -18,6 +21,7 @@ import org.dromara.flower.domain.vo.AppletUserAuthlogVo;
 import org.dromara.flower.domain.AppletUserAuthlog;
 import org.dromara.flower.mapper.AppletUserAuthlogMapper;
 import org.dromara.flower.service.IAppletUserAuthlogService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +41,8 @@ public class AppletUserAuthlogServiceImpl implements IAppletUserAuthlogService {
     private final AppletUserAuthlogMapper baseMapper;
 
     private final IAppletUserAuthService appletUserAuthService;
+
+    private final IAppletUserInformationService appletUserInformationService;
 
     /**
      * 查询小程序用户信息认证记录
@@ -111,6 +117,7 @@ public class AppletUserAuthlogServiceImpl implements IAppletUserAuthlogService {
      * @return 是否修改成功
      */
     @Override
+    @Transactional
     public Boolean updateByBo(AppletUserAuthlogBo bo) {
         bo.setAuthTime(new Date());
         AppletUserAuthlog update = MapstructUtils.convert(bo, AppletUserAuthlog.class);
@@ -122,7 +129,13 @@ public class AppletUserAuthlogServiceImpl implements IAppletUserAuthlogService {
             appletUserAuthBo.setIsPass(update.getIsPass());
             Boolean b = appletUserAuthService.updateByBo(appletUserAuthBo);
             if (b){
-                return true;
+                if (appletUserAuthBo.getIsPass() == 1L){
+                    AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(appletUserAuthBo.getUserId());
+                    AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
+                    appletUserInformationBo.setIsAuth(1L);
+                    return appletUserInformationService.updateByBo(appletUserInformationBo);
+                }
+                return false;
             }
         }
         return false;
