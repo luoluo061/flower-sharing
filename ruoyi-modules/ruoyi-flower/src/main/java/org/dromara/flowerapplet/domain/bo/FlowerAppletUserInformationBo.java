@@ -1,5 +1,8 @@
 package org.dromara.flowerapplet.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flowerapplet.domain.FlowerAppletUserInformation;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -136,6 +139,12 @@ public class FlowerAppletUserInformationBo extends BaseEntity {
      * 生日
      */
     private String birthday;
+
+    /**
+     * 是否认证 0:未认证 1:已认证
+     */
+    @ExcelProperty(value = "是否认证 0:未认证 1:已认证")
+    private Long isAuth;
 
 
 }

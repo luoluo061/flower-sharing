@@ -226,4 +226,10 @@ public class AppletUserInformationVo implements Serializable {
     @ExcelProperty(value = "会员购买记录")
     private MemberPurchaseRecordVo purchaseRecordVo;
 
+    /**
+     * 是否认证 0:未认证 1:已认证
+     */
+    @ExcelProperty(value = "是否认证 0:未认证 1:已认证")
+    private Long isAuth;
+
 }

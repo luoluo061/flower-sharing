@@ -1,9 +1,12 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 
 import java.io.Serial;
 
@@ -148,5 +151,10 @@ public class FlowerAppletUserInformation extends TenantEntity {
      */
     private String birthday;
 
+    /**
+     * 是否认证 0:未认证 1:已认证
+     */
+    @ExcelProperty(value = "是否认证 0:未认证 1:已认证")
+    private Long isAuth;
 
 }

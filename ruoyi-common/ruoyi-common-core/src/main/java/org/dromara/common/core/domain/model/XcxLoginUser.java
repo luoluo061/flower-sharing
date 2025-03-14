@@ -23,5 +23,7 @@ public class XcxLoginUser extends LoginUser {
     private String openid;
     //手机号
     private String phone;
+    //是否通过 0:未通过， 1:已通过
+    private Long isAuth;
 
 }

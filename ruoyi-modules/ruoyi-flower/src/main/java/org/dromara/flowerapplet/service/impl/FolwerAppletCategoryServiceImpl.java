@@ -83,6 +83,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
      */
     @Override
     public TableDataInfo<FolwerAppletCategoryVo> queryPageList(FolwerAppletCategoryBo bo, PageQuery pageQuery) {
+        bo.setStatus(1L);
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()){
@@ -118,6 +119,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
      */
     @Override
     public List<FolwerAppletCategoryVo> queryList(FolwerAppletCategoryBo bo) {
+        bo.setStatus(1L);
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
         List<FolwerAppletCategoryVo> folwerAppletCategoryVos = baseMapper.selectVoList(lqw);
         if (!folwerAppletCategoryVos.isEmpty()){

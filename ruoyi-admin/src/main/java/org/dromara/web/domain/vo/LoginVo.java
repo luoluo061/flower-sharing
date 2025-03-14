@@ -55,4 +55,9 @@ public class LoginVo {
      */
     private String phone;
 
+    /**
+     * 是否认证 0:未认证 1:已认证
+     */
+    private Long isAuth;
+
 }
