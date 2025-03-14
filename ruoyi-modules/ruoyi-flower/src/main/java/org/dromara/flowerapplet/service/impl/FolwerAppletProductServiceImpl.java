@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
@@ -18,6 +19,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.mapper.FolwerAppletProductMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -69,22 +71,45 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
      */
     @Override
     public TableDataInfo<FolwerAppletProductVo> queryPageList(FolwerAppletProductBo bo, PageQuery pageQuery) {
-        stringToLong(bo);
-        bo.setStatus(1L);
-        LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
-        Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        if (!result.getRecords().isEmpty()) {
-            result.getRecords().forEach(item -> {
-                if (item.getNormsType().equals(1L)) {
-                    FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                    folwerAppletSkuBo.setProdId(item.getId());
-                    folwerAppletSkuBo.setStatus(1L);
-                    List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                    item.setSkuList(folwerAppletSkuVos);
-                }
-            });
+        if (!LoginHelper.isLogin()){
+            stringToLong(bo);
+//            bo.setStatus(1L);
+            LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
+            Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            if (!result.getRecords().isEmpty()) {
+                result.getRecords().forEach(item -> {
+                    if (item.getNormsType().equals(1L)) {
+                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                        folwerAppletSkuBo.setProdId(item.getId());
+                        folwerAppletSkuBo.setStatus(1L);
+                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                        item.setSkuList(folwerAppletSkuVos);
+                        item.setOriPrice(new BigDecimal("-1"));
+                        item.setDerlinePrice(new BigDecimal("-1"));
+                    }
+                });
+            }
+            return TableDataInfo.build(result);
+        }else {
+            stringToLong(bo);
+//            bo.setStatus(1L);
+            LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
+            Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+            if (!result.getRecords().isEmpty()) {
+                result.getRecords().forEach(item -> {
+                    if (item.getNormsType().equals(1L)) {
+                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                        folwerAppletSkuBo.setProdId(item.getId());
+                        folwerAppletSkuBo.setStatus(1L);
+                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                        item.setSkuList(folwerAppletSkuVos);
+                    }
+                });
+            }
+            return TableDataInfo.build(result);
         }
-        return TableDataInfo.build(result);
+
+
     }
 
     /**
@@ -111,7 +136,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     }
 
     private void stringToLong(FolwerAppletProductBo bo) {
-        if (bo.getCategoryIdStr() != null) {
+        if (bo.getCategoryIdStr() != null && !bo.getCategoryIdStr().equals("")) {
             bo.setCategoryId(Long.parseLong(bo.getCategoryIdStr()));
         }
     }

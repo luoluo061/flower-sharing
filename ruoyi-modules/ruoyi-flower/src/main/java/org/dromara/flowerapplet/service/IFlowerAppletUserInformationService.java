@@ -58,6 +58,14 @@ public interface IFlowerAppletUserInformationService {
     Boolean updateByBo(FlowerAppletUserInformationBo bo);
 
     /**
+     * 修改小程序用户信息
+     *
+     * @param bo 小程序用户信息
+     * @return 是否修改成功
+     */
+    Boolean updateAuthenByBo(FlowerAppletUserInformationBo bo);
+
+    /**
      * 校验并批量删除小程序用户信息信息
      *
      * @param ids     待删除的主键集合

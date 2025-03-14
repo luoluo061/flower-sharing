@@ -42,6 +42,7 @@ public class AppletLoginImpl implements AppletLogin {
             loginUser.setUserId(user.getUserId());
             loginUser.setUserType(user.getUserType());
             loginUser.setPhone(phone);
+            loginUser.setIsAuth(user.getIsAuth());
             loginUser.setTenantId(user.getTenantId());
             loginUser.setDeptId(user.getDeptId());
             loginUser.setUsername(user.getName());

@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service.impl;
 
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FlowerAppletUserInformationBo;
 import org.dromara.flowerapplet.domain.vo.FlowerAppletUserInformationVo;
@@ -122,6 +124,21 @@ public class FlowerAppletUserInformationServiceImpl implements IFlowerAppletUser
      */
     @Override
     public Boolean updateByBo(FlowerAppletUserInformationBo bo) {
+        FlowerAppletUserInformation update = MapstructUtils.convert(bo, FlowerAppletUserInformation.class);
+        validEntityBeforeSave(update);
+        return baseMapper.updateById(update) > 0;
+    }
+
+    @Override
+    public Boolean updateAuthenByBo(FlowerAppletUserInformationBo bo) {
+        if (bo.getUserId() == null){
+            bo.setUserId(LoginHelper.getLoginUser().getUserId());
+        }
+        FlowerAppletUserInformationVo flowerAppletUserInformationVo = this.queryById(bo.getUserId());
+        if(flowerAppletUserInformationVo.getIsAuth() == 1){
+            throw new ServiceException("小程序用户信息已认证");
+        }
+
         FlowerAppletUserInformation update = MapstructUtils.convert(bo, FlowerAppletUserInformation.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;

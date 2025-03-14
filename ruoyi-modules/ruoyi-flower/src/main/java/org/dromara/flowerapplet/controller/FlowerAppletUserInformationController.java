@@ -107,6 +107,17 @@ public class FlowerAppletUserInformationController extends BaseController {
     }
 
     /**
+     * 小程序认证用户信息
+     */
+    @SaCheckPermission("flower:userInformation:updateAuthen")
+    @Log(title = "小程序认证用户信息", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/authen")
+    public R<Void> updateAuthen(@Validated(EditGroup.class) @RequestBody FlowerAppletUserInformationBo bo) {
+        return toAjax(flowerAppletUserInformationService.updateAuthenByBo(bo));
+    }
+
+    /**
      * 删除小程序用户信息
      *
      * @param userIds 主键串

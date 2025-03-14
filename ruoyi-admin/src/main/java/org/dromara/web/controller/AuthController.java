@@ -134,7 +134,6 @@ public class AuthController {
             return R.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
         LoginVo wxLoginVo = IAuthStrategy.login(body, client, grantType);
-
         LoginVo loginVo =  appletLogin.getLoginVo(wxLoginVo.getPhone(), client);
 
         return R.ok(loginVo);

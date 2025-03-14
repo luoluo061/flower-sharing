@@ -181,4 +181,11 @@ public class FlowerAppletUserInformationVo implements Serializable {
     private String birthday;
 
 
+    /**
+     * 是否认证 0:未认证 1:已认证
+     */
+    @ExcelProperty(value = "是否认证 0:未认证 1:已认证")
+    private Long isAuth;
+
+
 }
