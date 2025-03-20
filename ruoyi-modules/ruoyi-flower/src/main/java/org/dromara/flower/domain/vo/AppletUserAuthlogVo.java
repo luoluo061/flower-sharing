@@ -2,6 +2,7 @@ package org.dromara.flower.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.flower.domain.AppletUserAuthlog;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -25,7 +26,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = AppletUserAuthlog.class)
-public class AppletUserAuthlogVo implements Serializable {
+public class AppletUserAuthlogVo extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

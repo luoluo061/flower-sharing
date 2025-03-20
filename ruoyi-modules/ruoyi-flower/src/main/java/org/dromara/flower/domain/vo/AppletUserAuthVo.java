@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.vo;
 
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flower.domain.AppletUserAuth;
@@ -25,7 +26,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = AppletUserAuth.class)
-public class AppletUserAuthVo implements Serializable {
+public class AppletUserAuthVo extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,8 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -29,6 +32,7 @@ import java.util.Collection;
  * @author mlhxj
  * @date 2025-03-14
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FlowerAppletUserAuthServiceImpl implements IFlowerAppletUserAuthService {
@@ -104,11 +108,22 @@ public class FlowerAppletUserAuthServiceImpl implements IFlowerAppletUserAuthSer
     @Override
     @Transactional
     public Boolean insertByBo(FlowerAppletUserAuthBo bo) {
-        FlowerAppletUserAuth add = MapstructUtils.convert(bo, FlowerAppletUserAuth.class);
+//        FlowerAppletUserAuth add = MapstructUtils.convert(bo, FlowerAppletUserAuth.class);
+        if (bo.getUserId() == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        FlowerAppletUserAuthBo authBo = new FlowerAppletUserAuthBo();
+        authBo.setUserId(bo.getUserId());
+        List<FlowerAppletUserAuthVo> flowerAppletUserAuthVos = this.queryList(authBo);
+        if (flowerAppletUserAuthVos.size() > 0){
+            throw new RuntimeException("用户已提交认证");
+//            return false;
+        }
+        FlowerAppletUserAuth add = BeanUtil.copyProperties(bo, FlowerAppletUserAuth.class);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
-            bo.setAuthId(add.getAuthId());
+            bo.setAuthId(String.valueOf(add.getAuthId()));
 
             FlowerAppletUserAuthlogBo flowerAppletUserAuthlogBo = new FlowerAppletUserAuthlogBo();
             flowerAppletUserAuthlogBo.setUserId(add.getUserId());
@@ -128,7 +143,11 @@ public class FlowerAppletUserAuthServiceImpl implements IFlowerAppletUserAuthSer
     @Override
     @Transactional
     public Boolean updateByBo(FlowerAppletUserAuthBo bo) {
-        FlowerAppletUserAuth update = MapstructUtils.convert(bo, FlowerAppletUserAuth.class);
+//        FlowerAppletUserAuth update = MapstructUtils.convert(bo, FlowerAppletUserAuth.class);
+        if (bo.getUserId() == null){
+            throw new RuntimeException("用户ID不能为空");
+        }
+        FlowerAppletUserAuth update = BeanUtil.copyProperties(bo, FlowerAppletUserAuth.class);
         validEntityBeforeSave(update);
         if(baseMapper.updateById(update) > 0){
             FlowerAppletUserAuthlogBo flowerAppletUserAuthlogBo = new FlowerAppletUserAuthlogBo();

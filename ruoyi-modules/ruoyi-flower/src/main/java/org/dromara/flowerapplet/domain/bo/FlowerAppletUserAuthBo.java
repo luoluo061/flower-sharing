@@ -23,12 +23,12 @@ public class FlowerAppletUserAuthBo extends BaseEntity {
     /**
      * 主键id
      */
-    private Long authId;
+    private String authId;
 
     /**
      * 会员ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 商店名称
