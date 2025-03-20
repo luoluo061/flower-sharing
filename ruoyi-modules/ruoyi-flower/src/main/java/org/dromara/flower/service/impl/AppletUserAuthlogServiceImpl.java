@@ -134,8 +134,9 @@ public class AppletUserAuthlogServiceImpl implements IAppletUserAuthlogService {
                     AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(appletUserInformationVo, AppletUserInformationBo.class);
                     appletUserInformationBo.setIsAuth(1L);
                     return appletUserInformationService.updateByBo(appletUserInformationBo);
+                }else {
+                    return true;
                 }
-                return false;
             }
         }
         return false;
