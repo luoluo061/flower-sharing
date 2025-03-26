@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flower.domain.FolwerOrderDetail;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -11,7 +13,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -41,6 +43,12 @@ public class FolwerOrderDetailVo implements Serializable {
     private String orderId;
 
     /**
+     * 规格ID
+     */
+    @ExcelProperty(value = "规格ID")
+    private Long skuId;
+
+    /**
      * 商品名称
      */
     @ExcelProperty(value = "商品名称")
@@ -51,6 +59,13 @@ public class FolwerOrderDetailVo implements Serializable {
      */
     @ExcelProperty(value = "商品列表图")
     private String productListPictureUrl;
+
+    /**
+     * 商品列表图
+     */
+    @ExcelProperty(value = "商品列表图")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productListPictureUrl")
+    private String productListPictureUrlUrl;
 
     /**
      * 单价
@@ -70,5 +85,11 @@ public class FolwerOrderDetailVo implements Serializable {
     @ExcelProperty(value = "小计")
     private Long subtotal;
 
+
+    /**
+     * 商品规格
+     */
+    @ExcelProperty(value = "商品规格")
+    private FolwerSkuVo folwerSkuVo;
 
 }

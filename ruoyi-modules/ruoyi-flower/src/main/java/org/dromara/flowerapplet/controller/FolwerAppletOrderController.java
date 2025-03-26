@@ -84,7 +84,7 @@ public class FolwerAppletOrderController extends BaseController {
     @PostMapping()
     @ExceptionHandler(NotPermissionException.class)
     public R<String> add(@Validated(AddGroup.class) @RequestBody OrderParamBo bo) throws Exception {
-        return R.ok(folwerAppletOrderService.insertByBo(bo));
+        return folwerAppletOrderService.insertByBo(bo);
     }
 
     /**

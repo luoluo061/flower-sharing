@@ -222,13 +222,15 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String insertByBo(OrderParamBo bo) throws Exception {
+    public R<String> insertByBo(OrderParamBo bo) throws Exception {
         if (bo.getUserId() == null){
-            throw new Exception("用户ID不能为空");
+//            throw new Exception("用户ID不能为空");
+            return R.fail("用户ID不能为空");
         }
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(bo.getUserId()));
         if (appletUserInformationVo == null){
-            throw new Exception("用户不存在");
+//            throw new Exception("用户不存在");
+            return R.fail("用户不存在");
         }
 
         //总价
@@ -253,13 +255,16 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         if(bo.getProductItem() != null){
             FolwerAppletProductVo folwerAppletProductVo = productService.queryById(Long.valueOf(bo.getProductItem()));
             if (folwerAppletProductVo == null){
-                throw new Exception("商品不存在");
+//                throw new Exception("商品不存在");
+                return R.fail("商品不存在");
             }
             if (bo.getProdCount() == null){
-                throw new Exception("商品数量不能为空");
+//                throw new Exception("商品数量不能为空");
+                return R.fail("商品数量不能为空");
             }
             if (bo.getSkuId() == null){
-                throw new Exception("规格ID不能为空");
+//                throw new Exception("规格ID不能为空");
+                return R.fail("规格ID不能为空");
             }
             //订单详情
             FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
@@ -310,15 +315,18 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             for (String basketId : bo.getBasketIds()) {
                 FolwerAppletBasketVo basketVo = basketService.queryById(Long.valueOf(basketId));
                 if (basketVo == null){
-                    throw new Exception("购物车不存在");
+//                    throw new Exception("购物车不存在");
+                    return R.fail("购物车不存在");
                 }
                 if (!basketVo.getStatus().equals(1L)){
-                    throw new Exception("购物车状态为下架");
+//                    throw new Exception("购物车状态为下架");
+                    return R.fail("购物车状态为下架");
                 }
 
                 FolwerAppletProductVo productVo = productService.queryById(basketVo.getProdId());
                 if (productVo == null){
-                    throw new Exception("商品不存在");
+//                    throw new Exception("商品不存在");
+                    return R.fail("商品不存在");
                 }
 //                productVos.add(productVo);
                 //订单详情
@@ -428,7 +436,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 }
 
                 if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
-                    throw new Exception("您的支付金额未达" + folwerOrderSetVos.get(0).getStartPrice() +"元以上，未满足支付需求");
+                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
+                    BigDecimal num2 = new BigDecimal("100");
+                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
+                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
+//                    return R.fail("您的支付金额未达" + result +"元以上，未满足支付需求");
                 }
             }
         }
@@ -456,7 +468,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
             RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo.getOrderId(), Duration.ofMinutes(15));
         }
-        return add.getOrderId().toString();
+//        return add.getOrderId().toString();
+        return R.ok(add.getOrderId().toString());
     }
 
     /**

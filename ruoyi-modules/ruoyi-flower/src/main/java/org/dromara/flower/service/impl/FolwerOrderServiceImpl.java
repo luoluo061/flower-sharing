@@ -74,7 +74,7 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
         List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
         if (folwerPickAddrVos != null && folwerPickAddrVos.size() > 0){
             FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrVos.get(0);
-            folwerOrderVo.setAddr(folwerPickAddrVo.getAddr());
+            folwerOrderVo.setAddr(folwerPickAddrVo.getProvince()+ folwerPickAddrVo.getCity()+ folwerPickAddrVo.getArea()+ folwerPickAddrVo.getAddr());
             folwerOrderVo.setMobile(folwerPickAddrVo.getMobile());
             folwerOrderVo.setAddrName(folwerPickAddrVo.getAddrName());
         }
@@ -103,15 +103,28 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
     public TableDataInfo<FolwerOrderVo> queryPageList(FolwerOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerOrder> lqw = buildQueryWrapper(bo);
         Page<FolwerOrderVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.getRecords().forEach(FolwerOrderVo -> {
-            MemberLevelVo memberLevelVo = memberLevelService.queryById(FolwerOrderVo.getMemberLevelId());
+        result.getRecords().forEach(folwerOrderVo -> {
+            MemberLevelVo memberLevelVo = memberLevelService.queryById(folwerOrderVo.getMemberLevelId());
             if (memberLevelVo != null) {
-                FolwerOrderVo.setMemberLevelName(memberLevelVo.getGradeName());
+                folwerOrderVo.setMemberLevelName(memberLevelVo.getGradeName());
             }
-            AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(FolwerOrderVo.getUserId());
+            AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerOrderVo.getUserId());
             if (appletUserInformationVo != null){
-                FolwerOrderVo.setUserName(appletUserInformationVo.getNickName());
+                folwerOrderVo.setUserName(appletUserInformationVo.getNickName());
             }
+
+//            FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
+//            folwerPickAddrBo.setUserId(String.valueOf(FolwerOrderVo.getUserId()));
+//            List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
+
+            FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(folwerOrderVo.getAddrOrderId());
+            if (folwerPickAddrVo != null){
+//                FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrVos.get(0);
+                folwerOrderVo.setAddr(folwerPickAddrVo.getProvince()+ folwerPickAddrVo.getCity()+ folwerPickAddrVo.getArea()+ folwerPickAddrVo.getAddr());
+                folwerOrderVo.setMobile(folwerPickAddrVo.getMobile());
+                folwerOrderVo.setAddrName(folwerPickAddrVo.getAddrName());
+            }
+
         });
         return TableDataInfo.build(result);
     }

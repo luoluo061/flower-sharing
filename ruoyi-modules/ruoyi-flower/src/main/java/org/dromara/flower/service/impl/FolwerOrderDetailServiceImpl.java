@@ -9,6 +9,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.FolwerDelivery;
+import org.dromara.flower.domain.bo.FolwerSkuBo;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flower.service.IFolwerSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderDetailBo;
 import org.dromara.flower.domain.vo.FolwerOrderDetailVo;
@@ -32,6 +35,8 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
 
     private final FolwerOrderDetailMapper baseMapper;
 
+    private final IFolwerSkuService folwerSkuService;
+
     /**
      * 查询订单详细
      *
@@ -54,6 +59,12 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
     public TableDataInfo<FolwerOrderDetailVo> queryPageList(FolwerOrderDetailBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerOrderDetail> lqw = buildQueryWrapper(bo);
         Page<FolwerOrderDetailVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.getRecords().forEach(folwerOrderDetailVo -> {
+            FolwerSkuVo folwerSkuVos = folwerSkuService.queryById(folwerOrderDetailVo.getSkuId());
+            if (folwerSkuVos != null) {
+                folwerOrderDetailVo.setFolwerSkuVo(folwerSkuVos);
+            }
+        });
         return TableDataInfo.build(result);
     }
 

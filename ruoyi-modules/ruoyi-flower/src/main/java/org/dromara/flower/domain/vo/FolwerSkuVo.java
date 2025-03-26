@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flower.domain.FolwerSku;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -7,6 +9,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -48,9 +51,10 @@ public class FolwerSkuVo implements Serializable {
     private String skuPicid;
 
     /**
-     * 规格图ID
+     * 规格图IDURL
      */
-    @ExcelProperty(value = "规格图URL")
+    @ExcelProperty(value = "规格图IDURL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "skuPicid")
     private String skuPicidURL;
 
     /**

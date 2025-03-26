@@ -33,6 +33,11 @@ public class FolwerOrderDetail extends TenantEntity {
     private String orderId;
 
     /**
+     * 规格ID
+     */
+    private Long skuId;
+
+    /**
      * 商品名称
      */
     private String productName;

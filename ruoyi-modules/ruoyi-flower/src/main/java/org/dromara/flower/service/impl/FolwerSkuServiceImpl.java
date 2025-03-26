@@ -62,17 +62,17 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     public FolwerSkuVo queryById(Long skuId){
         FolwerSkuVo folwerSkuVo = baseMapper.selectVoById(skuId);
 
-        if (folwerSkuVo.getSkuPicid() != null && !folwerSkuVo.getSkuPicid().isEmpty())
-        {
-            Collection<Long> ossIds = new ArrayList<>();
-
-            ossIds.add(Long.valueOf(folwerSkuVo.getSkuPicid()));
-            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-            if (!stringStringMap.isEmpty()){
-                // 设置图片Url
-                folwerSkuVo.setSkuPicidURL(stringStringMap.get(folwerSkuVo.getSkuPicid()));
-            }
-        }
+//        if (folwerSkuVo.getSkuPicid() != null && !folwerSkuVo.getSkuPicid().isEmpty())
+//        {
+//            Collection<Long> ossIds = new ArrayList<>();
+//
+//            ossIds.add(Long.valueOf(folwerSkuVo.getSkuPicid()));
+//            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+//            if (!stringStringMap.isEmpty()){
+//                // 设置图片Url
+//                folwerSkuVo.setSkuPicidURL(stringStringMap.get(folwerSkuVo.getSkuPicid()));
+//            }
+//        }
 
         return folwerSkuVo;
     }
@@ -201,6 +201,9 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
             Long maxStocks = 0L;
             if (folwerSkuVos.size() > 0){
                 for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
+                    if(folwerSkuVo.getStatus().equals(0L)){
+                        continue;
+                    }
                     if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
                         maxPrace = folwerSkuVo.getPrice().setScale(2, RoundingMode.HALF_UP);
                     }
