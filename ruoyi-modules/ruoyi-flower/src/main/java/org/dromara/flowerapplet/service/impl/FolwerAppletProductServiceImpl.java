@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
+import org.dromara.flowerapplet.domain.vo.FlowerAppletUserInformationVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
+import org.dromara.flowerapplet.service.IFlowerAppletUserInformationService;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
@@ -37,6 +39,8 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     private final FolwerAppletProductMapper baseMapper;
 
     private final IFolwerAppletSkuService folwerAppletSkuService;
+
+    private final IFlowerAppletUserInformationService flowerAppletUserInformationService;
 
     /**
      * 查询小程序端商品管理
@@ -90,26 +94,51 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
                 });
             }
             return TableDataInfo.build(result);
-        }else {
-            stringToLong(bo);
-//            bo.setStatus(1L);
-            LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
-            Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-            if (!result.getRecords().isEmpty()) {
-                result.getRecords().forEach(item -> {
-                    if (item.getNormsType().equals(1L)) {
-                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                        folwerAppletSkuBo.setProdId(item.getId());
-                        folwerAppletSkuBo.setStatus(1L);
-                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                        item.setSkuList(folwerAppletSkuVos);
+        } else if (LoginHelper.isLogin()) {
+            Long userId = LoginHelper.getUserId();
+            if (userId != null){
+                FlowerAppletUserInformationVo flowerAppletUserInformationVo = flowerAppletUserInformationService.queryById(userId);
+                //认证功能
+                if (flowerAppletUserInformationVo.getIsAuth() == 1L){
+                    stringToLong(bo);
+//                  bo.setStatus(1L);
+                    LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
+                    Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+                    if (!result.getRecords().isEmpty()) {
+                        result.getRecords().forEach(item -> {
+                            if (item.getNormsType().equals(1L)) {
+                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                                folwerAppletSkuBo.setProdId(item.getId());
+                                folwerAppletSkuBo.setStatus(1L);
+                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                                item.setSkuList(folwerAppletSkuVos);
+                            }
+                        });
                     }
-                });
+                    return TableDataInfo.build(result);
+                }else if (flowerAppletUserInformationVo.getIsAuth() == 0L){
+                    stringToLong(bo);
+//                  bo.setStatus(1L);
+                    LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
+                    Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+                    if (!result.getRecords().isEmpty()) {
+                        result.getRecords().forEach(item -> {
+                            if (item.getNormsType().equals(1L)) {
+                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                                folwerAppletSkuBo.setProdId(item.getId());
+                                folwerAppletSkuBo.setStatus(1L);
+                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+                                item.setSkuList(folwerAppletSkuVos);
+                                item.setOriPrice(new BigDecimal("-2"));
+                                item.setDerlinePrice(new BigDecimal("-2"));
+                            }
+                        });
+                    }
+                    return TableDataInfo.build(result);
+                }
             }
-            return TableDataInfo.build(result);
         }
-
-
+        return TableDataInfo.build(new Page<>());
     }
 
     /**
@@ -160,6 +189,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         lqw.eq(bo.getDeliveryMode() != null, FolwerAppletProduct::getDeliveryMode, bo.getDeliveryMode());
         lqw.eq(bo.getDeliveryPrice() != null, FolwerAppletProduct::getDeliveryPrice, bo.getDeliveryPrice());
         lqw.eq(bo.getStatus() != null, FolwerAppletProduct::getStatus, bo.getStatus());
+        lqw.eq(bo.getIsRecommend() != null, FolwerAppletProduct::getIsRecommend, bo.getIsRecommend());
         lqw.eq(bo.getIsCoupon() != null, FolwerAppletProduct::getIsCoupon, bo.getIsCoupon());
         lqw.eq(bo.getIfRefund() != null, FolwerAppletProduct::getIfRefund, bo.getIfRefund());
         lqw.eq(bo.getIfFreeShipping() != null, FolwerAppletProduct::getIfFreeShipping, bo.getIfFreeShipping());

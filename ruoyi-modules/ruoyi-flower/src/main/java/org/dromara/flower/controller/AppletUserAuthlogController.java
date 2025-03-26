@@ -23,7 +23,7 @@ import org.dromara.flower.service.IAppletUserAuthlogService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
- * 小程序用户信息认证记录
+ * 花店认证信息认证记录
  *
  * @author mlhxj
  * @date 2025-03-14

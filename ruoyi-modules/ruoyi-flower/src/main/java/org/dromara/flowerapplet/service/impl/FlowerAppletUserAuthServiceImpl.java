@@ -144,18 +144,33 @@ public class FlowerAppletUserAuthServiceImpl implements IFlowerAppletUserAuthSer
     @Transactional
     public Boolean updateByBo(FlowerAppletUserAuthBo bo) {
 //        FlowerAppletUserAuth update = MapstructUtils.convert(bo, FlowerAppletUserAuth.class);
+        if (bo.getAuthId() == null){
+            throw new RuntimeException("认证ID不能为空");
+        }
+
         if (bo.getUserId() == null){
             throw new RuntimeException("用户ID不能为空");
         }
-        FlowerAppletUserAuth update = BeanUtil.copyProperties(bo, FlowerAppletUserAuth.class);
-        validEntityBeforeSave(update);
-        if(baseMapper.updateById(update) > 0){
-            FlowerAppletUserAuthlogBo flowerAppletUserAuthlogBo = new FlowerAppletUserAuthlogBo();
-            flowerAppletUserAuthlogBo.setUserId(update.getUserId());
-            flowerAppletUserAuthlogBo.setAuthId(update.getAuthId());
-            flowerAppletUserAuthlogBo.setStatus(0L);
-            return flowerAppletUserAuthlogService.insertByBo(flowerAppletUserAuthlogBo);
+
+        FlowerAppletUserAuthBo authBo = new FlowerAppletUserAuthBo();
+        authBo.setUserId(bo.getUserId());
+        List<FlowerAppletUserAuthVo> flowerAppletUserAuthVos = this.queryList(authBo);
+        if (flowerAppletUserAuthVos.size() > 0){
+            if(flowerAppletUserAuthVos.get(0).getStatus() == 1L){ // && flowerAppletUserAuthVos.get(0).getIsPass() == 0L){
+                FlowerAppletUserAuth update = BeanUtil.copyProperties(bo, FlowerAppletUserAuth.class);
+                validEntityBeforeSave(update);
+                if(baseMapper.updateById(update) > 0){
+                    FlowerAppletUserAuthlogBo flowerAppletUserAuthlogBo = new FlowerAppletUserAuthlogBo();
+                    flowerAppletUserAuthlogBo.setUserId(update.getUserId());
+                    flowerAppletUserAuthlogBo.setAuthId(update.getAuthId());
+                    flowerAppletUserAuthlogBo.setStatus(0L);
+                    return flowerAppletUserAuthlogService.insertByBo(flowerAppletUserAuthlogBo);
+                }
+            }else {
+                throw new RuntimeException("用户已提交认证");
+            }
         }
+
         return false;
     }
 

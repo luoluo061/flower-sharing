@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flower.service.IFolwerSkuService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -35,6 +36,8 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class FolwerOrderDetailController extends BaseController {
 
     private final IFolwerOrderDetailService folwerOrderDetailService;
+
+    private final IFolwerSkuService folwerSkuService;
 
     /**
      * 查询订单详细列表

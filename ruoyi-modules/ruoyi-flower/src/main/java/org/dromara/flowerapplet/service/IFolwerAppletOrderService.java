@@ -56,7 +56,7 @@ public interface IFolwerAppletOrderService {
      * @param bo 订单
      * @return 是否新增成功
      */
-    String insertByBo(OrderParamBo bo) throws Exception;
+    R<String> insertByBo(OrderParamBo bo) throws Exception;
 
     /**
      * 修改订单
