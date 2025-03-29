@@ -105,5 +105,10 @@ public class FolwerSkuVo implements Serializable {
     @ExcelProperty(value = "0 禁用 1 启用")
     private Long status;
 
+    /**
+     * 箱型ID
+     */
+    private Long boxId;
+
 
 }

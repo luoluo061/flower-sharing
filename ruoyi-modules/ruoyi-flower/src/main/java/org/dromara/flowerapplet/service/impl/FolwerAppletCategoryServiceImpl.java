@@ -8,9 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.flower.domain.FolwerCategory;
-import org.dromara.flower.domain.bo.FolwerCategoryBo;
-import org.dromara.flower.domain.vo.FolwerCategoryVo;
 import org.dromara.flowerapplet.domain.FolwerAppletCategory;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletCategoryBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCategoryVo;
@@ -19,10 +16,7 @@ import org.dromara.flowerapplet.service.IFolwerAppletCategoryService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 小程序端产品类目Service业务层处理
@@ -84,6 +78,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     @Override
     public TableDataInfo<FolwerAppletCategoryVo> queryPageList(FolwerAppletCategoryBo bo, PageQuery pageQuery) {
         bo.setStatus(1L);
+        bo.setParentId(0L);
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()){

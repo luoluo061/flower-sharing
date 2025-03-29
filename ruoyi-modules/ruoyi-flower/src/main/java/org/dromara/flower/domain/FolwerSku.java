@@ -79,6 +79,11 @@ public class FolwerSku extends TenantEntity {
     private Long status;
 
     /**
+     * 箱型ID
+     */
+    private Long boxId;
+
+    /**
      * 删除标志 0 否 2 是
      */
     @TableLogic
