@@ -172,6 +172,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         lqw.eq(StringUtils.isNotBlank(bo.getNumber()), FolwerSku::getNumber, bo.getNumber());
         lqw.eq(StringUtils.isNotBlank(bo.getWeight()), FolwerSku::getWeight, bo.getWeight());
         lqw.eq(StringUtils.isNotBlank(bo.getSize()), FolwerSku::getSize, bo.getSize());
+        lqw.eq(bo.getBoxId() != null, FolwerSku::getBoxId, bo.getBoxId());
         lqw.eq(bo.getPrice() != null, FolwerSku::getPrice, bo.getPrice());
         lqw.eq(bo.getActualStocks() != null, FolwerSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerSku::getStatus, bo.getStatus());

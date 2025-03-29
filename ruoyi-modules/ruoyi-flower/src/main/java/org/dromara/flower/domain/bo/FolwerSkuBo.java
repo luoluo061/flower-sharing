@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.FolwerSku;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -77,6 +78,11 @@ public class FolwerSkuBo extends BaseEntity {
      * 0 禁用 1 启用
      */
     private Long status;
+
+    /**
+     * 箱型ID
+     */
+    private Long boxId;
 
     /**
      * 开始时间
