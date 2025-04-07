@@ -55,7 +55,7 @@ spring:
 #          username: root
 #          password: 123456
 
-          ## 测试环境
+#          # 测试环境
 #          url: jdbc:mysql://172.16.1.190:3306/flower_sharing?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
 #          username: root
 #          password: mlhxjflower9527.

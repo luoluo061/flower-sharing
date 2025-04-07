@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flower.domain.FolwerProduct;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -64,6 +66,7 @@ public class FolwerProductVo implements Serializable {
      * 商品列表图
      */
     @ExcelProperty(value = "商品列表图URL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "productListPictureUrl")
     private String productListPicture;
 
     /**

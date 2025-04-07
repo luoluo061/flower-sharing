@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -43,6 +44,7 @@ public class FolwerAppletCategoryController extends BaseController {
      */
     @SaCheckPermission("flower:category:list")
     @GetMapping("/list")
+    @SaIgnore //忽略权限校验 小程序过审
     public TableDataInfo<FolwerAppletCategoryVo> list(FolwerAppletCategoryBo bo, PageQuery pageQuery) {
         return folwerCategoryService.queryPageList(bo, pageQuery);
     }
