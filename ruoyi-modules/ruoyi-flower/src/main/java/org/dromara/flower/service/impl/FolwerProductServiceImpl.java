@@ -81,15 +81,15 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
             }
 
             // 设置图片Url
-            if (folwerProductVo.getProductListPictureUrl() != null && !folwerProductVo.getProductListPictureUrl().isEmpty()) {
-                Collection<Long> ossIds = new ArrayList<>();
-                ossIds.add(Long.valueOf(folwerProductVo.getProductListPictureUrl()));
-                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                if (!stringStringMap.isEmpty()) {
-                    // 设置图片Url
-                    folwerProductVo.setProductListPicture(stringStringMap.get(folwerProductVo.getProductListPictureUrl()));
-                }
-            }
+//            if (folwerProductVo.getProductListPictureUrl() != null && !folwerProductVo.getProductListPictureUrl().isEmpty()) {
+//                Collection<Long> ossIds = new ArrayList<>();
+//                ossIds.add(Long.valueOf(folwerProductVo.getProductListPictureUrl()));
+//                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+//                if (!stringStringMap.isEmpty()) {
+//                    // 设置图片Url
+//                    folwerProductVo.setProductListPicture(stringStringMap.get(folwerProductVo.getProductListPictureUrl()));
+//                }
+//            }
 
             if (folwerProductVo.getNormsType().equals(1L)) {
                 List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
@@ -148,15 +148,15 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 }
             });
 
-            if (!longList.isEmpty()){
-                Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
-                if (!longStringMap.isEmpty()){
-                    // 设置图片Url
-                    result.getRecords().forEach(record ->
-                        record.setProductListPicture(longStringMap.get(record.getProductListPictureUrl()))
-                    );
-                }
-            }
+//            if (!longList.isEmpty()){
+//                Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
+//                if (!longStringMap.isEmpty()){
+//                    // 设置图片Url
+//                    result.getRecords().forEach(record ->
+//                        record.setProductListPicture(longStringMap.get(record.getProductListPictureUrl()))
+//                    );
+//                }
+//            }
         }
         return TableDataInfo.build(result);
     }
@@ -191,17 +191,17 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 vo.setCategoryName("");
             }
 
-            if (vo.getProductListPictureUrl() != null && !vo.getProductListPictureUrl().isEmpty())
-            {
-                Collection<Long> ossIds = new ArrayList<>();
-
-                ossIds.add(Long.valueOf(vo.getProductListPictureUrl()));
-                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                if (!stringStringMap.isEmpty()){
-                    // 设置图片Url
-                    vo.setProductListPicture(stringStringMap.get(vo.getProductListPictureUrl()));
-                }
-            }
+//            if (vo.getProductListPictureUrl() != null && !vo.getProductListPictureUrl().isEmpty())
+//            {
+//                Collection<Long> ossIds = new ArrayList<>();
+//
+//                ossIds.add(Long.valueOf(vo.getProductListPictureUrl()));
+//                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+//                if (!stringStringMap.isEmpty()){
+//                    // 设置图片Url
+//                    vo.setProductListPicture(stringStringMap.get(vo.getProductListPictureUrl()));
+//                }
+//            }
 
             if (vo.getNormsType().equals(1L)) {
                 List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(vo.getId());
