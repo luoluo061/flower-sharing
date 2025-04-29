@@ -50,12 +50,20 @@ public interface IFolwerDeliveryTemplateService {
     List<FolwerDeliveryTemplateVo> queryChildrenList(FolwerDeliveryTemplateBo bo);
 
     /**
-     * 新增运费模板
+     * 新增运费模板List
      *
      * @param bos 运费模板
      * @return 是否新增成功
      */
-    Boolean insertByBo(List<FolwerDeliveryTemplateBo> bos);
+    Boolean insertByBos(List<FolwerDeliveryTemplateBo> bos);
+
+    /**
+     * 新增运费模板
+     *
+     * @param bo 运费模板
+     * @return 是否新增成功
+     */
+    Boolean insertByBo(FolwerDeliveryTemplateBo bo);
 
     /**
      * 修改运费模板

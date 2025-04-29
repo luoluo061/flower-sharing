@@ -191,6 +191,24 @@ public class FolwerAppletProductVo implements Serializable {
     private Long inventoryEarlyWarningProportion;
 
     /**
+     * 颜色
+     */
+    @ExcelProperty(value = "颜色")
+    private String color;
+
+    /**
+     * 颜色代码
+     */
+    @ExcelProperty(value = "颜色代码")
+    private String colorCode;
+
+    /**
+     * 等级
+     */
+    @ExcelProperty(value = "等级")
+    private String level;
+
+    /**
      * 商品评论
      */
     @ExcelProperty(value = "商品评论")

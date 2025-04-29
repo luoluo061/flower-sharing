@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FlowerAppletUserInformationVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.service.IFlowerAppletUserInformationService;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
@@ -21,10 +23,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.mapper.FolwerAppletProductMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 小程序端商品管理Service业务层处理
@@ -67,6 +66,62 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
     }
 
     /**
+     * 查询商品颜色
+     *
+     * @param bo 主键
+     * @return 小程序端商品管理
+     */
+    @Override
+    public List<FolwerAppletProductColorVo> queryByColor(FolwerAppletProductBo bo){
+        stringToLong(bo);
+//      bo.setStatus(1L);
+//        LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
+        List<FolwerAppletProductColorVo> productVos = baseMapper.selectByColor(bo);
+        if (productVos.isEmpty()){
+            return null;
+        }
+//        List<FolwerAppletProductColorVo> productColorVos = new ArrayList<>();
+//        for (FolwerAppletProductVo productVo : productVos){
+//            FolwerAppletProductColorVo productColorVo =BeanUtil.copyProperties(productVo, FolwerAppletProductColorVo.class);
+//            productColorVos.add(productColorVo);
+//        }
+//        //去重
+//        List<FolwerAppletProductColorVo> uniqueList = removeDuplicatesUsingLinkedHashSet(productColorVos);
+
+        return productVos;
+    }
+
+    /**
+     * 查询商品等级
+     * @param bo 查询条件
+     * @return
+     */
+    @Override
+    public List<FolwerAppletProductColorVo> queryByLevel(FolwerAppletProductBo bo) {
+        stringToLong(bo);
+        List<FolwerAppletProductColorVo> productVos = baseMapper.selectByLevel(bo);
+        if (productVos.isEmpty()){
+            return null;
+        }
+        return productVos;
+    }
+
+    /**
+     * 查询商品销量
+     * @param bo 查询条件
+     * @return
+     */
+    @Override
+    public List<FolwerAppletProductColorVo> queryBySoldNum(FolwerAppletProductBo bo) {
+        stringToLong(bo);
+        List<FolwerAppletProductColorVo> productVos = baseMapper.selectBySoldNum(bo);
+        if (productVos.isEmpty()){
+            return null;
+        }
+        return productVos;
+    }
+
+    /**
      * 分页查询小程序端商品管理列表
      *
      * @param bo        查询条件
@@ -80,19 +135,32 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 //            bo.setStatus(1L);
             LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
             Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-            if (!result.getRecords().isEmpty()) {
-                result.getRecords().forEach(item -> {
-                    if (item.getNormsType().equals(1L)) {
-                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                        folwerAppletSkuBo.setProdId(item.getId());
-                        folwerAppletSkuBo.setStatus(1L);
-                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                        item.setSkuList(folwerAppletSkuVos);
-                        item.setOriPrice(new BigDecimal("-1"));
-                        item.setDerlinePrice(new BigDecimal("-1"));
-                    }
-                });
-            }
+//            if (!result.getRecords().isEmpty()) {
+//                result.getRecords().forEach(item -> {
+//                    if (item.getNormsType().equals(1L)) {
+//                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+//                        folwerAppletSkuBo.setProdId(item.getId());
+//                        folwerAppletSkuBo.setStatus(1L);
+//                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+//                        item.setSkuList(folwerAppletSkuVos);
+//                        item.setOriPrice(new BigDecimal("-1"));
+//                        item.setDerlinePrice(new BigDecimal("-1"));
+//
+//                    }
+//                });
+//
+//                if (!result.getRecords().isEmpty()) {
+//                    // 批量查询 SKU 数据
+//                    Map<Long, List<FolwerAppletSkuVo>> skuMap = getSkuMap(result.getRecords());
+//                    result.getRecords().forEach(item -> {
+//                        if (item.getNormsType().equals(1L)) {
+//                            item.setSkuList(skuMap.getOrDefault(item.getId(), new ArrayList<>()));
+//                            item.setOriPrice(new BigDecimal("-1"));
+//                            item.setDerlinePrice(new BigDecimal("-1"));
+//                        }
+//                    });
+//                }
+//            }
             return TableDataInfo.build(result);
         } else if (LoginHelper.isLogin()) {
             Long userId = LoginHelper.getUserId();
@@ -104,41 +172,93 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 //                  bo.setStatus(1L);
                     LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
                     Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-                    if (!result.getRecords().isEmpty()) {
-                        result.getRecords().forEach(item -> {
-                            if (item.getNormsType().equals(1L)) {
-                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                                folwerAppletSkuBo.setProdId(item.getId());
-                                folwerAppletSkuBo.setStatus(1L);
-                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                                item.setSkuList(folwerAppletSkuVos);
-                            }
-                        });
-                    }
+//                    if (!result.getRecords().isEmpty()) {
+//                        result.getRecords().forEach(item -> {
+//                            if (item.getNormsType().equals(1L)) {
+//                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+//                                folwerAppletSkuBo.setProdId(item.getId());
+//                                folwerAppletSkuBo.setStatus(1L);
+//                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+//                                item.setSkuList(folwerAppletSkuVos);
+//                            }
+//                        });
+//                    }
+
+//                    if (!result.getRecords().isEmpty()) {
+//                        // 批量查询 SKU 数据
+//                        Map<Long, List<FolwerAppletSkuVo>> skuMap = getSkuMap(result.getRecords());
+//                        result.getRecords().forEach(item -> {
+//                            if (item.getNormsType().equals(1L)) {
+//                                item.setSkuList(skuMap.getOrDefault(item.getId(), new ArrayList<>()));
+//                            }
+//                        });
+//                    }
+
                     return TableDataInfo.build(result);
                 }else if (flowerAppletUserInformationVo.getIsAuth() == 0L){
                     stringToLong(bo);
 //                  bo.setStatus(1L);
                     LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
                     Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-                    if (!result.getRecords().isEmpty()) {
-                        result.getRecords().forEach(item -> {
-                            if (item.getNormsType().equals(1L)) {
-                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                                folwerAppletSkuBo.setProdId(item.getId());
-                                folwerAppletSkuBo.setStatus(1L);
-                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                                item.setSkuList(folwerAppletSkuVos);
-                                item.setOriPrice(new BigDecimal("-2"));
-                                item.setDerlinePrice(new BigDecimal("-2"));
-                            }
-                        });
-                    }
+//                    if (!result.getRecords().isEmpty()) {
+//                        result.getRecords().forEach(item -> {
+//                            if (item.getNormsType().equals(1L)) {
+//                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+//                                folwerAppletSkuBo.setProdId(item.getId());
+//                                folwerAppletSkuBo.setStatus(1L);
+//                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+//                                item.setSkuList(folwerAppletSkuVos);
+//                                item.setOriPrice(new BigDecimal("-2"));
+//                                item.setDerlinePrice(new BigDecimal("-2"));
+//                            }
+//                        });
+//                    }
+//
+//                    if (!result.getRecords().isEmpty()) {
+//                        // 批量查询 SKU 数据
+//                        Map<Long, List<FolwerAppletSkuVo>> skuMap = getSkuMap(result.getRecords());
+//                        result.getRecords().forEach(item -> {
+//                            if (item.getNormsType().equals(1L)) {
+//                                item.setSkuList(skuMap.getOrDefault(item.getId(), new ArrayList<>()));
+//                                item.setOriPrice(new BigDecimal("-2"));
+//                                item.setDerlinePrice(new BigDecimal("-2"));
+//                            }
+//                        });
+//                    }
                     return TableDataInfo.build(result);
                 }
             }
         }
         return TableDataInfo.build(new Page<>());
+    }
+
+    private Map<Long, List<FolwerAppletSkuVo>> getSkuMap(List<FolwerAppletProductVo> products) {
+        List<Long> prodIds = new ArrayList<>();
+        for (FolwerAppletProductVo product : products) {
+            if (product.getNormsType().equals(1L)) {
+                  prodIds.add(product.getId());
+            }
+
+        }
+
+        if (prodIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+        folwerAppletSkuBo.setStatus(1L);
+        List<FolwerAppletSkuVo> allSkuVos = new ArrayList<>();
+        // 这里可以根据实际情况批量查询
+        for (Long prodId : prodIds) {
+            folwerAppletSkuBo.setProdId(prodId);
+            allSkuVos.addAll(folwerAppletSkuService.queryList(folwerAppletSkuBo));
+        }
+
+        Map<Long, List<FolwerAppletSkuVo>> skuMap = new HashMap<>();
+        for (FolwerAppletSkuVo skuVo : allSkuVos) {
+            skuMap.computeIfAbsent(skuVo.getProdId(), k -> new ArrayList<>()).add(skuVo);
+        }
+        return skuMap;
     }
 
     /**
@@ -193,9 +313,14 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         lqw.eq(bo.getIsCoupon() != null, FolwerAppletProduct::getIsCoupon, bo.getIsCoupon());
         lqw.eq(bo.getIfRefund() != null, FolwerAppletProduct::getIfRefund, bo.getIfRefund());
         lqw.eq(bo.getIfFreeShipping() != null, FolwerAppletProduct::getIfFreeShipping, bo.getIfFreeShipping());
+
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerAppletProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerAppletProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerAppletProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
+
+        lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerAppletProduct::getColor, bo.getColor());
+        lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerAppletProduct::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerAppletProduct::getLevel, bo.getLevel());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerAppletProduct::getRemarks, bo.getRemarks());
         return lqw;
     }

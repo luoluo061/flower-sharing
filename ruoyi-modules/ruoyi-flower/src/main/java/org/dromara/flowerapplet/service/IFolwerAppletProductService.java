@@ -1,5 +1,7 @@
 package org.dromara.flowerapplet.service;
 
+import org.dromara.flowerapplet.domain.FolwerAppletProduct;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -23,6 +25,30 @@ public interface IFolwerAppletProductService {
      * @return 小程序端商品管理
      */
     FolwerAppletProductVo queryById(Long id);
+
+    /**
+     * 根据颜色查询小程序端商品管理
+     *
+     * @param bo 查询条件
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletProductColorVo> queryByColor(FolwerAppletProductBo bo);
+
+    /**
+     * 根据等级查询小程序端商品管理
+     *
+     * @param bo 查询条件
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletProductColorVo> queryByLevel(FolwerAppletProductBo bo);
+
+    /**
+     * 根据销量查询小程序端商品管理
+     *
+     * @param bo 查询条件
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletProductColorVo> queryBySoldNum(FolwerAppletProductBo bo);
 
     /**
      * 分页查询小程序端商品管理列表

@@ -226,9 +226,14 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         lqw.eq(bo.getIfRefund() != null, FolwerProduct::getIfRefund, bo.getIfRefund());
         lqw.eq(bo.getIfFreeShipping() != null, FolwerProduct::getIfFreeShipping, bo.getIfFreeShipping());
         lqw.eq(bo.getIsRecommend() != null, FolwerProduct::getIsRecommend, bo.getIsRecommend());
+
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
         lqw.eq(bo.getInventoryEarlyWarningProportion() != null, FolwerProduct::getInventoryEarlyWarningProportion, bo.getInventoryEarlyWarningProportion());
+
+        lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerProduct::getColor, bo.getColor());
+        lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerProduct::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerProduct::getLevel, bo.getLevel());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }

@@ -40,21 +40,21 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     @Override
     public FolwerAppletCategoryVo queryById(Long id){
         FolwerAppletCategoryVo folwerCategoryVo = baseMapper.selectVoById(id);
-        if (folwerCategoryVo != null){
-            if (folwerCategoryVo.getIcon() != null){
-                // 设置图片Url
-                Collection<Long> ossIds  = new ArrayList<>();
-                ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
-                if (!ossIds.isEmpty()){
-                    Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                    if (!stringStringMap.isEmpty()){
-                        // 设置图片Url
-                        folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
-                    }
-                }
-            }else {
-                folwerCategoryVo.setIconUrl("");
-            }
+        if (folwerCategoryVo != null) {
+//            if (folwerCategoryVo.getIcon() != null){
+//                //设置图片Url
+//                Collection<Long> ossIds  = new ArrayList<>();
+//                ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
+//                if (!ossIds.isEmpty()){
+//                    Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+//                    if (!stringStringMap.isEmpty()){
+//                        // 设置图片Url
+//                        folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
+//                    }
+//                }
+//            }else {
+//                folwerCategoryVo.setIconUrl("");
+//            }
 
             //二级分类
             if (!folwerCategoryVo.getParentId().equals(0L)){
@@ -64,7 +64,6 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
                 folwerCategoryVo.setChildren(childrenFolwerCategoryVos);
             }
         }
-
         return folwerCategoryVo;
     }
 
@@ -82,16 +81,16 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         if (!result.getRecords().isEmpty()){
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                result.getRecords().stream().
-                    map(FolwerAppletCategoryVo::getIcon).
-                    map(Long::parseLong).toList());
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                result.getRecords().forEach(record ->
-                    record.setIconUrl(longStringMap.get(record.getIcon()))
-                );
-            }
+//            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+//                result.getRecords().stream().
+//                    map(FolwerAppletCategoryVo::getIcon).
+//                    map(Long::parseLong).toList());
+//            if (!longStringMap.isEmpty()){
+//                // 设置图片Url
+//                result.getRecords().forEach(record ->
+//                    record.setIconUrl(longStringMap.get(record.getIcon()))
+//                );
+//            }
             //二级分类
             result.getRecords().forEach(record ->{
                 if(!record.getParentId().equals(0)){
@@ -118,30 +117,29 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
         LambdaQueryWrapper<FolwerAppletCategory> lqw = buildQueryWrapper(bo);
         List<FolwerAppletCategoryVo> folwerAppletCategoryVos = baseMapper.selectVoList(lqw);
         if (!folwerAppletCategoryVos.isEmpty()){
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                folwerAppletCategoryVos.stream().
-                    map(FolwerAppletCategoryVo::getIcon).
-                    map(String::toString).
-                    map(Long::parseLong).toList());
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                folwerAppletCategoryVos.forEach(record ->
-                    record.setIconUrl(longStringMap.get(record.getIcon()))
-                );
-            }
+//            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+//                folwerAppletCategoryVos.stream().
+//                    map(FolwerAppletCategoryVo::getIcon).
+//                    map(String::toString).
+//                    map(Long::parseLong).toList());
+//            if (!longStringMap.isEmpty()){
+//                // 设置图片Url
+//                folwerAppletCategoryVos.forEach(record ->
+//                    record.setIconUrl(longStringMap.get(record.getIcon()))
+//                );
+//            }
+
+            //二级分类
+            folwerAppletCategoryVos.forEach(record ->{
+                if(!record.getParentId().equals(0)){
+                    FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
+                    childrenBo.setParentId(record.getId());
+                    List<FolwerAppletCategoryVo> childrenFolwerAppletCategoryVos = this.queryList(childrenBo);
+                    record.setChildren(childrenFolwerAppletCategoryVos);
+                }
+
+            });
         }
-
-        //二级分类
-        folwerAppletCategoryVos.forEach(record ->{
-            if(!record.getParentId().equals(0)){
-                FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
-                childrenBo.setParentId(record.getId());
-                List<FolwerAppletCategoryVo> childrenFolwerAppletCategoryVos = this.queryList(childrenBo);
-                record.setChildren(childrenFolwerAppletCategoryVos);
-            }
-
-        });
-
         return folwerAppletCategoryVos;
     }
 
@@ -153,6 +151,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
         lqw.like(StringUtils.isNotBlank(bo.getCategoryName()), FolwerAppletCategory::getCategoryName, bo.getCategoryName());
         lqw.eq(bo.getSeq() != null, FolwerAppletCategory::getSeq, bo.getSeq());
         lqw.eq(bo.getStatus() != null, FolwerAppletCategory::getStatus, bo.getStatus());
+        lqw.eq(bo.getIsShowFeature() != null, FolwerAppletCategory::getIsShowFeature, bo.getIsShowFeature());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerAppletCategory::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }

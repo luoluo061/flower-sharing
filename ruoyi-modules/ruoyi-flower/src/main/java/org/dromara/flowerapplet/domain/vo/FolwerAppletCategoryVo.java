@@ -55,6 +55,7 @@ public class FolwerAppletCategoryVo implements Serializable {
      * 类目图标Url
      */
     @ExcelProperty(value = "类目图标URL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "icon")
     private String iconUrl;
     /**
      * 排序
@@ -67,6 +68,12 @@ public class FolwerAppletCategoryVo implements Serializable {
      */
     @ExcelProperty(value = "默认是1，表示正常状态,0为下线状态")
     private Long status;
+
+    /**
+     * 是否显示花艺课程 默认是0，表示不显示,1为花艺课程
+     */
+    @ExcelProperty(value = "是否显示花艺课程 默认是0，表示不显示,1为花艺课程")
+    private Long isShowFeature;
 
     /**
      * 部门id

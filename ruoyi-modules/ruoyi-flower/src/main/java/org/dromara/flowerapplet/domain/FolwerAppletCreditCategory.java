@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -59,6 +60,11 @@ public class FolwerAppletCreditCategory extends TenantEntity {
      * 默认是1，表示正常状态,0为下线状态
      */
     private Long status;
+
+    /**
+     * 是否显示花艺课程
+     */
+    private Long isShowFeature;
 
     /**
      * 删除标志 0 否 1 是

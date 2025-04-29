@@ -122,7 +122,7 @@ public class FolwerDeliveryTemplateServiceImpl implements IFolwerDeliveryTemplat
      * @return 是否新增成功
      */
     @Override
-    public Boolean insertByBo(List<FolwerDeliveryTemplateBo> bos) {
+    public Boolean insertByBos(List<FolwerDeliveryTemplateBo> bos) {
         if (bos == null || bos.size() == 0) {
             return false;
         }
@@ -148,6 +148,23 @@ public class FolwerDeliveryTemplateServiceImpl implements IFolwerDeliveryTemplat
                     baseMapper.insert(folwerDeliveryTemplate);
                 }
             }
+        }
+        return flag;
+    }
+
+    /**
+     * 新增运费模板
+     *
+     * @param bos 运费模板
+     * @return 是否新增成功
+     */
+    @Override
+    public Boolean insertByBo(FolwerDeliveryTemplateBo bo) {
+        FolwerDeliveryTemplate add = MapstructUtils.convert(bo, FolwerDeliveryTemplate.class);
+        validEntityBeforeSave(add);
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setTempId(add.getTempId());
         }
         return flag;
     }
