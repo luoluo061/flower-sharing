@@ -55,20 +55,20 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
 
         FolwerCategoryVo folwerCategoryVo = baseMapper.selectVoById(id);
         if (folwerCategoryVo != null){
-            if (folwerCategoryVo.getIcon() != null){
-                // 设置图片Url
-                Collection<Long> ossIds  = new ArrayList<>();
-                ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
-                if (!ossIds.isEmpty()){
-                    Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                    if (!stringStringMap.isEmpty()){
-                        // 设置图片Url
-                        folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
-                    }
-                }
-            }else {
-                folwerCategoryVo.setIconUrl("");
-            }
+//            if (folwerCategoryVo.getIcon() != null){
+//                // 设置图片Url
+//                Collection<Long> ossIds  = new ArrayList<>();
+//                ossIds.add(Long.valueOf(folwerCategoryVo.getIcon()));
+//                if (!ossIds.isEmpty()){
+//                    Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
+//                    if (!stringStringMap.isEmpty()){
+//                        // 设置图片Url
+//                        folwerCategoryVo.setIconUrl(stringStringMap.get(folwerCategoryVo.getIcon()));
+//                    }
+//                }
+//            }else {
+//                folwerCategoryVo.setIconUrl("");
+//            }
 
             //二级分类
             if (!folwerCategoryVo.getParentId().equals(0L)){
@@ -95,16 +95,16 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
         Page<FolwerCategoryVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
 
         if (!result.getRecords().isEmpty()){
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                result.getRecords().stream().
-                map(FolwerCategoryVo::getIcon).
-                map(Long::parseLong).toList());
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                result.getRecords().forEach(record ->
-                    record.setIconUrl(longStringMap.get(record.getIcon()))
-                );
-            }
+//            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+//                result.getRecords().stream().
+//                map(FolwerCategoryVo::getIcon).
+//                map(Long::parseLong).toList());
+//            if (!longStringMap.isEmpty()){
+//                // 设置图片Url
+//                result.getRecords().forEach(record ->
+//                    record.setIconUrl(longStringMap.get(record.getIcon()))
+//                );
+//            }
             //二级分类
             result.getRecords().forEach(record ->{
                 if(!record.getParentId().equals(0)){
@@ -129,19 +129,19 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     public List<FolwerCategoryVo> queryList(FolwerCategoryBo bo) {
         LambdaQueryWrapper<FolwerCategory> lqw = buildQueryWrapper(bo);
         List<FolwerCategoryVo> folwerCategoryVos = baseMapper.selectVoList(lqw);
-        if (!folwerCategoryVos.isEmpty()){
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(
-                folwerCategoryVos.stream().
-                    map(FolwerCategoryVo::getIcon).
-                    map(String::toString).
-                    map(Long::parseLong).toList());
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                folwerCategoryVos.forEach(record ->
-                    record.setIconUrl(longStringMap.get(record.getIcon()))
-                );
-            }
-        }
+//        if (!folwerCategoryVos.isEmpty()){
+//            Map<String, String> longStringMap = sysOssService.listUrlByIds(
+//                folwerCategoryVos.stream().
+//                    map(FolwerCategoryVo::getIcon).
+//                    map(String::toString).
+//                    map(Long::parseLong).toList());
+//            if (!longStringMap.isEmpty()){
+//                // 设置图片Url
+//                folwerCategoryVos.forEach(record ->
+//                    record.setIconUrl(longStringMap.get(record.getIcon()))
+//                );
+//            }
+//        }
         //二级分类
         folwerCategoryVos.forEach(record ->{
             if(!record.getParentId().equals(0)){
@@ -163,6 +163,7 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
         lqw.eq(StringUtils.isNotBlank(bo.getIcon()), FolwerCategory::getIcon, bo.getIcon());
         lqw.eq(bo.getSeq() != null, FolwerCategory::getSeq, bo.getSeq());
         lqw.eq(bo.getStatus() != null, FolwerCategory::getStatus, bo.getStatus());
+        lqw.eq(bo.getIsShowFeature() != null, FolwerCategory::getIsShowFeature, bo.getIsShowFeature());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerCategory::getCreateTime, bo.getStartTime(), bo.getEndTime());
 //        lqw.eq(bo.getDeptId() != null, FolwerCategory::getDeptId, bo.getDeptId());
         return lqw;

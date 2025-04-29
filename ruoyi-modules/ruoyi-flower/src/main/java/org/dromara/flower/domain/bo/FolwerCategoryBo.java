@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.FolwerCategory;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -23,19 +24,19 @@ public class FolwerCategoryBo extends BaseEntity {
     /**
      * 主键
      */
-    @NotNull(message = "主键不能为空", groups = { EditGroup.class })
+//    @NotNull(message = "主键不能为空", groups = { EditGroup.class })
     private Long id;
 
     /**
      * 父节点
      */
-    @NotNull(message = "父节点不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "父节点不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long parentId;
 
     /**
      * 产品类目名称
      */
-    @NotBlank(message = "产品类目名称不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "产品类目名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String categoryName;
 
     /**
@@ -47,14 +48,19 @@ public class FolwerCategoryBo extends BaseEntity {
     /**
      * 排序
      */
-    @NotNull(message = "排序不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "排序不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long seq;
 
     /**
      * 默认是1，表示正常状态,0为下线状态
      */
-    @NotNull(message = "默认是1，表示正常状态,0为下线状态不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "默认是1，表示正常状态,0为下线状态不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
+
+    /**
+     * 是否显示花艺课程
+     */
+    private Long isShowFeature;
 
     /**
      * 部门id

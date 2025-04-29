@@ -221,8 +221,19 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     private SysOssVo buildResultEntity(String originalfileName, String suffix, String configKey, UploadResult uploadResult) {
         SysOss oss = new SysOss();
         if (!uploadResult.getUrl().isEmpty()){
-            String string = uploadResult.getUrl().replaceFirst("http", "https");
-            oss.setUrl(string);
+//            String string = uploadResult.getUrl().replaceFirst("http", "https");
+//            if(string.contains(".png")){
+//                this.removeAfter(string, ".png");
+//            }else if(string.contains(".jpg")){
+//                this.removeAfter(string, ".jpg");
+//            }else if(string.contains(".jpeg")){
+//                this.removeAfter(string, ".jpeg");
+//            }else if(string.contains(".gif")){
+//                this.removeAfter(string, ".gif");
+//            }else if(string.contains(".webp")){
+//                this.removeAfter(string, ".webp");
+//            }
+            oss.setUrl(uploadResult.getUrl());
         }
 //        oss.setUrl(uploadResult.getUrl());
         oss.setFileSuffix(suffix);
@@ -232,6 +243,14 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
         baseMapper.insert(oss);
         SysOssVo sysOssVo = MapstructUtils.convert(oss, SysOssVo.class);
         return this.matchingUrl(sysOssVo);
+    }
+
+    public static String removeAfter(String input, String target) {
+        int index = input.indexOf(target);
+        if (index != -1) {
+            return input.substring(0, index + target.length());
+        }
+        return input;
     }
 
     /**

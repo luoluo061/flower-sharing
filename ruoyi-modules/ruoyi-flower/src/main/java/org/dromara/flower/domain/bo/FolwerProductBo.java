@@ -172,6 +172,21 @@ public class FolwerProductBo extends BaseEntity {
     private Long inventoryEarlyWarningProportion;
 
     /**
+     * 颜色
+     */
+    private String color;
+
+    /**
+     * 颜色代码
+     */
+    private String colorCode;
+
+    /**
+     * 等级
+     */
+    private String level;
+
+    /**
      * 商品评论
      */
 //    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })

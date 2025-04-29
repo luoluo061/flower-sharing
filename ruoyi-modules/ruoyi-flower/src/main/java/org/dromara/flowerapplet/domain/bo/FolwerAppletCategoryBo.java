@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flowerapplet.domain.FolwerAppletCategory;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -46,6 +47,11 @@ public class FolwerAppletCategoryBo extends BaseEntity {
      * 默认是1，表示正常状态,0为下线状态
      */
     private Long status;
+
+    /**
+     * 是否显示花艺课程 默认是0，表示不显示,1为花艺课程
+     */
+    private Long isShowFeature;
 
     /**
      * 部门id

@@ -147,6 +147,22 @@ public class FolwerProduct extends TenantEntity {
     private Long inventoryEarlyWarningProportion;
 
     /**
+     * 颜色
+     */
+    private String color;
+
+    /**
+     * 等级
+     */
+    private String level;
+
+    /**
+     * 颜色代码
+     */
+    private String colorCode;
+
+
+    /**
      * 商品评论
      */
     private String remarks;

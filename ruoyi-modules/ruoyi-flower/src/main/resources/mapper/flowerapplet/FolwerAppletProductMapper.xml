@@ -3,5 +3,211 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.flowerapplet.mapper.FolwerAppletProductMapper">
+    <sql id="selectFolwerAppletProductVo">
+        SELECT
+            t.id,
+            t.product_name,
+            t.unit,
+            t.product_list_picture_url,
+            t.product_carousel_picture_url,
+            t.category_id,
+            t.ori_price,
+            t.derline_price,
+            t.norms_type,
+            t.sku_id,
+            t.norms_picture_url,
+            t.sold_num,
+            t.total_stocks,
+            t.weight,
+            t.delivery_mode,
+            t.delivery_price,
+            t.status,
+            t.is_coupon,
+            t.is_recommend,
+            t.if_refund,
+            t.if_free_shipping,
+            t.if_early_warning,
+            t.inventory_early_warning_num,
+            t.inventory_early_warning_proportion,
+            t.color,
+            t.color_code,
+            t.level,
+            t.remarks,
+            t.create_by,
+            t.create_time,
+            t.update_by,
+            t.update_time,
+            t.remark,
+            t.del_flag
+        FROM folwer_product t
+        WHERE t.del_flag = 0
+    </sql>
+
+    <resultMap type="org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo" id="FolwerAppletProductResult">
+        <result property="id" column="id"/>
+        <result property="productName" column="product_name"/>
+        <result property="unit" column="unit"/>
+        <result property="productListPictureUrl" column="product_list_picture_url"/>
+        <result property="productCarouselPictureUrl" column="product_carousel_picture_url"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="oriPrice" column="ori_price"/>
+        <result property="derlinePrice" column="derline_price"/>
+        <result property="normsType" column="norms_type"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="normsPictureUrl" column="norms_picture_url"/>
+        <result property="soldNum" column="sold_num"/>
+        <result property="totalStocks" column="total_stocks"/>
+        <result property="weight" column="weight"/>
+        <result property="deliveryMode" column="delivery_mode"/>
+        <result property="deliveryPrice" column="delivery_price"/>
+        <result property="status" column="status"/>
+        <result property="isCoupon" column="is_coupon"/>
+        <result property="isRecommend" column="is_recommend"/>
+        <result property="ifRefund" column="if_refund"/>
+        <result property="ifFreeShipping" column="if_free_shipping"/>
+        <result property="ifEarlyWarning" column="if_early_warning"/>
+        <result property="inventoryEarlyWarningNum" column="inventory_early_warning_num"/>
+        <result property="inventoryEarlyWarningProportion" column="inventory_early_warning_proportion"/>
+        <result property="color" column="color"/>
+        <result property="colorCode" column="color_code"/>
+        <result property="level" column="level"/>
+        <result property="remarks" column="remarks"/>
+        <collection property="skuList" ofType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo">
+        </collection>
+    </resultMap>
+
+    <select id="selectByColor" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
+        SELECT DISTINCT
+        color,
+        color_code
+        FROM
+        folwer_product
+        WHERE del_flag = 0 AND color IS NOT NULL
+              <if test="id != null and id != ''">
+                  AND    id = #{id}
+              </if>
+              <if test="productName != null and productName != ''">
+                  AND    product_name = #{productName}
+              </if>
+              <if test="categoryId != null and categoryId != ''">
+                  AND    category_id = #{categoryId}
+              </if>
+              <if test="normsType != null and normsType != ''">
+                  AND    norms_type = #{normsType}
+              </if>
+              <if test="skuId != null and skuId != ''">
+                  AND    sku_id = #{skuId}
+              </if>
+              <if test="status != null and status != ''">
+                  AND    status = #{status}
+              </if>
+              <if test="isRecommend != null and isRecommend != ''">
+                  AND    is_recommend = #{isRecommend}
+              </if>
+              <if test="soldNum != null and soldNum != ''">
+                  AND    sold_num = #{soldNum}
+              </if>
+              <if test="color != null and color != ''">
+                  AND    color = #{color}
+              </if>
+              <if test="colorCode != null and colorCode != ''">
+                  AND    color_code = #{colorCode}
+              </if>
+              <if test="level != null and level != ''">
+                  AND    level = #{level}
+              </if>
+        GROUP BY
+        color,
+        color_code
+    </select>
+
+    <select id="selectByLevel" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
+        SELECT DISTINCT
+        level
+        FROM
+        folwer_product
+        WHERE del_flag = 0 AND level IS NOT NULL
+        <if test="id != null and id != ''">
+            AND    id = #{id}
+        </if>
+        <if test="productName != null and productName != ''">
+            AND    product_name = #{productName}
+        </if>
+        <if test="categoryId != null and categoryId != ''">
+            AND    category_id = #{categoryId}
+        </if>
+        <if test="normsType != null and normsType != ''">
+            AND    norms_type = #{normsType}
+        </if>
+        <if test="skuId != null and skuId != ''">
+            AND    sku_id = #{skuId}
+        </if>
+        <if test="status != null and status != ''">
+            AND    status = #{status}
+        </if>
+        <if test="isRecommend != null and isRecommend != ''">
+            AND    is_recommend = #{isRecommend}
+        </if>
+        <if test="soldNum != null and soldNum != ''">
+            AND    sold_num = #{soldNum}
+        </if>
+        <if test="color != null and color != ''">
+            AND    color = #{color}
+        </if>
+        <if test="colorCode != null and colorCode != ''">
+            AND    color_code = #{colorCode}
+        </if>
+        <if test="level != null and level != ''">
+            AND    level = #{level}
+        </if>
+        GROUP BY
+            level
+    </select>
+
+    <select id="selectBySoldNum" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
+        SELECT
+            *
+        FROM
+        folwer_product
+        WHERE del_flag = 0
+        <if test="id != null and id != ''">
+            AND    id = #{id}
+        </if>
+        <if test="productName != null and productName != ''">
+            AND    product_name = #{productName}
+        </if>
+        <if test="categoryId != null and categoryId != ''">
+            AND    category_id = #{categoryId}
+        </if>
+        <if test="normsType != null and normsType != ''">
+            AND    norms_type = #{normsType}
+        </if>
+        <if test="skuId != null and skuId != ''">
+            AND    sku_id = #{skuId}
+        </if>
+        <if test="status != null and status != ''">
+            AND    status = #{status}
+        </if>
+        <if test="isRecommend != null and isRecommend != ''">
+            AND    is_recommend = #{isRecommend}
+        </if>
+        <if test="soldNum != null and soldNum != ''">
+            AND    sold_num = #{soldNum}
+        </if>
+        <if test="color != null and color != ''">
+            AND    color = #{color}
+        </if>
+        <if test="colorCode != null and colorCode != ''">
+            AND    color_code = #{colorCode}
+        </if>
+        <if test="level != null and level != ''">
+            AND    level = #{level}
+        </if>
+        GROUP BY
+            sold_num
+        ORDER BY
+            sold_num
+        DESC
+    </select>
 
 </mapper>

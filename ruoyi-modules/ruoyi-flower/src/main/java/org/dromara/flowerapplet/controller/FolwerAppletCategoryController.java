@@ -54,8 +54,8 @@ public class FolwerAppletCategoryController extends BaseController {
      */
     @SaCheckPermission("flower:category:alllist")
     @GetMapping("/allList")
-    public R<List<FolwerAppletCategoryVo>> getAllList() {
-        FolwerAppletCategoryBo bo = new FolwerAppletCategoryBo();
+    public R<List<FolwerAppletCategoryVo>> getAllList(FolwerAppletCategoryBo bo) {
+//        FolwerAppletCategoryBo bo = new FolwerAppletCategoryBo();
         bo.setParentId(0L);
         return R.ok(folwerCategoryService.queryList(bo));
     }

@@ -69,14 +69,25 @@ public class FolwerDeliveryTemplateController extends BaseController {
     }
 
     /**
-     * 新增运费模板
+     * 新增运费模板List
      */
     @SaCheckPermission("flower:deliveryTemplate:add")
     @Log(title = "运费模板", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody List<FolwerDeliveryTemplateBo> bos) {
-        return toAjax(folwerDeliveryTemplateService.insertByBo(bos));
+        return toAjax(folwerDeliveryTemplateService.insertByBos(bos));
+    }
+
+    /**
+     * 新增运费模板
+     */
+    @SaCheckPermission("flower:deliveryTemplate:newadd")
+    @Log(title = "单个运费模板", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/newadd")
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerDeliveryTemplateBo bo) {
+        return toAjax(folwerDeliveryTemplateService.insertByBo(bo));
     }
 
     /**
