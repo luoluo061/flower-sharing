@@ -70,7 +70,7 @@ public class FolwerAppletSkuVo implements Serializable {
      * 商品重量
      */
     @ExcelProperty(value = "商品重量")
-    private String weight;
+    private Long weight;
 
     /**
      * 商品尺寸
@@ -107,5 +107,34 @@ public class FolwerAppletSkuVo implements Serializable {
      */
     @ExcelProperty(value = "规格名称")
     private String skuName;
+
+    /**
+     * 颜色
+     */
+    @ExcelProperty(value = "颜色")
+    private String color;
+
+    /**
+     * 等级
+     */
+    @ExcelProperty(value = "等级")
+    private String level;
+
+    /**
+     * 颜色代码
+     */
+    @ExcelProperty(value = "颜色代码")
+    private String colorCode;
+
+    /**
+     * 是否是基地 默认为0否，1:是
+     */
+    private Long isSource;
+
+    /**
+     * 基地名称
+     */
+    @ExcelProperty(value = "基地名称")
+    private String source;
 
 }

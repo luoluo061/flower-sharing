@@ -50,6 +50,16 @@ public class FolwerAppletProductController extends BaseController {
     }
 
     /**
+     * 查询大分类下所有商品
+     */
+    @SaCheckPermission("flower:product:queryCategory")
+    @GetMapping("/queryCategory/{categoryId}/{pageNum}/{pageSize}")
+    @SaIgnore //忽略权限校验 小程序过审
+    public R<List<FolwerAppletProductVo>> queryCategory(@PathVariable Long categoryId, @PathVariable int pageNum, @PathVariable int pageSize) {
+        return R.ok(folwerAppletProductService.queryAllBycategoryId(categoryId, pageNum, pageSize));
+    }
+
+    /**
      * 查询小程序端商品颜色
      */
     @SaCheckPermission("flower:product:queryColor")

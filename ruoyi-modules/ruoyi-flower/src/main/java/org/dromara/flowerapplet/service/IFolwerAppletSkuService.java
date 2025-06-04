@@ -1,5 +1,8 @@
 package org.dromara.flowerapplet.service;
 
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -32,6 +35,22 @@ public interface IFolwerAppletSkuService {
      * @return 单品SKU分页列表
      */
     TableDataInfo<FolwerAppletSkuVo> queryPageList(FolwerAppletSkuBo bo, PageQuery pageQuery);
+
+    /**
+     * 根据颜色查询小程序端商品管理
+     *
+     * @param bo 查询条件
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletSkuColorVo> queryByColor(FolwerAppletSkuBo bo);
+
+    /**
+     * 根据等级查询小程序端商品管理
+     *
+     * @param bo 查询条件
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletSkuColorVo> queryByLevel(FolwerAppletSkuBo bo);
 
     /**
      * 查询符合条件的单品SKU列表

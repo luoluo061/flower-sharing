@@ -136,7 +136,7 @@ public class FolwerAppletProductBo extends BaseEntity {
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否
+     * 是否单季限定 默认为：0 否 1 是
      */
     private Long ifEarlyWarning;
 

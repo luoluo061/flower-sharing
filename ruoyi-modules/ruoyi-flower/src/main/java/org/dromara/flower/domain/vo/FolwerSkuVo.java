@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flower.domain.FolwerSku;
@@ -73,7 +75,8 @@ public class FolwerSkuVo implements Serializable {
      * 商品重量
      */
     @ExcelProperty(value = "商品重量")
-    private String weight;
+//    @JsonSerialize(using= ToStringSerializer.class)
+    private Double weight;
 
     /**
      * 商品尺寸
@@ -109,6 +112,42 @@ public class FolwerSkuVo implements Serializable {
      * 箱型ID
      */
     private Long boxId;
+
+    /**
+     * 颜色
+     */
+    @ExcelProperty(value = "颜色")
+    private String color;
+
+    /**
+     * 等级
+     */
+    @ExcelProperty(value = "等级")
+    private String level;
+
+    /**
+     * 颜色代码
+     */
+    @ExcelProperty(value = "颜色代码")
+    private String colorCode;
+
+    /**
+     * 是否是基地 默认为0否，1:是
+     */
+    @ExcelProperty(value = "是否是基地 默认为0否，1:是")
+    private Long isSource;
+
+    /**
+     * 基地名称
+     */
+    @ExcelProperty(value = "基地名称")
+    private String source;
+
+    /**
+     * 销量
+     */
+    @ExcelProperty(value = "销量")
+    private Long soldNum;
 
 
 }

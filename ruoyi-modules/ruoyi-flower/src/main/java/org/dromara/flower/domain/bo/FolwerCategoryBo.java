@@ -1,6 +1,8 @@
 package org.dromara.flower.domain.bo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.flower.domain.FolwerCategory;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -9,6 +11,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.util.Date;
 
 /**
  * 产品类目业务对象 folwer_category
@@ -61,6 +65,11 @@ public class FolwerCategoryBo extends BaseEntity {
      * 是否显示花艺课程
      */
     private Long isShowFeature;
+
+    /**
+     * 显示时间
+     */
+    private Date showTime;
 
     /**
      * 部门id

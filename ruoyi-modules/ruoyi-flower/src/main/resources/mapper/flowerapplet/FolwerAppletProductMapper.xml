@@ -210,4 +210,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DESC
     </select>
 
+
+
+    <select id="selectAllByCategoryId"  resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo">
+        -- 使用递归 CTE 找出指定分类及其所有子分类
+        WITH RECURSIVE subcategories AS (
+            -- 初始查询，找出指定分类
+            SELECT id
+            FROM folwer_category
+            WHERE del_flag = 0 and id = #{categoryId}
+            UNION ALL
+            -- 递归查询，找出子分类
+            SELECT c.id
+            FROM folwer_category c
+                     JOIN subcategories s ON c.parent_id = s.id
+        )
+-- 从商品表中查询属于这些分类的商品
+        SELECT *
+        FROM folwer_product p
+                 JOIN subcategories s ON p.category_id = s.id
+        where del_flag = 0 and status = 1
+        LIMIT #{pageSize} OFFSET #{offset};
+    </select>
+
+    <select id="selectListByAll"  resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo">
+        SELECT *
+        FROM folwer_product p
+        where del_flag = 0 and status = 1
+        LIMIT #{pageSize} OFFSET #{offset};
+    </select>
+
 </mapper>

@@ -180,9 +180,9 @@ public class FolwerProductVo implements Serializable {
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否
+     * 是否单季限定 默认为：0 否 1 是
      */
-    @ExcelProperty(value = "是否预警 1 是 2  否 ")
+    @ExcelProperty(value = "是否单季限定 默认为：0 否 1 是")
     private Long ifEarlyWarning;
 
     /**

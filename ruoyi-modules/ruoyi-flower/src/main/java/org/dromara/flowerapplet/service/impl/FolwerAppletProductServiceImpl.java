@@ -1,6 +1,5 @@
 package org.dromara.flowerapplet.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -23,6 +22,7 @@ import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.mapper.FolwerAppletProductMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -53,16 +53,91 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         if (folwerAppletProductVo == null){
             return null;
         }
-        if (folwerAppletProductVo != null) {
-            if (folwerAppletProductVo.getNormsType().equals(1L)) {
-                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                folwerAppletSkuBo.setProdId(folwerAppletProductVo.getId());
-                folwerAppletSkuBo.setStatus(1L);
-                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                folwerAppletProductVo.setSkuList(folwerAppletSkuVos);
+//        if (folwerAppletProductVo != null) {
+//            if (folwerAppletProductVo.getNormsType().equals(1L)) {
+//                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+//                folwerAppletSkuBo.setProdId(folwerAppletProductVo.getId());
+//                folwerAppletSkuBo.setStatus(1L);
+//                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+//                folwerAppletProductVo.setSkuList(folwerAppletSkuVos);
+//            }
+//        }
+        return folwerAppletProductVo;
+    }
+
+    /**
+     * 查询大分类下所有商品
+     *
+     * @param categoryId 主键
+     * @return 小程序端商品管理
+     */
+    @Override
+    public List<FolwerAppletProductVo> queryAllBycategoryId(Long categoryId, int pageNum, int pageSize){
+        int offset = (pageNum - 1) * pageSize;
+        if (!LoginHelper.isLogin()) {
+            if (categoryId == 0L) {
+                List<FolwerAppletProductVo> productVos = baseMapper.selectListByAll(pageSize,  offset);
+                if (!productVos.isEmpty()) {
+                    productVos.forEach(item -> {
+                        item.setOriPrice(new BigDecimal("-1"));
+                        item.setDerlinePrice(new BigDecimal("-1"));
+                    });
+                }
+                return productVos;
+            }
+            List<FolwerAppletProductVo> productVos = baseMapper.selectAllByCategoryId(categoryId,  pageSize, offset);
+            if (productVos == null) {
+                return null;
+            }
+            if (!productVos.isEmpty()) {
+                productVos.forEach(item -> {
+                    item.setOriPrice(new BigDecimal("-1"));
+                    item.setDerlinePrice(new BigDecimal("-1"));
+                });
+            }
+            return productVos;
+        } else if (LoginHelper.isLogin()) {
+            Long userId = LoginHelper.getUserId();
+            if (userId != null) {
+                FlowerAppletUserInformationVo flowerAppletUserInformationVo = flowerAppletUserInformationService.queryById(userId);
+                //认证功能
+                if (flowerAppletUserInformationVo.getIsAuth() == 1L) {
+                    if (categoryId == 0L) {
+                        List<FolwerAppletProductVo> productVos = baseMapper.selectListByAll(pageSize, offset);
+                        return productVos;
+                    }
+                    List<FolwerAppletProductVo> productVos = baseMapper.selectAllByCategoryId(categoryId, pageSize, offset);
+                    if (productVos == null) {
+                        return null;
+                    }
+                    return productVos;
+                } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
+                    if (categoryId == 0L) {
+                        List<FolwerAppletProductVo> productVos = baseMapper.selectListByAll(pageSize, offset);
+                        if (!productVos.isEmpty()) {
+                            productVos.forEach(item -> {
+                                item.setOriPrice(new BigDecimal("-2"));
+                                item.setDerlinePrice(new BigDecimal("-2"));
+                            });
+                        }
+                        return productVos;
+                    }
+                    List<FolwerAppletProductVo> productVos = baseMapper.selectAllByCategoryId(categoryId, pageSize, offset);
+                    if (productVos == null) {
+                        return null;
+                    }
+                    if (!productVos.isEmpty()) {
+                        productVos.forEach(item -> {
+                            item.setOriPrice(new BigDecimal("-2"));
+                            item.setDerlinePrice(new BigDecimal("-2"));
+                        });
+                    }
+                    return productVos;
+                }
+
             }
         }
-        return folwerAppletProductVo;
+        return null;
     }
 
     /**
@@ -103,7 +178,11 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         if (productVos.isEmpty()){
             return null;
         }
-        return productVos;
+        List<FolwerAppletProductColorVo> sortedByLevel = productVos.stream()
+            .filter(item -> item.getLevel() != null)
+            .sorted(Comparator.comparing(FolwerAppletProductColorVo::getLevel)) // 按等级升序
+            .collect(java.util.stream.Collectors.toList());
+        return sortedByLevel;
     }
 
     /**
@@ -135,19 +214,19 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 //            bo.setStatus(1L);
             LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
             Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-//            if (!result.getRecords().isEmpty()) {
-//                result.getRecords().forEach(item -> {
+            if (!result.getRecords().isEmpty()) {
+                result.getRecords().forEach(item -> {
 //                    if (item.getNormsType().equals(1L)) {
 //                        FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
 //                        folwerAppletSkuBo.setProdId(item.getId());
 //                        folwerAppletSkuBo.setStatus(1L);
 //                        List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
 //                        item.setSkuList(folwerAppletSkuVos);
-//                        item.setOriPrice(new BigDecimal("-1"));
-//                        item.setDerlinePrice(new BigDecimal("-1"));
-//
 //                    }
-//                });
+                    item.setOriPrice(new BigDecimal("-1"));
+                    item.setDerlinePrice(new BigDecimal("-1"));
+                });
+            }  //如果需要查询SKU数据则去掉
 //
 //                if (!result.getRecords().isEmpty()) {
 //                    // 批量查询 SKU 数据
@@ -200,19 +279,20 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 //                  bo.setStatus(1L);
                     LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
                     Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-//                    if (!result.getRecords().isEmpty()) {
-//                        result.getRecords().forEach(item -> {
+                    if (!result.getRecords().isEmpty()) {
+                        result.getRecords().forEach(item -> {
 //                            if (item.getNormsType().equals(1L)) {
 //                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
 //                                folwerAppletSkuBo.setProdId(item.getId());
 //                                folwerAppletSkuBo.setStatus(1L);
 //                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
 //                                item.setSkuList(folwerAppletSkuVos);
-//                                item.setOriPrice(new BigDecimal("-2"));
-//                                item.setDerlinePrice(new BigDecimal("-2"));
+//
 //                            }
-//                        });
-//                    }
+                            item.setOriPrice(new BigDecimal("-2"));
+                            item.setDerlinePrice(new BigDecimal("-2"));
+                        });
+                    }
 //
 //                    if (!result.getRecords().isEmpty()) {
 //                        // 批量查询 SKU 数据
@@ -272,15 +352,15 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         stringToLong(bo);
         LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
         List<FolwerAppletProductVo> productVos = baseMapper.selectVoList(lqw);
-        for (FolwerAppletProductVo productVo : productVos) {
-            if (productVo.getNormsType().equals(1L)) {
-                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-                folwerAppletSkuBo.setProdId(productVo.getId());
-                folwerAppletSkuBo.setStatus(1L);
-                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-                productVo.setSkuList(folwerAppletSkuVos);
-            }
-        }
+//        for (FolwerAppletProductVo productVo : productVos) {
+//            if (productVo.getNormsType().equals(1L)) {
+//                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+//                folwerAppletSkuBo.setProdId(productVo.getId());
+//                folwerAppletSkuBo.setStatus(1L);
+//                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+//                productVo.setSkuList(folwerAppletSkuVos);
+//            }
+//        }
         return productVos;
     }
 
