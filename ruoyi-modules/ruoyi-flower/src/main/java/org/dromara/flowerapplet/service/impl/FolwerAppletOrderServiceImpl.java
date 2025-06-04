@@ -282,7 +282,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             total = folwerAppletSkuVo.getPrice().multiply(BigDecimal.valueOf(bo.getProdCount()));
             folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
             folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletSkuVo.getSkuPicid());
-            transfee = folwerAppletProductVo.getDeliveryPrice();
+//            transfee = folwerAppletProductVo.getDeliveryPrice();      //从商品中获取运费
             if(bo.getUserChangeCoupon() != null){
                 //0:满减
                 if(bo.getUserChangeCoupon().equals(0)){
@@ -350,7 +350,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //                double price = Arith.mul(productVo.getOriPrice() ,basketVo.getBasketCount());
 //                total = Arith.add(total,price);
                 BigDecimal priceDel = productVo.getDeliveryPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
-                transfee = transfee.add(priceDel);
+//                transfee = transfee.add(priceDel);
 //                transfee = Arith.add(transfee, Arith.mul(productVo.getDeliveryPrice(), basketVo.getBasketCount()));
 
 
@@ -426,24 +426,23 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
         //满额包邮
         orderBo.setFreightAmount(transfee);
-        FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
-        List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
-        if (folwerOrderSetVos != null){
-            if(folwerOrderSetVos.get(0).getFreeShippingPrice() != null){
-                if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
-                    transfee = BigDecimal.valueOf(0);
-                    orderBo.setFreightAmount( transfee);
-                }
-
-                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
-                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
-                    BigDecimal num2 = new BigDecimal("100");
-                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
-                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
-//                    return R.fail("您的支付金额未达" + result +"元以上，未满足支付需求");
-                }
-            }
-        }
+//        FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
+//        List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
+//        if (folwerOrderSetVos != null){
+//            if(folwerOrderSetVos.get(0).getFreeShippingPrice() != null){
+//                if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
+//                    transfee = BigDecimal.valueOf(0);
+//                    orderBo.setFreightAmount( transfee);
+//                }
+//
+//                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
+//                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
+//                    BigDecimal num2 = new BigDecimal("100");
+//                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
+//                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
+//                }
+//            }
+//        }
         orderBo.setActualTotal(total.add(transfee));
 //        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
 //        folwerPickAddrBo.setUserId(bo.getUserId());

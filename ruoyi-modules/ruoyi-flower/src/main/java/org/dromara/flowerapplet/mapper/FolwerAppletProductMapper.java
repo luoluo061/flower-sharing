@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
@@ -21,6 +22,10 @@ public interface FolwerAppletProductMapper extends BaseMapperPlus<FolwerAppletPr
     List<FolwerAppletProductColorVo> selectByLevel(FolwerAppletProductBo bo);
 
     List<FolwerAppletProductColorVo> selectBySoldNum(FolwerAppletProductBo bo);
+
+    List<FolwerAppletProductVo> selectAllByCategoryId(@Param("categoryId") Long categoryId, @Param("pageSize") int pageSize, @Param("offset") int offset);
+
+    List<FolwerAppletProductVo> selectListByAll(@Param("pageSize") int pageSize, @Param("offset") int offset);
 
 
 }

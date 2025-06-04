@@ -83,6 +83,12 @@ public class FolwerCategoryVo implements Serializable {
     private Long isShowFeature;
 
     /**
+     * 显示时间
+     */
+    @ExcelProperty(value = "显示时间")
+    private Date showTime;
+
+    /**
      * 二级分类
      */
     @ExcelProperty(value = "二级分类")

@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 
@@ -70,10 +71,16 @@ public class FolwerAppletCategoryVo implements Serializable {
     private Long status;
 
     /**
-     * 是否显示花艺课程 默认是0，表示不显示,1为花艺课程
+     * 是否显示花艺课程 默认是0，表示不显示,1为花艺课程,2为盆栽
      */
-    @ExcelProperty(value = "是否显示花艺课程 默认是0，表示不显示,1为花艺课程")
+    @ExcelProperty(value = "是否显示花艺课程 默认是0，表示不显示,1为花艺课程,2为盆栽")
     private Long isShowFeature;
+
+    /**
+     * 显示时间
+     */
+    @ExcelProperty(value = "显示时间")
+    private Date showTime;
 
     /**
      * 部门id

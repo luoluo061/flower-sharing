@@ -52,7 +52,7 @@ public class FolwerSkuBo extends BaseEntity {
     /**
      * 商品重量
      */
-    private String weight;
+    private Double weight;
 
     /**
      * 商品尺寸
@@ -83,6 +83,32 @@ public class FolwerSkuBo extends BaseEntity {
      * 箱型ID
      */
     private Long boxId;
+
+    /**
+     * 颜色
+     */
+    private String color;
+
+    /**
+     * 等级
+     */
+    private String level;
+
+
+    /**
+     * 颜色代码
+     */
+    private String colorCode;
+
+    /**
+     * 是否是基地 默认为0否，1:是
+     */
+    private Long isSource;
+
+    /**
+     * 基地名称
+     */
+    private String source;
 
     /**
      * 开始时间

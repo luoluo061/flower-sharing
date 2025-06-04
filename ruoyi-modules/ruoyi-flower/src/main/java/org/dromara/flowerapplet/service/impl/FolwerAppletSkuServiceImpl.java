@@ -8,7 +8,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerSku;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flowerapplet.domain.FolwerAppletProduct;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
@@ -16,9 +21,11 @@ import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.flowerapplet.mapper.FolwerAppletSkuMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * 单品SKUService业务层处理
@@ -61,8 +68,33 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         result.getRecords().forEach(record ->{
             record.setSkuName(getSkuName(record));
         });
+        result.setRecords(result.getRecords().stream()
+            .sorted(Comparator.comparing(FolwerAppletSkuVo::getColor))
+            .collect(Collectors.toList()));
 
         return TableDataInfo.build(result);
+    }
+
+    @Override
+    public List<FolwerAppletSkuColorVo> queryByColor(FolwerAppletSkuBo bo) {
+        List<FolwerAppletSkuColorVo> folwerAppletSkuColorVos = baseMapper.selectByColor(bo);
+        if (folwerAppletSkuColorVos.isEmpty()){
+            return null;
+        }
+        return folwerAppletSkuColorVos;
+    }
+
+    @Override
+    public List<FolwerAppletSkuColorVo> queryByLevel(FolwerAppletSkuBo bo) {
+        List<FolwerAppletSkuColorVo> folwerAppletSkuColorVos = baseMapper.selectByLevel(bo);
+        if (folwerAppletSkuColorVos.isEmpty()){
+            return null;
+        }
+        List<FolwerAppletSkuColorVo> skuLevel = folwerAppletSkuColorVos.stream()
+            .filter(item -> item.getLevel() != null)
+            .sorted(Comparator.comparing(FolwerAppletSkuColorVo::getLevel))
+            .collect(Collectors.toList());
+        return skuLevel;
     }
 
     /**
@@ -95,12 +127,18 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         lqw.eq(StringUtils.isNotBlank(bo.getSkuPicid()), FolwerAppletSku::getSkuPicid, bo.getSkuPicid());
         lqw.eq(StringUtils.isNotBlank(bo.getColour()), FolwerAppletSku::getColour, bo.getColour());
         lqw.eq(StringUtils.isNotBlank(bo.getNumber()), FolwerAppletSku::getNumber, bo.getNumber());
-        lqw.eq(StringUtils.isNotBlank(bo.getWeight()), FolwerAppletSku::getWeight, bo.getWeight());
+        lqw.eq(bo.getWeight() != null, FolwerAppletSku::getWeight, bo.getWeight());
         lqw.eq(StringUtils.isNotBlank(bo.getSize()), FolwerAppletSku::getSize, bo.getSize());
         lqw.eq(bo.getPrice() != null, FolwerAppletSku::getPrice, bo.getPrice());
         lqw.eq(bo.getActualStocks() != null, FolwerAppletSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerAppletSku::getStatus, bo.getStatus());
         lqw.eq(bo.getSkuId() != null, FolwerAppletSku::getSkuId, bo.getSkuId());
+
+        lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerAppletSku::getColor, bo.getColor());
+        lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerAppletSku::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerAppletSku::getLevel, bo.getLevel());
+        lqw.like(bo.getIsSource() != null, FolwerAppletSku::getIsSource, bo.getIsSource());
+        lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerAppletSku::getSource, bo.getSource());
         return lqw;
     }
 

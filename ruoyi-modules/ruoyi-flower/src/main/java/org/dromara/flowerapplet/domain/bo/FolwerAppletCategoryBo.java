@@ -7,6 +7,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * 小程序端产品类目业务对象 folwer_category
  *
@@ -52,6 +54,11 @@ public class FolwerAppletCategoryBo extends BaseEntity {
      * 是否显示花艺课程 默认是0，表示不显示,1为花艺课程
      */
     private Long isShowFeature;
+
+    /**
+     * 显示时间
+     */
+    private Date showTime;
 
     /**
      * 部门id

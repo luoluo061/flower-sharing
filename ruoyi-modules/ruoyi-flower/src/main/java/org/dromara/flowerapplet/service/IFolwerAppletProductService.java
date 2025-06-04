@@ -27,6 +27,14 @@ public interface IFolwerAppletProductService {
     FolwerAppletProductVo queryById(Long id);
 
     /**
+     * 查询大分类下所有商品
+     *
+     * @param categoryId 主键
+     * @return 小程序端商品管理
+     */
+    List<FolwerAppletProductVo> queryAllBycategoryId(Long categoryId, int pageNum, int pageSize);
+
+    /**
      * 根据颜色查询小程序端商品管理
      *
      * @param bo 查询条件

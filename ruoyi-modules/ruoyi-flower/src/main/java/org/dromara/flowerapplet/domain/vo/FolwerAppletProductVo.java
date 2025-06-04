@@ -172,9 +172,9 @@ public class FolwerAppletProductVo implements Serializable {
     private Long ifFreeShipping;
 
     /**
-     * 是否预警 1 是 2  否
+     * 是否单季限定 默认为：0 否 1 是
      */
-    @ExcelProperty(value = "是否预警 1 是 2  否 ", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "是否单季限定 默认为：0 否 1 是", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "shop_yesno_status")
     private Long ifEarlyWarning;
 

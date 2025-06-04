@@ -13,6 +13,7 @@ import org.dromara.flower.domain.FolwerProductComm;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
 import org.dromara.flower.service.IFolwerProductService;
+import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
@@ -144,6 +145,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     @Override
     public List<FolwerSkuVo> queryListByProdId(long prodId) {
         FolwerSkuBo bo = new FolwerSkuBo();
+        bo.setStatus(1L);
         bo.setProdId(prodId);
         LambdaQueryWrapper<FolwerSku> lqw = buildQueryWrapper(bo);
         List<FolwerSkuVo> folwerSkuVos = baseMapper.selectVoList(lqw);
@@ -170,13 +172,19 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         lqw.eq(StringUtils.isNotBlank(bo.getSkuPicid()), FolwerSku::getSkuPicid, bo.getSkuPicid());
         lqw.eq(StringUtils.isNotBlank(bo.getColour()), FolwerSku::getColour, bo.getColour());
         lqw.eq(StringUtils.isNotBlank(bo.getNumber()), FolwerSku::getNumber, bo.getNumber());
-        lqw.eq(StringUtils.isNotBlank(bo.getWeight()), FolwerSku::getWeight, bo.getWeight());
+        lqw.eq(bo.getWeight() != null, FolwerSku::getWeight, bo.getWeight());
         lqw.eq(StringUtils.isNotBlank(bo.getSize()), FolwerSku::getSize, bo.getSize());
         lqw.eq(bo.getBoxId() != null, FolwerSku::getBoxId, bo.getBoxId());
         lqw.eq(bo.getPrice() != null, FolwerSku::getPrice, bo.getPrice());
         lqw.eq(bo.getActualStocks() != null, FolwerSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerSku::getStatus, bo.getStatus());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerSku::getCreateTime, bo.getStartTime(), bo.getEndTime());
+
+        lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerSku::getColor, bo.getColor());
+        lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerSku::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerSku::getLevel, bo.getLevel());
+        lqw.like(bo.getIsSource() != null, FolwerSku::getIsSource, bo.getIsSource());
+        lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerSku::getSource, bo.getSource());
         return lqw;
     }
 

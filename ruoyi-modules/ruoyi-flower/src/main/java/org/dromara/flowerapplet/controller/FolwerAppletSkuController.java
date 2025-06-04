@@ -2,10 +2,14 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -43,6 +47,26 @@ public class FolwerAppletSkuController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletSkuVo> list(FolwerAppletSkuBo bo, PageQuery pageQuery) {
         return folwerAppletSkuService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 查询SKU颜色
+     */
+    @SaCheckPermission("flower:sku:queryColor")
+    @GetMapping("/queryColor")
+    @SaIgnore //忽略权限校验 小程序过审
+    public R<List<FolwerAppletSkuColorVo>> queryColor(FolwerAppletSkuBo bo) {
+        return R.ok(folwerAppletSkuService.queryByColor(bo));
+    }
+
+    /**
+     * 查询SKU等级
+     */
+    @SaCheckPermission("flower:sku:queryLevel")
+    @GetMapping("/queryLevel")
+    @SaIgnore //忽略权限校验 小程序过审
+    public R<List<FolwerAppletSkuColorVo>> queryLevel(FolwerAppletSkuBo bo) {
+        return R.ok(folwerAppletSkuService.queryByLevel(bo));
     }
 
     /**
