@@ -137,4 +137,16 @@ public class FolwerAppletSkuVo implements Serializable {
     @ExcelProperty(value = "基地名称")
     private String source;
 
+    /**
+     * 排序
+     */
+    @ExcelProperty(value = "排序")
+    private Long seq;
+
+    /**
+     * 规格详情
+     */
+    @ExcelProperty(value = "规格详情")
+    private String details;
+
 }

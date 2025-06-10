@@ -127,9 +127,9 @@ public class FolwerProduct extends TenantEntity {
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否
+     * 排序
      */
-    private Long ifFreeShipping;
+    private Long seq;
 
     /**
      * 是否单季限定 默认为：0 否 1 是

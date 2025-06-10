@@ -139,6 +139,8 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerAppletSku::getLevel, bo.getLevel());
         lqw.like(bo.getIsSource() != null, FolwerAppletSku::getIsSource, bo.getIsSource());
         lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerAppletSku::getSource, bo.getSource());
+        lqw.eq(bo.getSeq() != null, FolwerAppletSku::getSeq, bo.getSeq());
+        lqw.orderByDesc(FolwerAppletSku::getSeq);
         return lqw;
     }
 

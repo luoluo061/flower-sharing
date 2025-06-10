@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -102,6 +103,17 @@ public class FolwerAppletSku extends TenantEntity {
      * 基地名称
      */
     private String source;
+
+    /**
+     * 排序
+     */
+    @ExcelProperty(value = "排序")
+    private Long seq;
+
+    /**
+     * 规格详情
+     */
+    private String details;
 
     /**
      * 删除标志 0 否 2 是

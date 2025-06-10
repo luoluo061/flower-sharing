@@ -14,6 +14,7 @@ import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flowerapplet.domain.FolwerAppletCategory;
 import org.dromara.system.domain.SysOss;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
@@ -224,7 +225,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         lqw.eq(bo.getTotalStocks() != null, FolwerProduct::getTotalStocks, bo.getTotalStocks());
         lqw.eq(bo.getStatus() != null, FolwerProduct::getStatus, bo.getStatus());
         lqw.eq(bo.getIfRefund() != null, FolwerProduct::getIfRefund, bo.getIfRefund());
-        lqw.eq(bo.getIfFreeShipping() != null, FolwerProduct::getIfFreeShipping, bo.getIfFreeShipping());
+        lqw.eq(bo.getSeq() != null, FolwerProduct::getSeq, bo.getSeq());
         lqw.eq(bo.getIsRecommend() != null, FolwerProduct::getIsRecommend, bo.getIsRecommend());
 
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
