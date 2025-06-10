@@ -64,7 +64,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isCoupon" column="is_coupon"/>
         <result property="isRecommend" column="is_recommend"/>
         <result property="ifRefund" column="if_refund"/>
-        <result property="ifFreeShipping" column="if_free_shipping"/>
         <result property="ifEarlyWarning" column="if_early_warning"/>
         <result property="inventoryEarlyWarningNum" column="inventory_early_warning_num"/>
         <result property="inventoryEarlyWarningProportion" column="inventory_early_warning_proportion"/>
@@ -118,7 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
               </if>
         GROUP BY
         color,
-        color_code
+        color_code;
     </select>
 
     <select id="selectByLevel" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
@@ -161,7 +160,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND    level = #{level}
         </if>
         GROUP BY
-            level
+            level;
     </select>
 
     <select id="selectBySoldNum" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
@@ -204,10 +203,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND    level = #{level}
         </if>
         GROUP BY
-            sold_num
-        ORDER BY
-            sold_num
-        DESC
+            sold_num;
     </select>
 
 
@@ -222,7 +218,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             UNION ALL
             -- 递归查询，找出子分类
             SELECT c.id
-            FROM folwer_category c
+            FROM folwer_category c 
                      JOIN subcategories s ON c.parent_id = s.id
         )
 -- 从商品表中查询属于这些分类的商品
@@ -230,6 +226,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM folwer_product p
                  JOIN subcategories s ON p.category_id = s.id
         where del_flag = 0 and status = 1
+        ORDER BY seq DESC
         LIMIT #{pageSize} OFFSET #{offset};
     </select>
 
@@ -237,6 +234,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT *
         FROM folwer_product p
         where del_flag = 0 and status = 1
+        ORDER BY seq DESC
         LIMIT #{pageSize} OFFSET #{offset};
     </select>
 

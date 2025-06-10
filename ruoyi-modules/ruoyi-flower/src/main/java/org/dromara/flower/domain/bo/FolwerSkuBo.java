@@ -111,6 +111,16 @@ public class FolwerSkuBo extends BaseEntity {
     private String source;
 
     /**
+     * 排序
+     */
+    private Long seq;
+
+    /**
+     * 规格详情
+     */
+    private String details;
+
+    /**
      * 开始时间
      */
     private String startTime;

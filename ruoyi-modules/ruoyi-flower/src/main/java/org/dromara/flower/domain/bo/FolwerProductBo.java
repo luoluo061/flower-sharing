@@ -148,10 +148,9 @@ public class FolwerProductBo extends BaseEntity {
     private Long ifRefund;
 
     /**
-     * 是否免费配送 1 是 2  否
+     * 排序
      */
-//    @NotNull(message = "是否免费配送 1 是 2  否 不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long ifFreeShipping;
+    private Long seq;
 
     /**
      * 是否单季限定 默认为：0 否 1 是

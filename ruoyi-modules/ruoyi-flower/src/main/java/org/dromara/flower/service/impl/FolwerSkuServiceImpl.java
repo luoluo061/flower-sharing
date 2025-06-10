@@ -13,6 +13,7 @@ import org.dromara.flower.domain.FolwerProductComm;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
 import org.dromara.flower.service.IFolwerProductService;
+import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
@@ -145,7 +146,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     @Override
     public List<FolwerSkuVo> queryListByProdId(long prodId) {
         FolwerSkuBo bo = new FolwerSkuBo();
-        bo.setStatus(1L);
+//        bo.setStatus(1L);
         bo.setProdId(prodId);
         LambdaQueryWrapper<FolwerSku> lqw = buildQueryWrapper(bo);
         List<FolwerSkuVo> folwerSkuVos = baseMapper.selectVoList(lqw);
@@ -185,6 +186,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerSku::getLevel, bo.getLevel());
         lqw.like(bo.getIsSource() != null, FolwerSku::getIsSource, bo.getIsSource());
         lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerSku::getSource, bo.getSource());
+        lqw.eq(bo.getSeq() != null, FolwerSku::getSeq, bo.getSeq());
         return lqw;
     }
 

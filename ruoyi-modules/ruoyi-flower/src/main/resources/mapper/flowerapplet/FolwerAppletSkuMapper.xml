@@ -52,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         GROUP BY
         color,
-        color_code
+        color_code;
     </select>
 
     <select id="selectByLevel" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo">
@@ -101,7 +101,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND    source = #{source}
         </if>
         GROUP BY
-        level
+        level;
     </select>
 
     <select id="selectBySoldNum" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo">
@@ -152,8 +152,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         GROUP BY
         sold_num
         ORDER BY
-        sold_num
-        DESC
+        sold_num DESC;
     </select>
 
 

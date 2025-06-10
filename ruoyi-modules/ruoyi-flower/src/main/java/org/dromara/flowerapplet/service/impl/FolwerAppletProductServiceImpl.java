@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
 import org.dromara.flowerapplet.domain.vo.FlowerAppletUserInformationVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo;
@@ -392,7 +393,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         lqw.eq(bo.getIsRecommend() != null, FolwerAppletProduct::getIsRecommend, bo.getIsRecommend());
         lqw.eq(bo.getIsCoupon() != null, FolwerAppletProduct::getIsCoupon, bo.getIsCoupon());
         lqw.eq(bo.getIfRefund() != null, FolwerAppletProduct::getIfRefund, bo.getIfRefund());
-        lqw.eq(bo.getIfFreeShipping() != null, FolwerAppletProduct::getIfFreeShipping, bo.getIfFreeShipping());
+        lqw.eq(bo.getSeq() != null, FolwerAppletProduct::getSeq, bo.getSeq());
 
         lqw.eq(bo.getIfEarlyWarning() != null, FolwerAppletProduct::getIfEarlyWarning, bo.getIfEarlyWarning());
         lqw.eq(bo.getInventoryEarlyWarningNum() != null, FolwerAppletProduct::getInventoryEarlyWarningNum, bo.getInventoryEarlyWarningNum());
@@ -402,6 +403,7 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
         lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerAppletProduct::getColorCode, bo.getColorCode());
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerAppletProduct::getLevel, bo.getLevel());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerAppletProduct::getRemarks, bo.getRemarks());
+        lqw.orderByDesc(FolwerAppletProduct::getSeq);
         return lqw;
     }
 

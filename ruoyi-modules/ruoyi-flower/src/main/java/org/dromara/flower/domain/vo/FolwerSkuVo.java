@@ -149,5 +149,17 @@ public class FolwerSkuVo implements Serializable {
     @ExcelProperty(value = "销量")
     private Long soldNum;
 
+    /**
+     * 排序
+     */
+    @ExcelProperty(value = "排序")
+    private Long seq;
+
+    /**
+     * 规格详情
+     */
+    @ExcelProperty(value = "规格详情")
+    private String details;
+
 
 }
