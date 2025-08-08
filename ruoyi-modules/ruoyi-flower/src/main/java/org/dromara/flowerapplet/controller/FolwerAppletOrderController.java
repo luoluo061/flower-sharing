@@ -99,6 +99,17 @@ public class FolwerAppletOrderController extends BaseController {
     }
 
     /**
+     * 修改运费订单
+     */
+    @SaCheckPermission("flower:order:updateByTransfee")
+    @Log(title = "修改运费订单", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/update")
+    public  R<String> updateByTransfee(@Validated(EditGroup.class) @RequestBody OrderParamBo bo) throws Exception {
+        return folwerAppletOrderService.updateByOrderParam(bo);
+    }
+
+    /**
      * 删除订单
      *
      * @param orderIds 主键串

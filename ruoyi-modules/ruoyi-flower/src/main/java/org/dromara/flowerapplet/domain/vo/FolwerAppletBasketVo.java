@@ -79,7 +79,17 @@ public class FolwerAppletBasketVo implements Serializable {
     /***
      * 颜色
      */
-    private String colour;
+    private String color;
+
+    /***
+     * 等级
+     */
+    private String level;
+
+    /**
+     * 基地名称
+     */
+    private String source;
 
     /***
      * 重量

@@ -92,11 +92,11 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 //                }
 //            }
 
-            if (folwerProductVo.getNormsType().equals(1L)) {
-                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
-//                List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(folwerProductVo.getId());
-                folwerProductVo.setProdSKU(folwerSkuVos);
-            }
+//            if (folwerProductVo.getNormsType().equals(1L)) {
+//                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(folwerProductVo.getId());
+////                List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(folwerProductVo.getId());
+//                folwerProductVo.setProdSKU(folwerSkuVos);
+//            }
         }
         return folwerProductVo;
     }
@@ -136,18 +136,18 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
                 }
             }
 
-            List<Long> longList = new ArrayList<>();
-            result.getRecords().forEach(record ->{
-                if (record.getProductListPictureUrl() != null && !record.getProductListPictureUrl().isEmpty()){
-                    longList.add(Long.valueOf(record.getProductListPictureUrl()));
-                }
-                //多规格
-                if (record.getNormsType().equals(1L)){
-                    List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(record.getId());
-//                    List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(record.getId());
-                    record.setProdSKU(folwerSkuVos);
-                }
-            });
+//            List<Long> longList = new ArrayList<>();
+//            result.getRecords().forEach(record ->{
+//                if (record.getProductListPictureUrl() != null && !record.getProductListPictureUrl().isEmpty()){
+//                    longList.add(Long.valueOf(record.getProductListPictureUrl()));
+//                }
+//                //多规格
+//                if (record.getNormsType().equals(1L)){
+//                    List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(record.getId());
+////                    List<FolwerSkuVo> folwerSkuVos = intermediateBean.getFolwerSkuVos(record.getId());
+//                    record.setProdSKU(folwerSkuVos);
+//                }
+//            });
 
 //            if (!longList.isEmpty()){
 //                Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
@@ -204,10 +204,10 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 //                }
 //            }
 
-            if (vo.getNormsType().equals(1L)) {
-                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(vo.getId());
-                vo.setProdSKU(folwerSkuVos);
-            }
+//            if (vo.getNormsType().equals(1L)) {
+//                List<FolwerSkuVo> folwerSkuVos = folwerSkuService.queryListByProdId(vo.getId());
+//                vo.setProdSKU(folwerSkuVos);
+//            }
 
         }
         return folwerProductVos;
@@ -234,6 +234,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 
         lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerProduct::getColor, bo.getColor());
         lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerProduct::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getColorPic()), FolwerProduct::getColorPic, bo.getColorPic());
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerProduct::getLevel, bo.getLevel());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerProduct::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;

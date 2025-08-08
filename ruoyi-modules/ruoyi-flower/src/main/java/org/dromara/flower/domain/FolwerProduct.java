@@ -161,6 +161,11 @@ public class FolwerProduct extends TenantEntity {
      */
     private String colorCode;
 
+    /**
+     * 颜色图
+     */
+    private String colorPic;
+
 
     /**
      * 商品评论

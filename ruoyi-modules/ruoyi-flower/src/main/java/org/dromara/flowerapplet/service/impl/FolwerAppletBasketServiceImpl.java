@@ -65,6 +65,9 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
                         FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId());
                         if (folwerAppletSkuVo != null){
                             folwerAppletBasketVo.setPrice(folwerAppletSkuVo.getPrice());
+                            folwerAppletBasketVo.setLevel(folwerAppletSkuVo.getLevel());
+                            folwerAppletBasketVo.setColor(folwerAppletSkuVo.getColor());
+                            folwerAppletBasketVo.setSource(folwerAppletSkuVo.getSource());
                         }else {
                             throw new RuntimeException("商品规格信息不存在");
                         }

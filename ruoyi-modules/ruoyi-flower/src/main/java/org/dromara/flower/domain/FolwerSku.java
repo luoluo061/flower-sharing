@@ -40,6 +40,11 @@ public class FolwerSku extends TenantEntity {
     private String skuPicid;
 
     /**
+     * 规格轮播图ID
+     */
+    private String skuPictureId;
+
+    /**
      * 商品颜色
      */
     private String colour;
@@ -100,6 +105,11 @@ public class FolwerSku extends TenantEntity {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    private String colorPic;
+
+    /**
      * 是否是基地 默认为0否，1:是
      */
     private Long isSource;
@@ -117,7 +127,7 @@ public class FolwerSku extends TenantEntity {
     /**
      * 规格详情
      */
-    private String details;
+    private String remarks;
 
     /**
      * 删除标志 0 否 2 是

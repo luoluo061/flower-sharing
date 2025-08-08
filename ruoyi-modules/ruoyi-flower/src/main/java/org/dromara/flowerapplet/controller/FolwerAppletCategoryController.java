@@ -54,6 +54,7 @@ public class FolwerAppletCategoryController extends BaseController {
      */
     @SaCheckPermission("flower:category:alllist")
     @GetMapping("/allList")
+    @SaIgnore
     public R<List<FolwerAppletCategoryVo>> getAllList(FolwerAppletCategoryBo bo) {
 //        FolwerAppletCategoryBo bo = new FolwerAppletCategoryBo();
         bo.setParentId(0L);
@@ -78,6 +79,7 @@ public class FolwerAppletCategoryController extends BaseController {
      */
     @SaCheckPermission("flower:category:query")
     @GetMapping("/{id}")
+    @SaIgnore
     public R<FolwerAppletCategoryVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(folwerCategoryService.queryById(id));

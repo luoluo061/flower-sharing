@@ -40,6 +40,9 @@ public class FolwerDeliveryServiceImpl implements IFolwerDeliveryService {
      */
     @Override
     public FolwerDeliveryVo queryById(Long dvyId){
+        if (dvyId == null || dvyId <= 0L){
+            return null;
+        }
         return baseMapper.selectVoById(dvyId);
     }
 
@@ -76,9 +79,9 @@ public class FolwerDeliveryServiceImpl implements IFolwerDeliveryService {
         lqw.eq(bo.getDvyType() != null, FolwerDelivery::getDvyType, bo.getDvyType());
         lqw.eq(StringUtils.isNotBlank(bo.getDvyCode()), FolwerDelivery::getDvyCode, bo.getDvyCode());
         lqw.eq(bo.getSeq() != null, FolwerDelivery::getSeq, bo.getSeq());
-        lqw.eq(bo.getRecTime() != null, FolwerDelivery::getRecTime, bo.getRecTime());
-        lqw.eq(bo.getModifyTime() != null, FolwerDelivery::getModifyTime, bo.getModifyTime());
-        lqw.eq(StringUtils.isNotBlank(bo.getQueryUrl()), FolwerDelivery::getQueryUrl, bo.getQueryUrl());
+        lqw.eq(bo.getPackagePrice() != null, FolwerDelivery::getPackagePrice, bo.getPackagePrice());
+        lqw.eq(bo.getMaterialPrice() != null, FolwerDelivery::getMaterialPrice, bo.getMaterialPrice());
+        lqw.eq(bo.getLaborPrice() != null, FolwerDelivery::getLaborPrice, bo.getLaborPrice());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerDelivery::getCreateTime, bo.getStartTime(), bo.getEndTime());
         return lqw;
     }

@@ -53,9 +53,9 @@ public class FolwerDeliveryBoxBo extends BaseEntity {
     private Long costPrice;
 
     /**
-     * 打包费
+     * 每箱装载重量
      */
-    private Long packagPrice;
+    private Double packagPrice;
 
     /**
      * 是否启用 1：启用 0：禁用

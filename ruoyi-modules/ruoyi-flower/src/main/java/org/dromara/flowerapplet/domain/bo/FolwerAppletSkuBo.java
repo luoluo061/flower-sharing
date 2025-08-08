@@ -1,6 +1,8 @@
 package org.dromara.flowerapplet.domain.bo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -36,6 +38,11 @@ public class FolwerAppletSkuBo extends BaseEntity {
     private String skuPicid;
 
     /**
+     * 规格轮播图ID
+     */
+    private String skuPictureId;
+
+    /**
      * 规格名称
      */
     private String colour;
@@ -48,7 +55,7 @@ public class FolwerAppletSkuBo extends BaseEntity {
     /**
      * 商品重量
      */
-    private Long weight;
+    private Double weight;
 
     /**
      * 商品尺寸
@@ -91,6 +98,11 @@ public class FolwerAppletSkuBo extends BaseEntity {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    private String colorPic;
+
+    /**
      * 是否是基地 默认为0否，1:是
      */
     private Long isSource;
@@ -106,8 +118,13 @@ public class FolwerAppletSkuBo extends BaseEntity {
     private Long seq;
 
     /**
+     * 销量
+     */
+    private Long soldNum;
+
+    /**
      * 规格详情
      */
-    private String details;
+    private String remarks;
 
 }

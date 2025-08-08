@@ -75,7 +75,7 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
         List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = baseMapper.selectVoList(lqw);
         for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos) {
             if(folwerAppletOrderDetailVo.getSkuId() != null){
-                folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.queryById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
+                folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.selsctById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
             }
         }
         return folwerAppletOrderDetailVos;

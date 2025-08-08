@@ -59,6 +59,14 @@ public interface IFolwerAppletOrderService {
     R<String> insertByBo(OrderParamBo bo) throws Exception;
 
     /**
+     * 修改计算的订单
+     *
+     * @param bo 订单
+     * @return 是否新增成功
+     */
+    R<String> updateByOrderParam(OrderParamBo bo) throws Exception;
+
+    /**
      * 修改订单
      *
      * @param bo 订单
@@ -147,5 +155,12 @@ public interface IFolwerAppletOrderService {
      * @param userId
      */
     void removeConfirmOrderCache(String userId);
+
+    /**
+     * 创建订单
+     * @param bo
+     * @return
+     */
+    R<String> createByOrder(OrderParamBo bo) throws Exception;
 
 }

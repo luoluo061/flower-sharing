@@ -217,6 +217,19 @@ public class FolwerProductVo implements Serializable {
     @ExcelProperty(value = "颜色代码")
     private String colorCode;
 
+    /**
+     * 颜色图
+     */
+    @ExcelProperty(value = "颜色图")
+    private String colorPic;
+
+    /**
+     * 颜色图Url
+     */
+    @ExcelProperty(value = "商品列表图URL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "colorPic")
+    private String colorPicUrl;
+
 
     /**
      * 商品评论

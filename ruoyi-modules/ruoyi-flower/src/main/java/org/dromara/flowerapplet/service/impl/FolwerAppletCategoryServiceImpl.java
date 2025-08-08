@@ -17,6 +17,7 @@ import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 小程序端产品类目Service业务层处理
@@ -61,7 +62,10 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
                 FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
                 childrenBo.setParentId(folwerCategoryVo.getId());
                 List<FolwerAppletCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-                folwerCategoryVo.setChildren(childrenFolwerCategoryVos);
+                List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerCategoryVos.stream()
+                    .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
+                    .collect(Collectors.toList());
+                folwerCategoryVo.setChildren(sortedFolwerAppletCategoryVo);
             }
         }
         return folwerCategoryVo;
@@ -97,7 +101,10 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
                     FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
                     childrenBo.setParentId(record.getId());
                     List<FolwerAppletCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-                    record.setChildren(childrenFolwerCategoryVos);
+                    List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerCategoryVos.stream()
+                        .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
+                        .collect(Collectors.toList());
+                    record.setChildren(sortedFolwerAppletCategoryVo);
                 }
             });
         }
@@ -135,7 +142,10 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
                     FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
                     childrenBo.setParentId(record.getId());
                     List<FolwerAppletCategoryVo> childrenFolwerAppletCategoryVos = this.queryList(childrenBo);
-                    record.setChildren(childrenFolwerAppletCategoryVos);
+                    List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerAppletCategoryVos.stream()
+                        .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
+                        .collect(Collectors.toList());
+                    record.setChildren(sortedFolwerAppletCategoryVo);
                 }
 
             });

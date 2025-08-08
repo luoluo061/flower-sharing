@@ -1,5 +1,7 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import org.apache.poi.hpsf.Decimal;
 import org.dromara.flower.domain.FolwerDelivery;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -8,6 +10,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -34,7 +38,7 @@ public class FolwerDeliveryBo extends BaseEntity {
     private String dvyName;
 
     /**
-     * 配送方式 1:商家配送, 默认商家配送 2:物流快递
+     * 配送方式 配送方式 1:冷链,  2:空运
      */
     private Long dvyType;
 
@@ -49,19 +53,19 @@ public class FolwerDeliveryBo extends BaseEntity {
     private Long seq;
 
     /**
-     * 建立时间
+     * 打包费
      */
-    private Date recTime;
+    private BigDecimal packagePrice;
 
     /**
-     * 修改时间
+     * 物料费
      */
-    private Date modifyTime;
+    private BigDecimal materialPrice;
 
     /**
-     * 物流查询接口
+     * 人工费
      */
-    private String queryUrl;
+    private BigDecimal laborPrice;
 
     /**
      * 发货地址

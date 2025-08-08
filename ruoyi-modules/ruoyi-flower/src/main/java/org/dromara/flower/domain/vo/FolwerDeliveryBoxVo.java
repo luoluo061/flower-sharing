@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 
 /**
@@ -64,13 +65,13 @@ public class FolwerDeliveryBoxVo implements Serializable {
      * 成本价
      */
     @ExcelProperty(value = "成本价")
-    private Long costPrice;
+    private BigDecimal costPrice;
 
     /**
-     * 打包费
+     * 每箱装载重量
      */
-    @ExcelProperty(value = "打包费")
-    private Long packagPrice;
+    @ExcelProperty(value = "每箱装载重量")
+    private Double packagPrice;
 
     /**
      * 是否启用 1：启用 0：禁用

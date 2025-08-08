@@ -55,6 +55,7 @@ public class FolwerAppletProductController extends BaseController {
     @SaCheckPermission("flower:product:queryCategory")
     @GetMapping("/queryCategory/{categoryId}/{pageNum}/{pageSize}")
     @SaIgnore //忽略权限校验 小程序过审
+//    @RepeatSubmit()
     public R<List<FolwerAppletProductVo>> queryCategory(@PathVariable Long categoryId, @PathVariable int pageNum, @PathVariable int pageSize) {
         return R.ok(folwerAppletProductService.queryAllBycategoryId(categoryId, pageNum, pageSize));
     }
@@ -107,6 +108,7 @@ public class FolwerAppletProductController extends BaseController {
      */
     @SaCheckPermission("flower:product:query")
     @GetMapping("/{id}")
+    @SaIgnore
     public R<FolwerAppletProductVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(folwerAppletProductService.queryById(id));

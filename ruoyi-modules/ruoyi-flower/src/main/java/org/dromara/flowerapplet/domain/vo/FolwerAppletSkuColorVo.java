@@ -4,6 +4,8 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.domain.FolwerAppletSku;
 
@@ -43,6 +45,19 @@ public class FolwerAppletSkuColorVo implements Serializable {
      */
     @ExcelProperty(value = "颜色代码")
     private String colorCode;
+
+    /**
+     * 颜色图
+     */
+    @ExcelProperty(value = "颜色图")
+    private String colorPic;
+
+    /**
+     * 颜色图IDURL
+     */
+    @ExcelProperty(value = "颜色图IDURL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "colorPic")
+    private String colorPicUrl;
 
     /**
      * 等级
