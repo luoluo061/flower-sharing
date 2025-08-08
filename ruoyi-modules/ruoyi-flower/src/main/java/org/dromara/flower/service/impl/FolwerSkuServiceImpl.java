@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.domain.FolwerProductComm;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
@@ -19,6 +20,7 @@ import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
+import org.dromara.system.service.impl.SysOssServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -171,6 +173,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         LambdaQueryWrapper<FolwerSku> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getProdId() != null, FolwerSku::getProdId, bo.getProdId());
         lqw.eq(StringUtils.isNotBlank(bo.getSkuPicid()), FolwerSku::getSkuPicid, bo.getSkuPicid());
+        lqw.eq(StringUtils.isNotBlank(bo.getSkuPictureId()), FolwerSku::getSkuPictureId, bo.getSkuPictureId());
         lqw.eq(StringUtils.isNotBlank(bo.getColour()), FolwerSku::getColour, bo.getColour());
         lqw.eq(StringUtils.isNotBlank(bo.getNumber()), FolwerSku::getNumber, bo.getNumber());
         lqw.eq(bo.getWeight() != null, FolwerSku::getWeight, bo.getWeight());
@@ -183,6 +186,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
 
         lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerSku::getColor, bo.getColor());
         lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerSku::getColorCode, bo.getColorCode());
+        lqw.like(StringUtils.isNotBlank(bo.getColorPic()), FolwerSku::getColorPic, bo.getColorPic());
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerSku::getLevel, bo.getLevel());
         lqw.like(bo.getIsSource() != null, FolwerSku::getIsSource, bo.getIsSource());
         lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerSku::getSource, bo.getSource());

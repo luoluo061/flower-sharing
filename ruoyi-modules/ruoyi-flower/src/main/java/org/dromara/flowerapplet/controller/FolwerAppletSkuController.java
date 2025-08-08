@@ -45,6 +45,7 @@ public class FolwerAppletSkuController extends BaseController {
      */
     @SaCheckPermission("flower:sku:list")
     @GetMapping("/list")
+    @SaIgnore
     public TableDataInfo<FolwerAppletSkuVo> list(FolwerAppletSkuBo bo, PageQuery pageQuery) {
         return folwerAppletSkuService.queryPageList(bo, pageQuery);
     }
@@ -87,6 +88,7 @@ public class FolwerAppletSkuController extends BaseController {
      */
     @SaCheckPermission("flower:sku:query")
     @GetMapping("/{skuId}")
+    @SaIgnore //忽略权限校验 小程序过审
     public R<FolwerAppletSkuVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long skuId) {
         return R.ok(folwerAppletSkuService.queryById(skuId));

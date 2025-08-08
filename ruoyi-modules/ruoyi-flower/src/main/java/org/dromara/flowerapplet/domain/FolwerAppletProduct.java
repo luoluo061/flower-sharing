@@ -157,6 +157,11 @@ public class FolwerAppletProduct extends TenantEntity {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    private String colorPic;
+
+    /**
      * 等级
      */
     private String level;

@@ -1,0 +1,80 @@
+package org.dromara.flower.domain;
+
+import org.dromara.common.tenant.core.TenantEntity;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
+import java.math.BigDecimal;
+
+/**
+ * 物流设置对象 folwer_delivery_set
+ *
+ * @author mlhxj
+ * @date 2025-08-01
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("folwer_delivery_set")
+public class FolwerDeliverySet extends TenantEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 物流设置ID
+     */
+    @TableId(value = "delivery_set_id")
+    private Long deliverySetId;
+
+    /**
+     * 人工费
+     */
+    private BigDecimal laborPrice;
+
+    /**
+     * 保温棉费用
+     */
+    private BigDecimal insulationCotton;
+
+    /**
+     * 保温棉开始使用月份
+     */
+    private Long useInsulationStarttime;
+
+    /**
+     * 保温棉使用结束月份
+     */
+    private Long useInsulationEndtime;
+
+    /**
+     * 冰瓶费用
+     */
+    private BigDecimal iceBottle;
+
+    /**
+     * 冰瓶数量/箱
+     */
+    private Long iceBottleNum;
+
+    /**
+     * 冰瓶开始使用月份
+     */
+    private Long useIceBottleStarttime;
+
+    /**
+     * 冰瓶使用结束月份
+     */
+    private Long useIceBottleEndtime;
+
+
+
+    /**
+     * 删除标志 0 否 2 是
+     */
+    @TableLogic
+    private Long delFlag;
+
+
+}

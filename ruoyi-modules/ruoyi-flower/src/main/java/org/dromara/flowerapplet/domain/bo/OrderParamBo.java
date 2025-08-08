@@ -17,6 +17,8 @@ import java.util.Map;
 @Data
 @Schema(description = "订单参数")
 public class OrderParamBo {
+    @Schema(description = "订单ID" )
+    private String orderId;
 
     @Schema(description = "用户ID" )
     @NotNull(message = "用户ID")
@@ -44,17 +46,20 @@ public class OrderParamBo {
     @Schema(description = "物流公司ID" ,required=true)
     private String dvyId;
 
-	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
-	private Integer userChangeCoupon;
+    @Schema(description = "保温棉圈数" ,required=true)
+    private Integer insulationNum;
 
-    @Schema(description = "满减ID" )
-    private String couponId;
-
-    @Schema(description = "优惠券使用数量" )
-    private Integer couponCount;
-
-    @Schema(description = "优惠券id数组, 商品ID+优惠券ID" )
-	private List<Map<String, String>> couponIds;
+//	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
+//	private Integer userChangeCoupon;
+//
+//    @Schema(description = "满减ID" )
+//    private String couponId;
+//
+//    @Schema(description = "优惠券使用数量" )
+//    private Integer couponCount;
+//
+//    @Schema(description = "优惠券id数组, 商品ID+优惠券ID" )
+//	private List<Map<String, String>> couponIds;
 
 //	@Schema(description = "每次订单提交时的uuid" )
 //	private String uuid;

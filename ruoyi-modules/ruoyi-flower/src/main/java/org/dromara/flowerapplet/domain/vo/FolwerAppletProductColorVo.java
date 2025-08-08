@@ -50,6 +50,19 @@ public class FolwerAppletProductColorVo implements Serializable {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    @ExcelProperty(value = "颜色图")
+    private String colorPic;
+
+    /**
+     * 颜色图IDURL
+     */
+    @ExcelProperty(value = "颜色图IDURL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "colorPic")
+    private String colorPicUrl;
+
+    /**
      * 等级
      */
     @ExcelProperty(value = "等级")

@@ -54,10 +54,23 @@ public class FolwerAppletSkuVo implements Serializable {
      */
     @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "skuPicid")
     private String skuPicidUrl;
+
     /**
-     * 商品颜色
+     * 规格轮播图ID
      */
-    @ExcelProperty(value = "商品颜色")
+    @ExcelProperty(value = "规格轮播图ID")
+    private String skuPictureId;
+
+    /**
+     * 规格轮播图IDUrl
+     */
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "skuPictureId")
+    private String skuPictureIdUrl;
+
+    /**
+     * 规格名称
+     */
+    @ExcelProperty(value = "规格名称")
     private String colour;
 
     /**
@@ -70,7 +83,7 @@ public class FolwerAppletSkuVo implements Serializable {
      * 商品重量
      */
     @ExcelProperty(value = "商品重量")
-    private Long weight;
+    private Double weight;
 
     /**
      * 商品尺寸
@@ -127,6 +140,19 @@ public class FolwerAppletSkuVo implements Serializable {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    @ExcelProperty(value = "颜色图")
+    private String colorPic;
+
+    /**
+     * 颜色图IDURL
+     */
+    @ExcelProperty(value = "颜色图IDURL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "colorPic")
+    private String colorPicUrl;
+
+    /**
      * 是否是基地 默认为0否，1:是
      */
     private Long isSource;
@@ -144,9 +170,15 @@ public class FolwerAppletSkuVo implements Serializable {
     private Long seq;
 
     /**
+     * 销量
+     */
+    @ExcelProperty(value = "销量")
+    private Long soldNum;
+
+    /**
      * 规格详情
      */
     @ExcelProperty(value = "规格详情")
-    private String details;
+    private String remarks;
 
 }

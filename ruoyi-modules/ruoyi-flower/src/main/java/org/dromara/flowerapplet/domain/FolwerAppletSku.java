@@ -5,6 +5,8 @@ import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 
 import java.io.Serial;
 import java.math.BigDecimal;
@@ -40,6 +42,11 @@ public class FolwerAppletSku extends TenantEntity {
     private String skuPicid;
 
     /**
+     * 规格轮播图ID
+     */
+    private String skuPictureId;
+
+    /**
      * 商品颜色
      */
     private String colour;
@@ -52,7 +59,7 @@ public class FolwerAppletSku extends TenantEntity {
     /**
      * 商品重量
      */
-    private Long weight;
+    private Double weight;
 
     /**
      * 商品尺寸
@@ -95,6 +102,11 @@ public class FolwerAppletSku extends TenantEntity {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    private String colorPic;
+
+    /**
      * 是否是基地 默认为0否，1:是
      */
     private Long isSource;
@@ -111,9 +123,14 @@ public class FolwerAppletSku extends TenantEntity {
     private Long seq;
 
     /**
+     * 销量
+     */
+    private Long soldNum;
+
+    /**
      * 规格详情
      */
-    private String details;
+    private String remarks;
 
     /**
      * 删除标志 0 否 2 是

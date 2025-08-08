@@ -1,6 +1,7 @@
 package org.dromara.flowerapplet.domain.bo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import io.reactivex.rxjava3.annotations.Nullable;
 import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -53,6 +54,7 @@ public class FolwerAppletProductBo extends BaseEntity {
     /**
      * 商品分类
      */
+    @Nullable
     private Long categoryId;
 
     /**
@@ -159,6 +161,11 @@ public class FolwerAppletProductBo extends BaseEntity {
      * 颜色代码
      */
     private String colorCode;
+
+    /**
+     * 颜色图
+     */
+    private String colorPic;
 
     /**
      * 等级

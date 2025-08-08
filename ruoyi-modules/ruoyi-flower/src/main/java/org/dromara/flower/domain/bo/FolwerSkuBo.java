@@ -26,7 +26,7 @@ public class FolwerSkuBo extends BaseEntity {
     /**
      * 单品ID
      */
-    @NotNull(message = "单品ID不能为空", groups = { EditGroup.class })
+//    @NotNull(message = "单品ID不能为空", groups = { EditGroup.class })
     private Long skuId;
 
     /**
@@ -38,6 +38,11 @@ public class FolwerSkuBo extends BaseEntity {
      * 规格图ID
      */
     private String skuPicid;
+
+    /**
+     * 规格轮播图ID
+     */
+    private String skuPictureId;
 
     /**
      * 商品颜色
@@ -101,6 +106,11 @@ public class FolwerSkuBo extends BaseEntity {
     private String colorCode;
 
     /**
+     * 颜色图
+     */
+    private String colorPic;
+
+    /**
      * 是否是基地 默认为0否，1:是
      */
     private Long isSource;
@@ -118,7 +128,7 @@ public class FolwerSkuBo extends BaseEntity {
     /**
      * 规格详情
      */
-    private String details;
+    private String remarks;
 
     /**
      * 开始时间

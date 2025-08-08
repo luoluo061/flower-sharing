@@ -1,7 +1,9 @@
 package org.dromara.flower.domain.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.poi.hpsf.Decimal;
 import org.dromara.flower.domain.FolwerDelivery;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -43,9 +45,9 @@ public class FolwerDeliveryVo implements Serializable {
     private String dvyName;
 
     /**
-     * 配送方式 1:商家配送, 默认商家配送 2:物流快递 
+     * 配送方式 1:商家配送, 默认商家配送 2:物流快递
      */
-    @ExcelProperty(value = "配送方式 1:商家配送, 默认商家配送 2:物流快递 ")
+    @ExcelProperty(value = "配送方式 1:冷链,  2:空运 ")
     private Long dvyType;
 
     /**
@@ -61,22 +63,22 @@ public class FolwerDeliveryVo implements Serializable {
     private Long seq;
 
     /**
-     * 建立时间
+     * 打包费
      */
-    @ExcelProperty(value = "建立时间")
-    private Date recTime;
+    @ExcelProperty(value = "打包费")
+    private BigDecimal packagePrice;
 
     /**
-     * 修改时间
+     * 物料费
      */
-    @ExcelProperty(value = "修改时间")
-    private Date modifyTime;
+    @ExcelProperty(value = "物料费")
+    private BigDecimal materialPrice;
 
     /**
-     * 物流查询接口
+     * 人工费
      */
-    @ExcelProperty(value = "物流查询接口")
-    private String queryUrl;
+    @ExcelProperty(value = "人工费")
+    private BigDecimal laborPrice;
 
     /**
      * 发货地址

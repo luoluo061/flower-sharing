@@ -1,9 +1,12 @@
 package org.dromara.flower.domain;
 
+import org.apache.poi.hpsf.Decimal;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -35,7 +38,7 @@ public class FolwerDelivery extends TenantEntity {
     private String dvyName;
 
     /**
-     * 配送方式 1:商家配送, 默认商家配送 2:物流快递 
+     * 配送方式 1:冷链,  2:空运
      */
     private Long dvyType;
 
@@ -50,19 +53,19 @@ public class FolwerDelivery extends TenantEntity {
     private Long seq;
 
     /**
-     * 建立时间
+     * 打包费
      */
-    private Date recTime;
+    private BigDecimal packagePrice;
 
     /**
-     * 修改时间
+     * 物料费
      */
-    private Date modifyTime;
+    private BigDecimal materialPrice;
 
     /**
-     * 物流查询接口
+     * 人工费
      */
-    private String queryUrl;
+    private BigDecimal laborPrice;
 
     /**
      * 发货地址

@@ -7,7 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectByColor" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo">
         SELECT DISTINCT
         color,
-        color_code
+        color_pic
         FROM
         folwer_sku
         WHERE del_flag = 0 AND color IS NOT NULL
@@ -38,9 +38,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="color != null and color != ''">
             AND    color = #{color}
         </if>
-        <if test="colorCode != null and colorCode != ''">
-            AND    color_code = #{colorCode}
-        </if>
         <if test="level != null and level != ''">
             AND    level = #{level}
         </if>
@@ -52,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         GROUP BY
         color,
-        color_code;
+        color_pic;
     </select>
 
     <select id="selectByLevel" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo">
@@ -87,9 +84,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <if test="color != null and color != ''">
             AND    color = #{color}
-        </if>
-        <if test="colorCode != null and colorCode != ''">
-            AND    color_code = #{colorCode}
         </if>
         <if test="level != null and level != ''">
             AND    level = #{level}
@@ -136,9 +130,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <if test="color != null and color != ''">
             AND    color = #{color}
-        </if>
-        <if test="colorCode != null and colorCode != ''">
-            AND    color_code = #{colorCode}
         </if>
         <if test="level != null and level != ''">
             AND    level = #{level}

@@ -8,23 +8,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.flower.domain.FolwerSku;
-import org.dromara.flower.domain.vo.FolwerSkuVo;
-import org.dromara.flowerapplet.domain.FolwerAppletProduct;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuColorVo;
+import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.flowerapplet.domain.vo.*;
+import org.dromara.flowerapplet.service.IFlowerAppletUserInformationService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletSkuBo;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.flowerapplet.mapper.FolwerAppletSkuMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +33,7 @@ import java.util.stream.Collectors;
 public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
 
     private final FolwerAppletSkuMapper baseMapper;
+    private final IFlowerAppletUserInformationService flowerAppletUserInformationService;
 
     /**
      * 查询单品SKU
@@ -47,6 +43,38 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
      */
     @Override
     public FolwerAppletSkuVo queryById(Long skuId){
+        FolwerAppletSkuVo folwerAppletSkuVo = baseMapper.selectVoById(skuId);
+        if(folwerAppletSkuVo != null){
+//            folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+            if (!LoginHelper.isLogin()) {
+                folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+                folwerAppletSkuVo.setPrice(new BigDecimal("-1"));
+            }
+            else if (LoginHelper.isLogin()) {
+                Long userId = LoginHelper.getUserId();
+                if (userId != null) {
+                    FlowerAppletUserInformationVo flowerAppletUserInformationVo = flowerAppletUserInformationService.queryById(userId);
+                    //认证功能
+                    if (flowerAppletUserInformationVo.getIsAuth() == 1L) {
+                        folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+                    } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
+                        folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
+                        folwerAppletSkuVo.setPrice(new BigDecimal("-2"));
+                    }
+                }
+            }
+        }
+        return folwerAppletSkuVo;
+    }
+
+    /**
+     * 查询单品SKU
+     *
+     * @param skuId 主键
+     * @return 单品SKU
+     */
+    @Override
+    public FolwerAppletSkuVo selsctById(Long skuId){
         FolwerAppletSkuVo folwerAppletSkuVo = baseMapper.selectVoById(skuId);
         if(folwerAppletSkuVo != null){
             folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
@@ -65,11 +93,32 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
     public TableDataInfo<FolwerAppletSkuVo> queryPageList(FolwerAppletSkuBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletSku> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletSkuVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.getRecords().forEach(record ->{
-            record.setSkuName(getSkuName(record));
-        });
+        if (!LoginHelper.isLogin()) {
+            result.getRecords().forEach(record -> {
+                record.setSkuName(getSkuName(record));
+                record.setPrice(new BigDecimal("-1"));
+            });
+        }
+        else if (LoginHelper.isLogin()) {
+            Long userId = LoginHelper.getUserId();
+            if (userId != null) {
+                FlowerAppletUserInformationVo flowerAppletUserInformationVo = flowerAppletUserInformationService.queryById(userId);
+                //认证功能
+                if (flowerAppletUserInformationVo.getIsAuth() == 1L) {
+                    result.getRecords().forEach(record -> {
+                        record.setSkuName(getSkuName(record));
+                    });
+                } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
+                    result.getRecords().forEach(record -> {
+                        record.setSkuName(getSkuName(record));
+                        record.setPrice(new BigDecimal("-2"));
+                    });
+                }
+            }
+        }
+        // 倒序排序，null值排最后
         result.setRecords(result.getRecords().stream()
-            .sorted(Comparator.comparing(FolwerAppletSkuVo::getColor))
+            .sorted(Comparator.comparing(FolwerAppletSkuVo::getSeq, Comparator.nullsLast(Comparator.reverseOrder())))
             .collect(Collectors.toList()));
 
         return TableDataInfo.build(result);
@@ -81,7 +130,16 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         if (folwerAppletSkuColorVos.isEmpty()){
             return null;
         }
-        return folwerAppletSkuColorVos;
+        List<FolwerAppletSkuColorVo> collect = folwerAppletSkuColorVos.stream()
+            .filter(distinctByKey(FolwerAppletSkuColorVo::getColor))
+            .collect(Collectors.toList());
+        return collect;
+    }
+    // 自定义去重工具方法
+    private static <T> java.util.function.Predicate<T> distinctByKey(
+        java.util.function.Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
     @Override
@@ -125,6 +183,7 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         LambdaQueryWrapper<FolwerAppletSku> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getProdId() != null, FolwerAppletSku::getProdId, bo.getProdId());
         lqw.eq(StringUtils.isNotBlank(bo.getSkuPicid()), FolwerAppletSku::getSkuPicid, bo.getSkuPicid());
+        lqw.eq(StringUtils.isNotBlank(bo.getSkuPictureId()), FolwerAppletSku::getSkuPictureId, bo.getSkuPictureId());
         lqw.eq(StringUtils.isNotBlank(bo.getColour()), FolwerAppletSku::getColour, bo.getColour());
         lqw.eq(StringUtils.isNotBlank(bo.getNumber()), FolwerAppletSku::getNumber, bo.getNumber());
         lqw.eq(bo.getWeight() != null, FolwerAppletSku::getWeight, bo.getWeight());
@@ -134,8 +193,9 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
         lqw.eq(bo.getStatus() != null, FolwerAppletSku::getStatus, bo.getStatus());
         lqw.eq(bo.getSkuId() != null, FolwerAppletSku::getSkuId, bo.getSkuId());
 
-        lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerAppletSku::getColor, bo.getColor());
+        lqw.eq(StringUtils.isNotBlank(bo.getColor()), FolwerAppletSku::getColor, bo.getColor());
         lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerAppletSku::getColorCode, bo.getColorCode());
+        lqw.eq(StringUtils.isNotBlank(bo.getColorPic()), FolwerAppletSku::getColorPic, bo.getColorPic());
         lqw.like(StringUtils.isNotBlank(bo.getLevel()), FolwerAppletSku::getLevel, bo.getLevel());
         lqw.like(bo.getIsSource() != null, FolwerAppletSku::getIsSource, bo.getIsSource());
         lqw.like(StringUtils.isNotBlank(bo.getSource()), FolwerAppletSku::getSource, bo.getSource());

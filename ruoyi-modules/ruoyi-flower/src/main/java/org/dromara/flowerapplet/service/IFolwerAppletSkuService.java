@@ -28,6 +28,14 @@ public interface IFolwerAppletSkuService {
     FolwerAppletSkuVo queryById(Long skuId);
 
     /**
+     * 查询单品SKU没有认证版
+     *
+     * @param skuId 主键
+     * @return 单品SKU
+     */
+    FolwerAppletSkuVo selsctById(Long skuId);
+
+    /**
      * 分页查询单品SKU列表
      *
      * @param bo        查询条件

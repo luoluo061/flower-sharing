@@ -31,6 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             t.inventory_early_warning_proportion,
             t.color,
             t.color_code,
+            t.color_pic,
             t.level,
             t.remarks,
             t.create_by,
@@ -69,6 +70,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="inventoryEarlyWarningProportion" column="inventory_early_warning_proportion"/>
         <result property="color" column="color"/>
         <result property="colorCode" column="color_code"/>
+        <result property="colorPic" column="color_pic"/>
+        <result property="colorPic" column="color_pic"/>
         <result property="level" column="level"/>
         <result property="remarks" column="remarks"/>
         <collection property="skuList" ofType="org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo">
@@ -78,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectByColor" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
         SELECT DISTINCT
         color,
-        color_code
+        color_pic
         FROM
         folwer_product
         WHERE del_flag = 0 AND color IS NOT NULL
@@ -109,15 +112,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
               <if test="color != null and color != ''">
                   AND    color = #{color}
               </if>
-              <if test="colorCode != null and colorCode != ''">
-                  AND    color_code = #{colorCode}
+              <if test="colorPic != null and colorPic != ''">
+                  AND    color_pic = #{colorPic}
               </if>
               <if test="level != null and level != ''">
                   AND    level = #{level}
               </if>
         GROUP BY
         color,
-        color_code;
+        color_pic;
     </select>
 
     <select id="selectByLevel" parameterType="org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo" resultType="org.dromara.flowerapplet.domain.vo.FolwerAppletProductColorVo">
@@ -153,8 +156,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="color != null and color != ''">
             AND    color = #{color}
         </if>
-        <if test="colorCode != null and colorCode != ''">
-            AND    color_code = #{colorCode}
+        <if test="colorPic != null and colorPic != ''">
+            AND    color_pic = #{colorPic}
         </if>
         <if test="level != null and level != ''">
             AND    level = #{level}
@@ -196,8 +199,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="color != null and color != ''">
             AND    color = #{color}
         </if>
-        <if test="colorCode != null and colorCode != ''">
-            AND    color_code = #{colorCode}
+        <if test="colorPic != null and colorPic != ''">
+            AND    color_pic = #{colorPic}
         </if>
         <if test="level != null and level != ''">
             AND    level = #{level}
@@ -218,7 +221,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             UNION ALL
             -- 递归查询，找出子分类
             SELECT c.id
-            FROM folwer_category c 
+            FROM folwer_category c
                      JOIN subcategories s ON c.parent_id = s.id
         )
 -- 从商品表中查询属于这些分类的商品
@@ -226,7 +229,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM folwer_product p
                  JOIN subcategories s ON p.category_id = s.id
         where del_flag = 0 and status = 1
-        ORDER BY seq DESC
+        --ORDER BY seq DESC
         LIMIT #{pageSize} OFFSET #{offset};
     </select>
 
@@ -234,7 +237,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT *
         FROM folwer_product p
         where del_flag = 0 and status = 1
-        ORDER BY seq DESC
+        --ORDER BY seq DESC
         LIMIT #{pageSize} OFFSET #{offset};
     </select>
 
