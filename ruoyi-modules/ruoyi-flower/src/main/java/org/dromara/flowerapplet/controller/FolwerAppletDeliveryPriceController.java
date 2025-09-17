@@ -33,7 +33,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/deliveryPrice")
+@RequestMapping("/flowerapplet/deliveryPrice")
 public class FolwerAppletDeliveryPriceController extends BaseController {
 
     private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;

@@ -95,25 +95,6 @@ public class FolwerOrder extends TenantEntity {
      */
     private Long status;
 
-    /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
-     */
-    private Long deliveryMode;
-
-    /**
-     * 物流公司ID
-     */
-    private Long dvyId;
-
-    /**
-     * 物流公司
-     */
-    private String dvyName;
-
-    /**
-     * 物流单号
-     */
-    private String dvyFlowId;
 
     /**
      * 订单运费
@@ -125,10 +106,10 @@ public class FolwerOrder extends TenantEntity {
      */
     private Long addrOrderId;
 
-    /**
-     * 发货时间
-     */
-    private Date dvyTime;
+//    /**
+//     * 发货时间
+//     */
+//    private Date dvyTime;
 
     /**
      * 完成时间

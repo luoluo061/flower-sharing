@@ -50,13 +50,13 @@ public class FolwerDeliverySetVo implements Serializable {
     /**
      * 保温棉开始使用月份
      */
-    @ExcelProperty(value = "保温棉开始使用月份")
+    @ExcelProperty(value = "保温棉开始使用温度")
     private Long useInsulationStarttime;
 
     /**
      * 保温棉使用结束月份
      */
-    @ExcelProperty(value = "保温棉使用结束月份")
+    @ExcelProperty(value = "保温棉温度梯度")
     private Long useInsulationEndtime;
 
     /**
@@ -69,18 +69,24 @@ public class FolwerDeliverySetVo implements Serializable {
      * 冰瓶数量/箱
      */
     @ExcelProperty(value = "冰瓶数量/箱")
-    private Long iceBottleNum;
+    private Integer iceBottleNum;
+
+    /**
+     * 冰瓶重量
+     */
+    @ExcelProperty(value = "冰瓶重量")
+    private Double iceBottleWeight;
 
     /**
      * 冰瓶开始使用月份
      */
-    @ExcelProperty(value = "冰瓶开始使用月份")
+    @ExcelProperty(value = "开始增加冰瓶的初始温度")
     private Long useIceBottleStarttime;
 
     /**
      * 冰瓶使用结束月份
      */
-    @ExcelProperty(value = "冰瓶使用结束月份")
+    @ExcelProperty(value = "冰瓶使用温度梯度")
     private Long useIceBottleEndtime;
 
 

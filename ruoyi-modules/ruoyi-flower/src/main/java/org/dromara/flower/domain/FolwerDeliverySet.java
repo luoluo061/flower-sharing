@@ -39,12 +39,12 @@ public class FolwerDeliverySet extends TenantEntity {
     private BigDecimal insulationCotton;
 
     /**
-     * 保温棉开始使用月份
+     * 保温棉开始使用温度
      */
     private Long useInsulationStarttime;
 
     /**
-     * 保温棉使用结束月份
+     * 保温棉温度梯度
      */
     private Long useInsulationEndtime;
 
@@ -59,12 +59,17 @@ public class FolwerDeliverySet extends TenantEntity {
     private Long iceBottleNum;
 
     /**
-     * 冰瓶开始使用月份
+     * 冰瓶重量
+     */
+    private Double iceBottleWeight;
+
+    /**
+     * 开始增加冰瓶的初始温度
      */
     private Long useIceBottleStarttime;
 
     /**
-     * 冰瓶使用结束月份
+     * 冰瓶使用温度梯度
      */
     private Long useIceBottleEndtime;
 

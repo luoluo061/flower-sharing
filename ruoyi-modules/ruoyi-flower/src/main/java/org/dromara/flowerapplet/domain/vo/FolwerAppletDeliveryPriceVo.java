@@ -50,6 +50,30 @@ public class FolwerAppletDeliveryPriceVo implements Serializable {
     private String province;
 
     /**
+     * 市id
+     */
+    @ExcelProperty(value = "市id")
+    private Long cityId;
+
+    /**
+     * 市
+     */
+    @ExcelProperty(value = "市")
+    private String city;
+
+    /**
+     * 县ID
+     */
+    @ExcelProperty(value = "县ID")
+    private Long countyId;
+
+    /**
+     * 县
+     */
+    @ExcelProperty(value = "县")
+    private String county;
+
+    /**
      * 计费首重
      */
     @ExcelProperty(value = "计费首重")

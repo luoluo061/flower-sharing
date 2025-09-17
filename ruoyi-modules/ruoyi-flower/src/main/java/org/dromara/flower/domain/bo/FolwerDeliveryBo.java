@@ -1,25 +1,16 @@
 package org.dromara.flower.domain.bo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
-import org.apache.poi.hpsf.Decimal;
 import org.dromara.flower.domain.FolwerDelivery;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
-import org.dromara.common.core.validate.AddGroup;
-import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 物流公司业务对象 folwer_delivery
  *
  * @author mlhxj
- * @date 2024-12-26
+ * @date 2025-09-02
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -29,7 +20,6 @@ public class FolwerDeliveryBo extends BaseEntity {
     /**
      * ID
      */
-    @NotNull(message = "ID不能为空", groups = { EditGroup.class })
     private Long dvyId;
 
     /**
@@ -38,14 +28,19 @@ public class FolwerDeliveryBo extends BaseEntity {
     private String dvyName;
 
     /**
-     * 配送方式 配送方式 1:冷链,  2:空运
+     * 配送方式  1:普通 2:冷链,  3:空运
      */
     private Long dvyType;
 
     /**
-     * 快递代码
+     * 付款类型(1:到付, 2:预付)
      */
-    private String dvyCode;
+    private Long isCod;
+
+    /**
+     * 备注
+     */
+    private String reamrk;
 
     /**
      * 排序
@@ -53,34 +48,9 @@ public class FolwerDeliveryBo extends BaseEntity {
     private Long seq;
 
     /**
-     * 打包费
-     */
-    private BigDecimal packagePrice;
-
-    /**
-     * 物料费
-     */
-    private BigDecimal materialPrice;
-
-    /**
-     * 人工费
-     */
-    private BigDecimal laborPrice;
-
-    /**
      * 发货地址
      */
     private String dvyAddr;
-
-    /**
-     * 开始时间
-     */
-    private String startTime;
-
-    /**
-     * 结束时间
-     */
-    private String endTime;
 
 
 }

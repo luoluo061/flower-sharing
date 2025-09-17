@@ -154,13 +154,9 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
         lqw.eq(bo.getPayTime() != null, FolwerOrder::getPayTime, bo.getPayTime());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerOrder::getRemarks, bo.getRemarks());
         lqw.eq(bo.getStatus() != null, FolwerOrder::getStatus, bo.getStatus());
-        lqw.eq(bo.getDeliveryMode() != null, FolwerOrder::getDeliveryMode, bo.getDeliveryMode());
-        lqw.eq(bo.getDvyId() != null, FolwerOrder::getDvyId, bo.getDvyId());
-        lqw.like(StringUtils.isNotBlank(bo.getDvyName()), FolwerOrder::getDvyName, bo.getDvyName());
-        lqw.eq(StringUtils.isNotBlank(bo.getDvyFlowId()), FolwerOrder::getDvyFlowId, bo.getDvyFlowId());
         lqw.eq(bo.getFreightAmount() != null, FolwerOrder::getFreightAmount, bo.getFreightAmount());
         lqw.eq(bo.getAddrOrderId() != null, FolwerOrder::getAddrOrderId, bo.getAddrOrderId());
-        lqw.eq(bo.getDvyTime() != null, FolwerOrder::getDvyTime, bo.getDvyTime());
+//        lqw.eq(bo.getDvyTime() != null, FolwerOrder::getDvyTime, bo.getDvyTime());
         lqw.eq(bo.getFinallyTime() != null, FolwerOrder::getFinallyTime, bo.getFinallyTime());
         lqw.eq(bo.getCancelTime() != null, FolwerOrder::getCancelTime, bo.getCancelTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCancelMsg()), FolwerOrder::getCancelMsg, bo.getCancelMsg());

@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.flower.domain.FolwerCategory;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerDeliveryBo;
 import org.dromara.flower.domain.vo.FolwerDeliveryVo;
@@ -24,7 +23,7 @@ import java.util.Collection;
  * 物流公司Service业务层处理
  *
  * @author mlhxj
- * @date 2024-12-26
+ * @date 2025-09-02
  */
 @RequiredArgsConstructor
 @Service
@@ -40,9 +39,6 @@ public class FolwerDeliveryServiceImpl implements IFolwerDeliveryService {
      */
     @Override
     public FolwerDeliveryVo queryById(Long dvyId){
-        if (dvyId == null || dvyId <= 0L){
-            return null;
-        }
         return baseMapper.selectVoById(dvyId);
     }
 
@@ -77,12 +73,10 @@ public class FolwerDeliveryServiceImpl implements IFolwerDeliveryService {
         LambdaQueryWrapper<FolwerDelivery> lqw = Wrappers.lambdaQuery();
         lqw.like(StringUtils.isNotBlank(bo.getDvyName()), FolwerDelivery::getDvyName, bo.getDvyName());
         lqw.eq(bo.getDvyType() != null, FolwerDelivery::getDvyType, bo.getDvyType());
-        lqw.eq(StringUtils.isNotBlank(bo.getDvyCode()), FolwerDelivery::getDvyCode, bo.getDvyCode());
+        lqw.eq(bo.getIsCod() != null, FolwerDelivery::getIsCod, bo.getIsCod());
+        lqw.eq(StringUtils.isNotBlank(bo.getReamrk()), FolwerDelivery::getReamrk, bo.getReamrk());
         lqw.eq(bo.getSeq() != null, FolwerDelivery::getSeq, bo.getSeq());
-        lqw.eq(bo.getPackagePrice() != null, FolwerDelivery::getPackagePrice, bo.getPackagePrice());
-        lqw.eq(bo.getMaterialPrice() != null, FolwerDelivery::getMaterialPrice, bo.getMaterialPrice());
-        lqw.eq(bo.getLaborPrice() != null, FolwerDelivery::getLaborPrice, bo.getLaborPrice());
-        lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerDelivery::getCreateTime, bo.getStartTime(), bo.getEndTime());
+        lqw.eq(StringUtils.isNotBlank(bo.getDvyAddr()), FolwerDelivery::getDvyAddr, bo.getDvyAddr());
         return lqw;
     }
 

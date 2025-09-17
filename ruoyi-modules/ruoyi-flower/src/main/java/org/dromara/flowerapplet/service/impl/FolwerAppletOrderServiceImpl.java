@@ -36,9 +36,7 @@ import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.*;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
-import org.dromara.flowerapplet.domain.bo.OrderParamBo;
+import org.dromara.flowerapplet.domain.bo.*;
 import org.dromara.flowerapplet.domain.vo.*;
 import org.dromara.flowerapplet.service.*;
 import org.dromara.flowerapplet.util.Arith;
@@ -49,7 +47,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
 import org.dromara.flowerapplet.domain.FolwerAppletOrder;
 import org.dromara.flowerapplet.mapper.FolwerAppletOrderMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,7 +109,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private final IFolwerAppletProductService folwerAppletProductService;
 
-    private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;
+    private final IFolwerAppletOrderDvyService folwerAppletOrderDvyService;
+
+//    private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;
 
     @Resource
     private Snowflake snowflake;
@@ -203,13 +202,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         lqw.eq(bo.getPayTime() != null, FolwerAppletOrder::getPayTime, bo.getPayTime());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), FolwerAppletOrder::getRemarks, bo.getRemarks());
         lqw.eq(bo.getStatus() != null, FolwerAppletOrder::getStatus, bo.getStatus());
-        lqw.eq(bo.getDeliveryMode() != null, FolwerAppletOrder::getDeliveryMode, bo.getDeliveryMode());
-        lqw.eq(bo.getDvyId() != null, FolwerAppletOrder::getDvyId, bo.getDvyId());
-        lqw.like(StringUtils.isNotBlank(bo.getDvyName()), FolwerAppletOrder::getDvyName, bo.getDvyName());
-        lqw.eq(StringUtils.isNotBlank(bo.getDvyFlowId()), FolwerAppletOrder::getDvyFlowId, bo.getDvyFlowId());
         lqw.eq(bo.getFreightAmount() != null, FolwerAppletOrder::getFreightAmount, bo.getFreightAmount());
         lqw.eq(bo.getAddrOrderId() != null, FolwerAppletOrder::getAddrOrderId, bo.getAddrOrderId());
-        lqw.eq(bo.getDvyTime() != null, FolwerAppletOrder::getDvyTime, bo.getDvyTime());
+//        lqw.eq(bo.getDvyTime() != null, FolwerAppletOrder::getDvyTime, bo.getDvyTime());
         lqw.eq(bo.getFinallyTime() != null, FolwerAppletOrder::getFinallyTime, bo.getFinallyTime());
         lqw.eq(bo.getCancelTime() != null, FolwerAppletOrder::getCancelTime, bo.getCancelTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCancelMsg()), FolwerAppletOrder::getCancelMsg, bo.getCancelMsg());
@@ -262,8 +257,6 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             folwerAppletOrderDetailBo.setOrderPrice(folwerAppletSkuVo.getPrice());
             folwerAppletOrderDetailBo.setProductListPictureUrl(folwerAppletSkuVo.getSkuPicid());
 
-            transfee = folwerAppletDeliveryPriceService.calculateFreight(Long.valueOf(bo.getDvyId()), Long.valueOf(bo.getUserId()), bo.getBasketIds(), Long.valueOf(bo.getSkuId()), bo.getProdCount(), bo.getInsulationNum());   //从计算中获取运费
-
             folwerAppletOrderDetailBo.setProductId(folwerAppletProductVo.getId());
             folwerAppletOrderDetailBo.setProductName(folwerAppletProductVo.getProductName());
 
@@ -312,8 +305,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
                 folwerAppletOrderDetailBos.add(folwerAppletOrderDetailBo);
             }
+//            if (bo.getDvyId() != null) {
+//                transfee = folwerAppletDeliveryPriceService.calculateFreight(Long.valueOf(bo.getDvyId()), Long.valueOf(bo.getUserId()), bo.getBasketIds(), Long.valueOf(bo.getSkuId()), bo.getProdCount(), bo.getInsulationNum());   //从计算中获取运费
+//            }
 
-            transfee = folwerAppletDeliveryPriceService.calculateFreight(Long.valueOf(bo.getDvyId()), Long.valueOf(bo.getUserId()), bo.getBasketIds(), Long.valueOf(bo.getSkuId()), bo.getProdCount(), bo.getInsulationNum());   //从计算中获取运费
 
         }
 
@@ -330,17 +325,10 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         orderBo.setRemarks(bo.getRemarks());
         orderBo.setStatus(0L);
 
-        orderBo.setDvyId(bo.getDvyId());
-        if (bo.getDvyId() == null || bo.getDvyId().equals("")){
-            orderBo.setDvyName(null);
-        }else {
-            orderBo.setDvyName(deliveryService.queryById(Long.valueOf(bo.getDvyId())).getDvyName());
-        }
-
-        orderBo.setFreightAmount(transfee);
+//        orderBo.setFreightAmount(transfee);
         orderBo.setAddrOrderId(bo.getAddrId());
 
-        orderBo.setActualTotal(total.add(transfee));
+//        orderBo.setActualTotal(total.add(transfee));
 
         FolwerAppletOrder add = MapstructUtils.convert(orderBo, FolwerAppletOrder.class);
         validEntityBeforeSave(add);
@@ -352,6 +340,31 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 //商品详情插入
                 Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
             }
+
+            if (bo.getDvyId() != null) {
+                FolwerAppletOrderDvyBo folwerAppletOrderDvyBo = new FolwerAppletOrderDvyBo();
+                folwerAppletOrderDvyBo.setOrderId(add.getOrderId());
+                folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
+                folwerAppletOrderDvyBo.setInsulationNum(Long.valueOf(bo.getInsulationNum()));
+                folwerAppletOrderDvyBo.setBasketIds(bo.getBasketIds());
+                folwerAppletOrderDvyBo.setSkuId(bo.getSkuId());
+                folwerAppletOrderDvyBo.setProdCount(bo.getProdCount());
+                folwerAppletOrderDvyBo.setUserId(bo.getUserId());
+                //从计算中获取运费
+                FolwerAppletOrderDvyVo folwerAppletOrderDvyVo = folwerAppletOrderDvyService.insertByBo(folwerAppletOrderDvyBo);
+                if (folwerAppletOrderDvyVo != null){
+                    transfee = folwerAppletOrderDvyVo.getPackingAmount();
+                }else {
+                    transfee = new BigDecimal(0);
+                }
+                FolwerAppletOrderVo folwerAppletOrderVo = queryById(add.getOrderId());
+                FolwerAppletOrder folwerAppletOrder = new FolwerAppletOrder();
+                BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrder);
+                folwerAppletOrder.setFreightAmount(transfee);
+                folwerAppletOrder.setActualTotal(total.add(transfee));
+                int i = baseMapper.updateById(folwerAppletOrder);
+            }
+
             //放入缓存
             FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
             RedisUtils.setCacheObject(CONFIRM_ORDER_CACHE_KEY + add.getOrderId(), folwerAppletOrderVo.getOrderId(), Duration.ofMinutes(15));
@@ -366,12 +379,22 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             return R.fail("订单ID不能为空");
         }
         FolwerAppletOrderVo folwerAppletOrderVo = baseMapper.selectVoById(Long.valueOf(bo.getOrderId()));
-        BigDecimal transfee = folwerAppletDeliveryPriceService.calculateFreight(Long.valueOf(bo.getDvyId()), Long.valueOf(bo.getUserId()), bo.getBasketIds(), Long.valueOf(bo.getSkuId()), bo.getProdCount(), bo.getInsulationNum());   //从计算中获取运费
+//        FolwerAppletOrderDvyBo folwerAppletOrderDvyBo = new FolwerAppletOrderDvyBo();
+//        folwerAppletOrderDvyBo.setOrderId(folwerAppletOrderVo.getOrderId());
+//        folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
+//        folwerAppletOrderDvyBo.setInsulationNum(Long.valueOf(bo.getInsulationNum()));
+//        folwerAppletOrderDvyBo.setBasketIds(bo.getBasketIds());
+//        folwerAppletOrderDvyBo.setSkuId(bo.getSkuId());
+//        folwerAppletOrderDvyBo.setProdCount(bo.getProdCount());
+//        BigDecimal transfee = folwerAppletOrderDvyService.insertByBo(folwerAppletOrderDvyBo).getPackingAmount();   //从计算中获取运费
+//
+//        BigDecimal transfeeOld = folwerAppletOrderVo.getFreightAmount();
+//        BigDecimal total = folwerAppletOrderVo.getTotal().subtract(transfeeOld);
+
         FolwerAppletOrder update = BeanUtil.copyProperties(folwerAppletOrderVo, FolwerAppletOrder.class);
-        update.setDvyId(Long.valueOf(bo.getDvyId()));
-        update.setDvyName(deliveryService.queryById(Long.valueOf(bo.getDvyId())).getDvyName());
-        Long trans = transfee.longValue();
-        update.setFreightAmount(trans);
+//        Long trans = transfee.longValue();
+//        update.setFreightAmount(transfee);
+//        update.setActualTotal(total.add(transfee));
         validEntityBeforeSave(update);
         boolean b = baseMapper.updateById(update) > 0;
         if(b){

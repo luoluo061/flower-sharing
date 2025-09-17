@@ -1,14 +1,9 @@
 package org.dromara.flower.domain;
 
-import org.apache.poi.hpsf.Decimal;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
 
@@ -16,7 +11,7 @@ import java.io.Serial;
  * 物流公司对象 folwer_delivery
  *
  * @author mlhxj
- * @date 2024-12-26
+ * @date 2025-09-02
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -38,34 +33,24 @@ public class FolwerDelivery extends TenantEntity {
     private String dvyName;
 
     /**
-     * 配送方式 1:冷链,  2:空运
+     * 配送方式  1:普通 2:冷链,  3:空运 
      */
     private Long dvyType;
 
     /**
-     * 快递代码
+     * 付款类型(1:到付, 2:预付)
      */
-    private String dvyCode;
+    private Long isCod;
+
+    /**
+     * 备注
+     */
+    private String reamrk;
 
     /**
      * 排序
      */
     private Long seq;
-
-    /**
-     * 打包费
-     */
-    private BigDecimal packagePrice;
-
-    /**
-     * 物料费
-     */
-    private BigDecimal materialPrice;
-
-    /**
-     * 人工费
-     */
-    private BigDecimal laborPrice;
 
     /**
      * 发货地址

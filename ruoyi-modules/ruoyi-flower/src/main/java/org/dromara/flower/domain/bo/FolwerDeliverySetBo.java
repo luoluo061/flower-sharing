@@ -1,5 +1,6 @@
 package org.dromara.flower.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flower.domain.FolwerDeliverySet;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -35,12 +36,12 @@ public class FolwerDeliverySetBo extends BaseEntity {
     private BigDecimal insulationCotton;
 
     /**
-     * 保温棉开始使用月份
+     * 保温棉开始使用温度
      */
     private Long useInsulationStarttime;
 
     /**
-     * 保温棉结束使用月份
+     * 保温棉温度梯度
      */
     private Long useInsulationEndtime;
 
@@ -55,12 +56,17 @@ public class FolwerDeliverySetBo extends BaseEntity {
     private Long iceBottleNum;
 
     /**
-     * 冰瓶使用月份
+     * 冰瓶重量
+     */
+    private Double iceBottleWeight;
+
+    /**
+     * 开始增加冰瓶的初始温度
      */
     private Long useIceBottleStarttime;
 
     /**
-     * 冰瓶使用月份
+     * 冰瓶使用温度梯度
      */
     private Long useIceBottleEndtime;
 
