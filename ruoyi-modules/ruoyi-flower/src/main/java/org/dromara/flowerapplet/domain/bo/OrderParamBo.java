@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Data
 @Schema(description = "订单参数")
-public class OrderParamBo {
+public class  OrderParamBo {
     @Schema(description = "订单ID" )
     private String orderId;
 
@@ -48,6 +48,24 @@ public class OrderParamBo {
 
     @Schema(description = "保温棉圈数" ,required=true)
     private Integer insulationNum;
+
+//    @Schema(description = "省份ID" ,required=true)
+//    private Long provinceId;
+//
+//    @Schema(description = "省份" ,required=true)
+//    private String province;
+//
+//    @Schema(description = "市id" ,required=true)
+//    private Long cityId;
+//
+//    @Schema(description = "市" ,required=true)
+//    private String city;
+//
+//    @Schema(description = "县ID" ,required=true)
+//    private Long countyId;
+//
+//    @Schema(description = "县" ,required=true)
+//    private String county;
 
 //	@Schema(description = "用户是否改变了优惠券的选择，如果用户改变了优惠券的选择，则完全根据传入参数进行优惠券的选择 -1:不参与优惠，0:满减，1：花券" )
 //	private Integer userChangeCoupon;

@@ -11,14 +11,18 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.flower.domain.FolwerProduct;
 import org.dromara.flower.domain.FolwerProductComm;
+import org.dromara.flower.domain.bo.FolwerDeliverySetBo;
 import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.domain.vo.FolwerProductVo;
+import org.dromara.flower.service.IFolwerDeliverySetService;
 import org.dromara.flower.service.IFolwerProductService;
 import org.dromara.flowerapplet.domain.FolwerAppletProduct;
 import org.dromara.flowerapplet.domain.FolwerAppletSku;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
+import org.dromara.system.domain.vo.SysDictDataVo;
+import org.dromara.system.service.ISysDictTypeService;
 import org.dromara.system.service.ISysOssService;
 import org.dromara.system.service.impl.SysOssServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +55,13 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
 
     private final ISysOssService sysOssService;
 
-    private final IFolwerAppletProductService folwerProductService;
+    private final IFolwerAppletProductService folwerAppletProductService;
+
+//    private final IFolwerProductService folwerProductService;
+
+    private final IFolwerDeliverySetService folwerDeliverySetService;
+
+    private final ISysDictTypeService dictTypeService;
 
 //    private final IFolwerAppletProductService folwerAppletProductService;
 
@@ -228,14 +238,43 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
                     maxStocks =+ folwerSkuVo.getActualStocks();
                 }
             }
-            FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(add.getProdId());
+            FolwerAppletProductVo folwerProductVo = folwerAppletProductService.queryById(add.getProdId());
             FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
             folwerProductBo.setOriPrice(maxPrace);
             folwerProductBo.setDerlinePrice(minPrace);
             folwerProductBo.setTotalStocks(maxStocks);
-            folwerProductService.updateByBo(folwerProductBo);
+            folwerAppletProductService.updateByBo(folwerProductBo);
+
+//            FolwerDeliverySetBo folwerDeliverySetBo = new FolwerDeliverySetBo();
+//            folwerDeliverySetBo.setProdId(add.getProdId());
+//            folwerDeliverySetBo.setSkuId(add.getSkuId());
+//            List<SysDictDataVo> sysDictDataVos = dictTypeService.selectDictDataByType("folwer_delivery_set");
+//            SysDictDataVo dataVo = getDictData(sysDictDataVos, "冰瓶每个费用");
+//            folwerDeliverySetBo.setIceBottle(new BigDecimal(dataVo.getDictLabel()));
+//            SysDictDataVo dataVo1 = getDictData(sysDictDataVos, "冰瓶每箱数量");
+//            folwerDeliverySetBo.setIceBottleNum(Long.valueOf(dataVo1.getDictLabel()));
+//            SysDictDataVo dataVo2 = getDictData(sysDictDataVos, "冰瓶重量");
+//            folwerDeliverySetBo.setIceBottleWeight(Double.valueOf(dataVo2.getDictLabel()));
+//            SysDictDataVo dataVo3 = getDictData(sysDictDataVos, "保温棉费用");
+//            folwerDeliverySetBo.setInsulationCotton(new BigDecimal(dataVo3.getDictLabel()));
+//            SysDictDataVo dataVo4 = getDictData(sysDictDataVos, "保温棉开始使用温度");
+//            folwerDeliverySetBo.setUseInsulationStarttime(Long.valueOf(dataVo4.getDictLabel()));
+//            SysDictDataVo dataVo5 = getDictData(sysDictDataVos, "保温棉温度梯度");
+//            folwerDeliverySetBo.setUseInsulationEndtime(Long.valueOf(dataVo5.getDictLabel()));
+//            SysDictDataVo dataVo6 = getDictData(sysDictDataVos, "人工费");
+//            folwerDeliverySetBo.setLaborPrice(new BigDecimal(dataVo6.getDictLabel()));
+//
+//            Boolean b = folwerDeliverySetService.insertByBo(folwerDeliverySetBo);
         }
         return flag;
+    }
+
+    private SysDictDataVo getDictData(List<SysDictDataVo> sysDictDataVos, String dictValue) {
+        SysDictDataVo dataVo = sysDictDataVos.stream()
+            .filter(sysDictDataVo -> sysDictDataVo.getDictValue() == dictValue)
+            .findFirst()
+            .orElse(null);
+        return dataVo;
     }
 
     @Override
@@ -279,12 +318,12 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
                         maxStocks =+ folwerSkuVo.getActualStocks();
                     }
                 }
-                FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(update.getProdId());
+                FolwerAppletProductVo folwerProductVo = folwerAppletProductService.queryById(update.getProdId());
                 FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
                 folwerProductBo.setOriPrice(maxPrace);
                 folwerProductBo.setDerlinePrice(minPrace);
                 folwerProductBo.setTotalStocks(maxStocks);
-                folwerProductService.updateByBo(folwerProductBo);
+                folwerAppletProductService.updateByBo(folwerProductBo);
             }
         }
 

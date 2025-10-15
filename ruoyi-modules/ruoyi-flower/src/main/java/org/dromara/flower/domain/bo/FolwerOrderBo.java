@@ -9,6 +9,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -67,7 +69,7 @@ public class FolwerOrderBo extends BaseEntity {
     /**
      * 实际金额
      */
-    private Long actualTotal;
+    private BigDecimal actualTotal;
 
     /**
      * 支付方式 0 手动代付 1 微信支付 2 支付宝
@@ -95,40 +97,19 @@ public class FolwerOrderBo extends BaseEntity {
     private Long status;
 
     /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
-     */
-    private Long deliveryMode;
-
-    /**
-     * 物流公司ID
-     */
-    private Long dvyId;
-
-    /**
-     * 物流公司
-     */
-//    @NotBlank(message = "物流公司不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String dvyName;
-
-    /**
-     * 物流单号
-     */
-    private String dvyFlowId;
-
-    /**
      * 订单运费
      */
-    private Long freightAmount;
+    private BigDecimal freightAmount;
 
     /**
      * 用户订单地址Id
      */
     private Long addrOrderId;
 
-    /**
-     * 发货时间
-     */
-    private Date dvyTime;
+//    /**
+//     * 发货时间
+//     */
+//    private Date dvyTime;
 
     /**
      * 完成时间

@@ -71,14 +71,17 @@ public class FolwerDeliverySetServiceImpl implements IFolwerDeliverySetService {
     private LambdaQueryWrapper<FolwerDeliverySet> buildQueryWrapper(FolwerDeliverySetBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FolwerDeliverySet> lqw = Wrappers.lambdaQuery();
+        lqw.eq((bo.getProdId() != null), FolwerDeliverySet::getProdId, bo.getProdId());
+        lqw.eq(bo.getSkuId() != null, FolwerDeliverySet::getSkuId, bo.getSkuId());
+        lqw.eq(bo.getStatus() != null, FolwerDeliverySet::getStatus, bo.getStatus());
         lqw.eq(bo.getLaborPrice() != null, FolwerDeliverySet::getLaborPrice, bo.getLaborPrice());
-        lqw.eq(bo.getInsulationCotton() != null, FolwerDeliverySet::getInsulationCotton, bo.getInsulationCotton());
-        lqw.eq(bo.getUseInsulationStarttime() != null, FolwerDeliverySet::getUseInsulationStarttime, bo.getUseInsulationStarttime());
-        lqw.eq(bo.getUseInsulationEndtime() != null, FolwerDeliverySet::getUseInsulationEndtime, bo.getUseInsulationEndtime());
-        lqw.eq(bo.getIceBottle() != null, FolwerDeliverySet::getIceBottle, bo.getIceBottle());
+//        lqw.eq(bo.getInsulationCotton() != null, FolwerDeliverySet::getInsulationCotton, bo.getInsulationCotton());
+//        lqw.eq(bo.getUseInsulationStarttime() != null, FolwerDeliverySet::getUseInsulationStarttime, bo.getUseInsulationStarttime());
+//        lqw.eq(bo.getUseInsulationEndtime() != null, FolwerDeliverySet::getUseInsulationEndtime, bo.getUseInsulationEndtime());
+//        lqw.eq(bo.getIceBottle() != null, FolwerDeliverySet::getIceBottle, bo.getIceBottle());
         lqw.eq(bo.getIceBottleNum() != null, FolwerDeliverySet::getIceBottleNum, bo.getIceBottleNum());
-        lqw.eq(bo.getUseIceBottleStarttime() != null, FolwerDeliverySet::getUseIceBottleStarttime, bo.getUseIceBottleStarttime());
-        lqw.eq(bo.getUseIceBottleEndtime() != null, FolwerDeliverySet::getUseIceBottleEndtime, bo.getUseIceBottleEndtime());
+//        lqw.eq(bo.getUseIceBottleStarttime() != null, FolwerDeliverySet::getUseIceBottleStarttime, bo.getUseIceBottleStarttime());
+//        lqw.eq(bo.getUseIceBottleEndtime() != null, FolwerDeliverySet::getUseIceBottleEndtime, bo.getUseIceBottleEndtime());
         return lqw;
     }
 

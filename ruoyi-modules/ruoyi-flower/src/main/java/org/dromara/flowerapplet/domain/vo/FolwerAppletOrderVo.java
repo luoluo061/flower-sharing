@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
@@ -66,7 +67,7 @@ public class FolwerAppletOrderVo extends BaseEntity implements Serializable {
      * 商品总价
      */
     @ExcelProperty(value = "商品总价")
-    private Long total;
+    private BigDecimal total;
 
     /**
      * 商品总数量
@@ -131,34 +132,10 @@ public class FolwerAppletOrderVo extends BaseEntity implements Serializable {
     private Long isProfitSharing;
 
     /**
-     * 配送方式 默认是1，表示物流配送, 0，商家配送
-     */
-    @ExcelProperty(value = "配送方式 默认是1,商家配送， 2，表示物流配送")
-    private Long deliveryMode;
-
-    /**
-     * 物流公司ID
-     */
-    @ExcelProperty(value = "物流公司ID")
-    private Long dvyId;
-
-    /**
-     * 物流公司
-     */
-    @ExcelProperty(value = "物流公司")
-    private String dvyName;
-
-    /**
-     * 物流单号
-     */
-    @ExcelProperty(value = "物流单号")
-    private String dvyFlowId;
-
-    /**
      * 订单运费
      */
     @ExcelProperty(value = "订单运费")
-    private Long freightAmount;
+    private BigDecimal freightAmount;
 
     /**
      * 用户订单地址Id
@@ -166,11 +143,11 @@ public class FolwerAppletOrderVo extends BaseEntity implements Serializable {
     @ExcelProperty(value = "用户订单地址Id")
     private Long addrOrderId;
 
-    /**
-     * 发货时间
-     */
-    @ExcelProperty(value = "发货时间")
-    private Date dvyTime;
+//    /**
+//     * 发货时间
+//     */
+//    @ExcelProperty(value = "发货时间")
+//    private Date dvyTime;
 
     /**
      * 完成时间

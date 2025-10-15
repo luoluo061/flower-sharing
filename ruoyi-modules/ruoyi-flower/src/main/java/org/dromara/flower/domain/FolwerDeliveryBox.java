@@ -1,11 +1,13 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 物流箱型对象 folwer_delivery_box
@@ -53,6 +55,11 @@ public class FolwerDeliveryBox extends TenantEntity {
     private Long volume;
 
     /**
+     * 箱子重量
+     */
+    private Double boxWeight;
+
+    /**
      * 成本价
      */
     private Long costPrice;
@@ -61,6 +68,26 @@ public class FolwerDeliveryBox extends TenantEntity {
      * 每箱装载重量
      */
     private Double packagPrice;
+
+    /**
+     * 每箱最大扎数
+     */
+    private Long bundle;
+
+    /**
+     * 冰瓶/扎
+     */
+    private Double iceBunch;
+
+    /**
+     * 冰瓶费用
+     */
+    private BigDecimal iceBottleCost;
+
+    /**
+     * 冰瓶重量
+     */
+    private Double iceBottleWeight;
 
     /**
      * 是否启用 1：启用 0：禁用
@@ -72,6 +99,21 @@ public class FolwerDeliveryBox extends TenantEntity {
      */
     @TableLogic
     private Long delFlag;
+
+    /**
+     * 保温棉费用
+     */
+    private BigDecimal insulationCotton;
+
+    /**
+     * 保温棉开始使用月份
+     */
+    private Long useInsulationStarttime;
+
+    /**
+     * 保温棉使用结束月份
+     */
+    private Long useInsulationEndtime;
 
 
 }

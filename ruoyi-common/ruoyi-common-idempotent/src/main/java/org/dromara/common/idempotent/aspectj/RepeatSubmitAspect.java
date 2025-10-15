@@ -43,8 +43,8 @@ public class RepeatSubmitAspect {
         // 如果注解不为0 则使用注解数值
         long interval = repeatSubmit.timeUnit().toMillis(repeatSubmit.interval());
 
-        if (interval < 1000) {
-            throw new ServiceException("重复提交间隔时间不能小于'1'秒");
+        if (interval < 300) {
+            throw new ServiceException("重复提交间隔时间不能小于'0.5'秒");
         }
         HttpServletRequest request = ServletUtils.getRequest();
         String nowParams = argsArrayToString(point.getArgs());

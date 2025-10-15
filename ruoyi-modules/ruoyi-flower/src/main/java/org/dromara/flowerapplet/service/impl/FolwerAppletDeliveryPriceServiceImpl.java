@@ -101,7 +101,12 @@ public class FolwerAppletDeliveryPriceServiceImpl implements IFolwerAppletDelive
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FolwerAppletDeliveryPrice> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getDvyId() != null, FolwerAppletDeliveryPrice::getDvyId, bo.getDvyId());
+        lqw.eq(bo.getProvinceId() != null, FolwerAppletDeliveryPrice::getProvinceId, bo.getProvinceId());
         lqw.eq(StringUtils.isNotBlank(bo.getProvince()), FolwerAppletDeliveryPrice::getProvince, bo.getProvince());
+        lqw.eq(bo.getCityId() != null, FolwerAppletDeliveryPrice::getCityId, bo.getCityId());
+        lqw.eq(StringUtils.isNotBlank(bo.getCity()), FolwerAppletDeliveryPrice::getCity, bo.getCity());
+        lqw.eq(bo.getCountyId() != null, FolwerAppletDeliveryPrice::getCountyId, bo.getCountyId());
+        lqw.eq(StringUtils.isNotBlank(bo.getCounty()), FolwerAppletDeliveryPrice::getCounty, bo.getCounty());
         lqw.eq(bo.getFirstWeight() != null, FolwerAppletDeliveryPrice::getFirstWeight, bo.getFirstWeight());
         lqw.eq(bo.getAdditionalWeight() != null, FolwerAppletDeliveryPrice::getAdditionalWeight, bo.getAdditionalWeight());
         lqw.eq(bo.getFirstWeightPrice() != null, FolwerAppletDeliveryPrice::getFirstWeightPrice, bo.getFirstWeightPrice());
@@ -224,14 +229,15 @@ public class FolwerAppletDeliveryPriceServiceImpl implements IFolwerAppletDelive
         BigDecimal insulationPrace = new BigDecimal(0);
         BigDecimal iceBottlePrace = new BigDecimal(0);
 
-        if (folwerDeliverySetVo.getUseInsulationStarttime() >= LocalDate.now().getMonthValue() || LocalDate.now().getMonthValue() >= folwerDeliverySetVo.getUseInsulationEndtime()){
-            insulationPrace = folwerDeliverySetVo.getInsulationCotton().multiply(new BigDecimal(insulationNum));
-        }
+        insulationPrace = deliveryBoxVo.getInsulationCotton().multiply(new BigDecimal(insulationNum));
 
-        if (folwerDeliverySetVo.getUseIceBottleStarttime() <= LocalDate.now().getMonthValue() || folwerDeliverySetVo.getUseInsulationStarttime() <= folwerDeliverySetVo.getUseIceBottleEndtime()){
-            long IceBottleTotalNum = Math.multiplyExact(boxNum, folwerDeliverySetVo.getIceBottleNum());
-            iceBottlePrace = folwerDeliverySetVo.getIceBottle().multiply(new BigDecimal(IceBottleTotalNum));
-        }
+//        if(folwerDeliverySetVo.getUseIceBottleStarttime() == 0L && folwerDeliverySetVo.getUseIceBottleEndtime() == 0L){
+//            iceBottlePrace = new BigDecimal(0);
+//        }
+//        if (folwerDeliverySetVo.getUseIceBottleStarttime() <= LocalDate.now().getMonthValue() && folwerDeliverySetVo.getUseInsulationStarttime() <= folwerDeliverySetVo.getUseIceBottleEndtime()){
+//            long IceBottleTotalNum = Math.multiplyExact(boxNum, folwerDeliverySetVo.getIceBottleNum());
+//            iceBottlePrace = folwerDeliverySetVo.getIceBottle().multiply(new BigDecimal(IceBottleTotalNum));
+//        }
 
         // 调用累加方法
         materialPrace = insulationPrace.add(iceBottlePrace);

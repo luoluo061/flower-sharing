@@ -36,52 +36,82 @@ public class FolwerDeliverySetVo implements Serializable {
     private Long deliverySetId;
 
     /**
+     * 商品ID
+     */
+    @ExcelProperty(value = "商品ID")
+    private Long prodId;
+
+    /**
+     * 规格ID
+     */
+    @ExcelProperty(value = "规格ID")
+    private Long skuId;
+
+    /**
+     * 是否使用 0否 1是
+     */
+    @ExcelProperty(value = "是否使用 0否 1是")
+    private Long status;
+
+    /**
      * 人工费
      */
     @ExcelProperty(value = "人工费")
     private BigDecimal laborPrice;
 
     /**
-     * 保温棉费用
+     * 二次人工费
      */
-    @ExcelProperty(value = "保温棉费用")
-    private BigDecimal insulationCotton;
+    @ExcelProperty(value = "二次人工费")
+    private BigDecimal secondLaborPrice;
+
+//    /**
+//     * 保温棉费用
+//     */
+//    @ExcelProperty(value = "保温棉费用")
+//    private BigDecimal insulationCotton;
+//
+//    /**
+//     * 保温棉开始使用温度
+//     */
+//    @ExcelProperty(value = "保温棉开始使用温度")
+//    private Long useInsulationStarttime;
+//
+//    /**
+//     * 保温棉温度梯度
+//     */
+//    @ExcelProperty(value = "保温棉温度梯度")
+//    private Long useInsulationEndtime;
+
+//    /**
+//     * 冰瓶费用
+//     */
+//    @ExcelProperty(value = "冰瓶费用")
+//    private BigDecimal iceBottle;
 
     /**
-     * 保温棉开始使用月份
-     */
-    @ExcelProperty(value = "保温棉开始使用月份")
-    private Long useInsulationStarttime;
-
-    /**
-     * 保温棉使用结束月份
-     */
-    @ExcelProperty(value = "保温棉使用结束月份")
-    private Long useInsulationEndtime;
-
-    /**
-     * 冰瓶费用
-     */
-    @ExcelProperty(value = "冰瓶费用")
-    private BigDecimal iceBottle;
-
-    /**
-     * 冰瓶数量/箱
+     * 冰瓶数量/扎
      */
     @ExcelProperty(value = "冰瓶数量/箱")
-    private Long iceBottleNum;
+    private Double iceBottleNum;
 
-    /**
-     * 冰瓶开始使用月份
-     */
-    @ExcelProperty(value = "冰瓶开始使用月份")
-    private Long useIceBottleStarttime;
-
-    /**
-     * 冰瓶使用结束月份
-     */
-    @ExcelProperty(value = "冰瓶使用结束月份")
-    private Long useIceBottleEndtime;
+//    /**
+//     * 冰瓶重量
+//     */
+//    @ExcelProperty(value = "冰瓶重量")
+//    private Double iceBottleWeight;
+//
+//    /**
+//     * 冰瓶开始使用月份
+//     */
+//    @ExcelProperty(value = "开始增加冰瓶的初始温度")
+//    private Long useIceBottleStarttime;
+//
+//    /**
+//     * 冰瓶使用结束月份
+//     */
+//    @ExcelProperty(value = "冰瓶使用温度梯度")
+//    private Long useIceBottleEndtime;
 
 
 }

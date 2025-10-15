@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -42,6 +43,26 @@ public class FolwerAppletDeliveryPrice extends TenantEntity {
      * 省份
      */
     private String province;
+
+    /**
+     * 市id
+     */
+    private Long cityId;
+
+    /**
+     * 市
+     */
+    private String city;
+
+    /**
+     * 县ID
+     */
+    private Long countyId;
+
+    /**
+     * 县
+     */
+    private String county;
 
     /**
      * 计费首重

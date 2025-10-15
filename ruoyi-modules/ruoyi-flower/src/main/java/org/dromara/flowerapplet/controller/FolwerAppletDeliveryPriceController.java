@@ -33,7 +33,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/deliveryPrice")
+@RequestMapping("/flowerapplet/deliveryPrice")
 public class FolwerAppletDeliveryPriceController extends BaseController {
 
     private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;
@@ -41,7 +41,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
     /**
      * 查询物流计费列表
      */
-    @SaCheckPermission("flower:deliveryPrice:list")
+    @SaCheckPermission(value = "flower:deliveryPrice:list", orRole = "appletuser")
     @GetMapping("/list")
     public TableDataInfo<FolwerAppletDeliveryPriceVo> list(FolwerAppletDeliveryPriceBo bo, PageQuery pageQuery) {
         return folwerAppletDeliveryPriceService.queryPageList(bo, pageQuery);
@@ -50,7 +50,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
     /**
      * 导出物流计费列表
      */
-    @SaCheckPermission("flower:deliveryPrice:export")
+    @SaCheckPermission(value = "flower:deliveryPrice:export", orRole = "appletuser")
     @Log(title = "物流计费", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletDeliveryPriceBo bo, HttpServletResponse response) {
@@ -63,7 +63,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
      *
      * @param logisticId 主键
      */
-    @SaCheckPermission("flower:deliveryPrice:query")
+    @SaCheckPermission(value = "flower:deliveryPrice:query", orRole = "appletuser")
     @GetMapping("/{logisticId}")
     public R<FolwerAppletDeliveryPriceVo> getInfo(@NotNull(message = "主键不能为空")
                                                   @PathVariable Long logisticId) {
@@ -73,7 +73,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
     /**
      * 新增物流计费
      */
-    @SaCheckPermission("flower:deliveryPrice:add")
+    @SaCheckPermission(value = "flower:deliveryPrice:add", orRole = "appletuser")
     @Log(title = "物流计费", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -84,7 +84,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
     /**
      * 修改物流计费
      */
-    @SaCheckPermission("flower:deliveryPrice:edit")
+    @SaCheckPermission(value = "flower:deliveryPrice:edit", orRole = "appletuser")
     @Log(title = "物流计费", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -97,7 +97,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
      *
      * @param logisticIds 主键串
      */
-    @SaCheckPermission("flower:deliveryPrice:remove")
+    @SaCheckPermission(value = "flower:deliveryPrice:remove", orRole = "appletuser")
     @Log(title = "物流计费", businessType = BusinessType.DELETE)
     @DeleteMapping("/{logisticIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
@@ -110,7 +110,7 @@ public class FolwerAppletDeliveryPriceController extends BaseController {
      *
      * @param deliveryId
      */
-    @SaCheckPermission("flower:deliveryPrice:getDeliveryPrice")
+    @SaCheckPermission(value = "flower:deliveryPrice:getDeliveryPrice", orRole = "appletuser")
     @GetMapping("/getDeliveryPrice/{deliveryId}/{userId}/{skuId}/{skuByNum}")
     public R<BigDecimal> getDeliveryPrice(@PathVariable Long deliveryId, @PathVariable Long userId,
                                           @PathVariable Long skuId, @PathVariable Integer skuByNum) throws Exception {

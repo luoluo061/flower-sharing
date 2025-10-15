@@ -122,7 +122,7 @@ public class FolwerAppletBasketServiceImpl implements IFolwerAppletBasketService
             folwerAppletSkuBo.setStatus(1L);
             List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
             if (folwerAppletSkuVos != null) {
-                folwerAppletBasketVo.setPrice(folwerAppletSkuService.queryById(folwerAppletBasketVo.getSkuId()).getPrice());
+                folwerAppletBasketVo.setPrice(folwerAppletSkuService.selsctById(folwerAppletBasketVo.getSkuId()).getPrice());
             }else {
                 return null;
             }

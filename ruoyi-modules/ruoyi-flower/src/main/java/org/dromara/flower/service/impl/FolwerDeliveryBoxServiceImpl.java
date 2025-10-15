@@ -87,7 +87,14 @@ public class FolwerDeliveryBoxServiceImpl implements IFolwerDeliveryBoxService {
         lqw.eq(bo.getVolume() != null, FolwerDeliveryBox::getVolume, bo.getVolume());
         lqw.eq(bo.getCostPrice() != null, FolwerDeliveryBox::getCostPrice, bo.getCostPrice());
         lqw.eq(bo.getPackagPrice() != null, FolwerDeliveryBox::getPackagPrice, bo.getPackagPrice());
+        lqw.eq(bo.getBundle() != null, FolwerDeliveryBox::getBundle, bo.getBundle());
+        lqw.eq(bo.getIceBunch() != null, FolwerDeliveryBox::getIceBunch, bo.getIceBunch());
+        lqw.eq(bo.getIceBottleCost() != null, FolwerDeliveryBox::getIceBottleCost, bo.getIceBottleCost());
+        lqw.eq(bo.getIceBottleWeight() != null, FolwerDeliveryBox::getIceBottleWeight, bo.getIceBottleWeight());
         lqw.eq(bo.getStatus() != null, FolwerDeliveryBox::getStatus, bo.getStatus());
+        lqw.eq(bo.getInsulationCotton() != null, FolwerDeliveryBox::getInsulationCotton, bo.getInsulationCotton());
+        lqw.eq(bo.getUseInsulationStarttime() != null, FolwerDeliveryBox::getUseInsulationStarttime, bo.getUseInsulationStarttime());
+        lqw.eq(bo.getUseInsulationEndtime() != null, FolwerDeliveryBox::getUseInsulationEndtime, bo.getUseInsulationEndtime());
         return lqw;
     }
 
