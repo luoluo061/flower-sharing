@@ -1,5 +1,6 @@
 package org.dromara.flower.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -29,49 +30,69 @@ public class FolwerDeliverySet extends TenantEntity {
     private Long deliverySetId;
 
     /**
+     * 商品ID
+     */
+    private Long prodId;
+
+    /**
+     * 规格ID
+     */
+    private Long skuId;
+
+    /**
+     * 是否使用 0否 1是
+     */
+    private Long status;
+
+    /**
      * 人工费
      */
     private BigDecimal laborPrice;
 
     /**
-     * 保温棉费用
+     * 二次人工费
      */
-    private BigDecimal insulationCotton;
+    private BigDecimal secondLaborPrice;
+
+//    /**
+//     * 保温棉费用
+//     */
+//    private BigDecimal insulationCotton;
+//
+//    /**
+//     * 保温棉开始使用温度
+//     */
+//    private Long useInsulationStarttime;
+//
+//    /**
+//     * 保温棉温度梯度
+//     */
+//    private Long useInsulationEndtime;
+
+//    /**
+//     * 冰瓶费用
+//     */
+//    private BigDecimal iceBottle;
 
     /**
-     * 保温棉开始使用温度
+     * 冰瓶数量/扎
      */
-    private Long useInsulationStarttime;
+    private Double iceBottleNum;
 
-    /**
-     * 保温棉温度梯度
-     */
-    private Long useInsulationEndtime;
-
-    /**
-     * 冰瓶费用
-     */
-    private BigDecimal iceBottle;
-
-    /**
-     * 冰瓶数量/箱
-     */
-    private Long iceBottleNum;
-
-    /**
-     * 冰瓶重量
-     */
-    private Double iceBottleWeight;
-
-    /**
-     * 开始增加冰瓶的初始温度
-     */
-    private Long useIceBottleStarttime;
-
-    /**
-     * 冰瓶使用温度梯度
-     */
-    private Long useIceBottleEndtime;
+//    /**
+//     * 冰瓶重量
+//     */
+//    private Double iceBottleWeight;
+//
+//    /**
+//     * 开始增加冰瓶的初始温度
+//     */
+//    private Long useIceBottleStarttime;
+//
+//    /**
+//     * 冰瓶使用温度梯度
+//     */
+//    private Long useIceBottleEndtime;
 
 
 

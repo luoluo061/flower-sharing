@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Data
 @Schema(description = "订单参数")
-public class OrderParamBo {
+public class  OrderParamBo {
     @Schema(description = "订单ID" )
     private String orderId;
 

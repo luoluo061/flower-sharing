@@ -12,6 +12,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -83,7 +84,7 @@ public class FolwerAppletOrderDetailVo implements Serializable {
      * 单价
      */
     @ExcelProperty(value = "单价")
-    private Long orderPrice;
+    private BigDecimal orderPrice;
 
     /**
      * 数量
@@ -95,7 +96,7 @@ public class FolwerAppletOrderDetailVo implements Serializable {
      * 小计
      */
     @ExcelProperty(value = "小计")
-    private Long subtotal;
+    private BigDecimal subtotal;
 
 
 }

@@ -229,15 +229,15 @@ public class FolwerAppletDeliveryPriceServiceImpl implements IFolwerAppletDelive
         BigDecimal insulationPrace = new BigDecimal(0);
         BigDecimal iceBottlePrace = new BigDecimal(0);
 
-        insulationPrace = folwerDeliverySetVo.getInsulationCotton().multiply(new BigDecimal(insulationNum));
+        insulationPrace = deliveryBoxVo.getInsulationCotton().multiply(new BigDecimal(insulationNum));
 
-        if(folwerDeliverySetVo.getUseIceBottleStarttime() == 0L && folwerDeliverySetVo.getUseIceBottleEndtime() == 0L){
-            iceBottlePrace = new BigDecimal(0);
-        }
-        if (folwerDeliverySetVo.getUseIceBottleStarttime() <= LocalDate.now().getMonthValue() && folwerDeliverySetVo.getUseInsulationStarttime() <= folwerDeliverySetVo.getUseIceBottleEndtime()){
-            long IceBottleTotalNum = Math.multiplyExact(boxNum, folwerDeliverySetVo.getIceBottleNum());
-            iceBottlePrace = folwerDeliverySetVo.getIceBottle().multiply(new BigDecimal(IceBottleTotalNum));
-        }
+//        if(folwerDeliverySetVo.getUseIceBottleStarttime() == 0L && folwerDeliverySetVo.getUseIceBottleEndtime() == 0L){
+//            iceBottlePrace = new BigDecimal(0);
+//        }
+//        if (folwerDeliverySetVo.getUseIceBottleStarttime() <= LocalDate.now().getMonthValue() && folwerDeliverySetVo.getUseInsulationStarttime() <= folwerDeliverySetVo.getUseIceBottleEndtime()){
+//            long IceBottleTotalNum = Math.multiplyExact(boxNum, folwerDeliverySetVo.getIceBottleNum());
+//            iceBottlePrace = folwerDeliverySetVo.getIceBottle().multiply(new BigDecimal(IceBottleTotalNum));
+//        }
 
         // 调用累加方法
         materialPrace = insulationPrace.add(iceBottlePrace);

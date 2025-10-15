@@ -18,10 +18,7 @@ import org.dromara.flower.domain.FolwerDeliveryPrice;
 import org.dromara.flower.mapper.FolwerDeliveryPriceMapper;
 import org.dromara.flower.service.IFolwerDeliveryPriceService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -77,7 +74,12 @@ public class FolwerDeliveryPriceServiceImpl implements IFolwerDeliveryPriceServi
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FolwerDeliveryPrice> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getDvyId() != null, FolwerDeliveryPrice::getDvyId, bo.getDvyId());
-        lqw.eq(StringUtils.isNotBlank(bo.getProvince()), FolwerDeliveryPrice::getProvince, bo.getProvince());
+        lqw.like(StringUtils.isNotBlank(bo.getProvince()), FolwerDeliveryPrice::getProvince, bo.getProvince());
+        lqw.like(StringUtils.isNotBlank(bo.getCity()), FolwerDeliveryPrice::getCity, bo.getCity());
+        lqw.like(StringUtils.isNotBlank(bo.getCounty()), FolwerDeliveryPrice::getCounty, bo.getCounty());
+        lqw.eq(bo.getProvinceId() != null, FolwerDeliveryPrice::getProvinceId, bo.getProvinceId());
+        lqw.eq(bo.getCityId() != null, FolwerDeliveryPrice::getCityId, bo.getCityId());
+        lqw.eq(bo.getCountyId() != null, FolwerDeliveryPrice::getCountyId, bo.getCountyId());
         lqw.eq(bo.getFirstWeight() != null, FolwerDeliveryPrice::getFirstWeight, bo.getFirstWeight());
         lqw.eq(bo.getAdditionalWeight() != null, FolwerDeliveryPrice::getAdditionalWeight, bo.getAdditionalWeight());
         lqw.eq(bo.getFirstWeightPrice() != null, FolwerDeliveryPrice::getFirstWeightPrice, bo.getFirstWeightPrice());
@@ -96,6 +98,14 @@ public class FolwerDeliveryPriceServiceImpl implements IFolwerDeliveryPriceServi
     @Override
     @Async
     public CompletableFuture<Boolean> insertByBo(FolwerDeliveryPriceAdd add, List<FolwerDeliveryArea> areaList) {
+
+        FolwerDeliveryPriceBo deliveryPriceBo = new FolwerDeliveryPriceBo();
+        deliveryPriceBo.setDvyId(add.getDvyId());
+        List<FolwerDeliveryPriceVo> folwerDeliveryPriceVos = this.queryList(deliveryPriceBo);
+        if (folwerDeliveryPriceVos.size() > 0){
+            return CompletableFuture.completedFuture(false);
+        }
+
         return CompletableFuture.supplyAsync(() -> {
 
             List<FolwerDeliveryPrice> priceList = new ArrayList<>();
@@ -191,5 +201,23 @@ public class FolwerDeliveryPriceServiceImpl implements IFolwerDeliveryPriceServi
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    /**
+     * 校验并通过物流公司ID删除物流计费信息
+     *
+     * @param dvyId     待删除的主键集合
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    @Override
+    public Boolean deleteWithValidByDvyId(Long dvyId, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("dvy_id", dvyId);
+
+        return baseMapper.deleteByMap(map) > 0;
     }
 }

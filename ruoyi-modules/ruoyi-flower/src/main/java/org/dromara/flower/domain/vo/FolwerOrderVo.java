@@ -114,7 +114,7 @@ public class FolwerOrderVo  extends BaseEntity implements Serializable {
      * 实际金额
      */
     @ExcelProperty(value = "实际金额")
-    private Long actualTotal;
+    private BigDecimal actualTotal;
 
     /**
      * 支付方式 0 手动代付 1 微信支付 2 支付宝

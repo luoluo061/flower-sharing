@@ -69,4 +69,13 @@ public interface IFolwerDeliveryPriceService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 根据物流公司id删除物流计费信息
+     *
+     * @param dvyId    物流公司id
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    Boolean deleteWithValidByDvyId(Long dvyId, Boolean isValid);
 }

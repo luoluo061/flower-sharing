@@ -108,11 +108,30 @@ public class FolwerDeliveryPriceController extends BaseController {
      *
      * @param logisticIds 主键串
      */
+//    @SaCheckPermission("flower:deliveryPrice:remove")
+//    @Log(title = "物流计费", businessType = BusinessType.DELETE)
+//    @DeleteMapping("/{logisticIds}")
+//    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+//                          @PathVariable Long[] logisticIds) {
+//        return toAjax(folwerDeliveryPriceService.deleteWithValidByIds(List.of(logisticIds), true));
+//    }
+
     @SaCheckPermission("flower:deliveryPrice:remove")
-    @Log(title = "物流计费", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{logisticIds}")
+    @Log(title = "删除物流计费", businessType = BusinessType.DELETE)
+    @DeleteMapping("/del")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] logisticIds) {
+                          @RequestBody Long[] logisticIds) {
         return toAjax(folwerDeliveryPriceService.deleteWithValidByIds(List.of(logisticIds), true));
+    }
+
+    /**
+     * 通过物流公司ID批量删除物流计费
+     */
+    @SaCheckPermission("flower:deliveryPrice:removebydvyid")
+    @Log(title = "通过物流公司ID批量删除物流计费", businessType = BusinessType.DELETE)
+    @DeleteMapping("/delAllByDvyID/{dvyId}")
+    public R<Void> removeAllByDvyID(@NotNull(message = "物流公司ID不能为空")
+                                    @PathVariable Long dvyId) {
+        return toAjax(folwerDeliveryPriceService.deleteWithValidByDvyId(dvyId, true));
     }
 }

@@ -341,11 +341,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 Boolean b = folwerAppletOrderDetailService.insertByBo(folwerAppletOrderDetailBo);
             }
 
-            if (bo.getDvyId() != null) {
+//            if (bo.getDvyId() != null) {
                 FolwerAppletOrderDvyBo folwerAppletOrderDvyBo = new FolwerAppletOrderDvyBo();
                 folwerAppletOrderDvyBo.setOrderId(add.getOrderId());
-                folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
-                folwerAppletOrderDvyBo.setInsulationNum(Long.valueOf(bo.getInsulationNum()));
+//                folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
+//                folwerAppletOrderDvyBo.setInsulationNum(Long.valueOf(bo.getInsulationNum()));
                 folwerAppletOrderDvyBo.setBasketIds(bo.getBasketIds());
                 folwerAppletOrderDvyBo.setSkuId(bo.getSkuId());
                 folwerAppletOrderDvyBo.setProdCount(bo.getProdCount());
@@ -357,13 +357,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 }else {
                     transfee = new BigDecimal(0);
                 }
-                FolwerAppletOrderVo folwerAppletOrderVo = queryById(add.getOrderId());
+                FolwerAppletOrderVo OrderVo = queryById(add.getOrderId());
                 FolwerAppletOrder folwerAppletOrder = new FolwerAppletOrder();
-                BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrder);
+                BeanUtil.copyProperties(OrderVo, folwerAppletOrder);
                 folwerAppletOrder.setFreightAmount(transfee);
                 folwerAppletOrder.setActualTotal(total.add(transfee));
                 int i = baseMapper.updateById(folwerAppletOrder);
-            }
+//            }
 
             //放入缓存
             FolwerAppletOrderVo folwerAppletOrderVo =  this.queryById(add.getOrderId());
@@ -825,9 +825,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             return R.fail("用户不存在");
         }
 //        Long cacheObject = RedisUtils.getCacheObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
-//        if (cacheObject == null){
-//            return R.fail("订单状态异常");
-//        }
+        if (folwerAppletOrderVo.getActualTotal() == null){
+            return R.fail("订单状态异常，无支付金额");
+        }
 
         WxPayRequest payJSAPIParam = new WxPayRequest();
         payJSAPIParam.setClientIp(IpUtils.getIpAddr());

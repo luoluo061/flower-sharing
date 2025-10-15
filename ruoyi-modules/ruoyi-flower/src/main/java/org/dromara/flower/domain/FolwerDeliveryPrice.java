@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 /**
  * 物流计费对象 folwer_delivery_price
@@ -65,27 +66,27 @@ public class FolwerDeliveryPrice extends TenantEntity {
     /**
      * 计费首重
      */
-    private Long firstWeight;
+    private Double firstWeight;
 
     /**
      * 续重重量
      */
-    private Long additionalWeight;
+    private Double additionalWeight;
 
     /**
      * 首重价格
      */
-    private Long firstWeightPrice;
+    private BigDecimal firstWeightPrice;
 
     /**
      * 续重1价格
      */
-    private Long additionalWeightPrice;
+    private BigDecimal additionalWeightPrice;
 
     /**
      * 续重2价格
      */
-    private Long additionalWeightPricel;
+    private BigDecimal additionalWeightPricel;
 
     /**
      * 是否使用，1:使用，0:不使用

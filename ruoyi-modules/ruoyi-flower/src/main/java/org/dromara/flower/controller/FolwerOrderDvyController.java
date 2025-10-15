@@ -1,4 +1,4 @@
-package org.dromara.flowerapplet.controller;
+package org.dromara.flower.controller;
 
 import java.util.List;
 
@@ -17,43 +17,43 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
-import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderDvyVo;
-import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDvyBo;
-import org.dromara.flowerapplet.service.IFolwerAppletOrderDvyService;
+import org.dromara.flower.domain.vo.FolwerOrderDvyVo;
+import org.dromara.flower.domain.bo.FolwerOrderDvyBo;
+import org.dromara.flower.service.IFolwerOrderDvyService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
  * 订单物流
  *
  * @author mlhxj
- * @date 2025-09-02
+ * @date 2025-09-28
  */
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flower/orderDvy")
-public class FolwerAppletOrderDvyController extends BaseController {
+@RequestMapping("/flowerPc/orderDvy")
+public class FolwerOrderDvyController extends BaseController {
 
-    private final IFolwerAppletOrderDvyService folwerAppletOrderDvyService;
+    private final IFolwerOrderDvyService folwerOrderDvyService;
 
     /**
      * 查询订单物流列表
      */
-    @SaCheckPermission(value = "flower:orderDvy:list", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:list")
     @GetMapping("/list")
-    public TableDataInfo<FolwerAppletOrderDvyVo> list(FolwerAppletOrderDvyBo bo, PageQuery pageQuery) {
-        return folwerAppletOrderDvyService.queryPageList(bo, pageQuery);
+    public TableDataInfo<FolwerOrderDvyVo> list(FolwerOrderDvyBo bo, PageQuery pageQuery) {
+        return folwerOrderDvyService.queryPageList(bo, pageQuery);
     }
 
     /**
      * 导出订单物流列表
      */
-    @SaCheckPermission(value = "flower:orderDvy:export", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:export")
     @Log(title = "订单物流", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(FolwerAppletOrderDvyBo bo, HttpServletResponse response) {
-        List<FolwerAppletOrderDvyVo> list = folwerAppletOrderDvyService.queryList(bo);
-        ExcelUtil.exportExcel(list, "订单物流", FolwerAppletOrderDvyVo.class, response);
+    public void export(FolwerOrderDvyBo bo, HttpServletResponse response) {
+        List<FolwerOrderDvyVo> list = folwerOrderDvyService.queryList(bo);
+        ExcelUtil.exportExcel(list, "订单物流", FolwerOrderDvyVo.class, response);
     }
 
     /**
@@ -61,33 +61,33 @@ public class FolwerAppletOrderDvyController extends BaseController {
      *
      * @param orderDevId 主键
      */
-    @SaCheckPermission(value = "flower:orderDvy:query", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:query")
     @GetMapping("/{orderDevId}")
-    public R<FolwerAppletOrderDvyVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<FolwerOrderDvyVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long orderDevId) {
-        return R.ok(folwerAppletOrderDvyService.queryById(orderDevId));
+        return R.ok(folwerOrderDvyService.queryById(orderDevId));
     }
 
     /**
      * 新增订单物流
      */
-    @SaCheckPermission(value = "flower:orderDvy:add", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:add")
     @Log(title = "订单物流", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<FolwerAppletOrderDvyVo> add(@Validated(AddGroup.class) @RequestBody FolwerAppletOrderDvyBo bo) throws Exception {
-        return R.ok(folwerAppletOrderDvyService.insertByBo(bo));
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FolwerOrderDvyBo bo) {
+        return toAjax(folwerOrderDvyService.insertByBo(bo));
     }
 
     /**
      * 修改订单物流
      */
-    @SaCheckPermission(value = "flower:orderDvy:edit", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:edit")
     @Log(title = "订单物流", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<FolwerAppletOrderDvyVo> edit(@Validated(EditGroup.class) @RequestBody FolwerAppletOrderDvyBo bo) throws Exception {
-        return R.ok(folwerAppletOrderDvyService.updateByBo(bo));
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerOrderDvyBo bo) {
+        return toAjax(folwerOrderDvyService.updateByBo(bo));
     }
 
     /**
@@ -95,11 +95,11 @@ public class FolwerAppletOrderDvyController extends BaseController {
      *
      * @param orderDevIds 主键串
      */
-    @SaCheckPermission(value = "flower:orderDvy:remove", orRole = "appletuser")
+    @SaCheckPermission("flower:orderDvy:remove")
     @Log(title = "订单物流", businessType = BusinessType.DELETE)
     @DeleteMapping("/{orderDevIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] orderDevIds) {
-        return toAjax(folwerAppletOrderDvyService.deleteWithValidByIds(List.of(orderDevIds), true));
+        return toAjax(folwerOrderDvyService.deleteWithValidByIds(List.of(orderDevIds), true));
     }
 }

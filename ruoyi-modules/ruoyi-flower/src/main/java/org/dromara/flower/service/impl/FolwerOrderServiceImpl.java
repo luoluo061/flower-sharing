@@ -237,7 +237,7 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
                     folwerOrderRefundBo.setUserName(folwerOrderVo.getUserName());
                     folwerOrderRefundBo.setMemberLevelId(folwerOrderVo.getMemberLevelId());
 //                    folwerOrderRefundBo.setApplyType(1L);
-                    BigDecimal actualTotal = new BigDecimal(folwerOrderVo.getActualTotal());
+                    BigDecimal actualTotal = new BigDecimal(String.valueOf(folwerOrderVo.getActualTotal()));
                     folwerOrderRefundBo.setRefundAmount(actualTotal);
                     folwerOrderRefundBo.setActualTotal(actualTotal);
                     folwerOrderRefundBo.setRefundMsg("平台退款");

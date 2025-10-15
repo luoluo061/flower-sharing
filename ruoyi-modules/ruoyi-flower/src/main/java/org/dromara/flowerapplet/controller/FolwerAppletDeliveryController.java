@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -39,8 +40,9 @@ public class FolwerAppletDeliveryController extends BaseController {
     /**
      * 查询物流公司列表
      */
-    @SaCheckPermission("flower:delivery:list")
+    @SaCheckPermission(value = "flower:delivery:list", orRole = "appletuser")
     @GetMapping("/list")
+//    @SaIgnore //忽略权限校验 小程序过审
     public TableDataInfo<FolwerAppletDeliveryVo> list(FolwerAppletDeliveryBo bo, PageQuery pageQuery) {
         return folwerAppletDeliveryService.queryPageList(bo, pageQuery);
     }
@@ -48,7 +50,7 @@ public class FolwerAppletDeliveryController extends BaseController {
     /**
      * 导出物流公司列表
      */
-    @SaCheckPermission("flower:delivery:export")
+    @SaCheckPermission(value = "flower:delivery:export", orRole = "appletuser")
     @Log(title = "物流公司", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FolwerAppletDeliveryBo bo, HttpServletResponse response) {
@@ -61,7 +63,7 @@ public class FolwerAppletDeliveryController extends BaseController {
      *
      * @param dvyId 主键
      */
-    @SaCheckPermission("flower:delivery:query")
+    @SaCheckPermission(value = "flower:delivery:query", orRole = "appletuser")
     @GetMapping("/{dvyId}")
     public R<FolwerAppletDeliveryVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long dvyId) {
@@ -71,7 +73,7 @@ public class FolwerAppletDeliveryController extends BaseController {
     /**
      * 新增物流公司
      */
-    @SaCheckPermission("flower:delivery:add")
+    @SaCheckPermission(value = "flower:delivery:add", orRole = "appletuser")
     @Log(title = "物流公司", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -82,7 +84,7 @@ public class FolwerAppletDeliveryController extends BaseController {
     /**
      * 修改物流公司
      */
-    @SaCheckPermission("flower:delivery:edit")
+    @SaCheckPermission(value = "flower:delivery:edit", orRole = "appletuser")
     @Log(title = "物流公司", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -95,7 +97,7 @@ public class FolwerAppletDeliveryController extends BaseController {
      *
      * @param dvyIds 主键串
      */
-    @SaCheckPermission("flower:delivery:remove")
+    @SaCheckPermission(value = "flower:delivery:remove", orRole = "appletuser")
     @Log(title = "物流公司", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dvyIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

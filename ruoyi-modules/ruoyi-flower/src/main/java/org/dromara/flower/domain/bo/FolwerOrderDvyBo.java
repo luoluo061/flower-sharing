@@ -1,31 +1,28 @@
-package org.dromara.flowerapplet.domain;
+package org.dromara.flower.domain.bo;
 
-import org.dromara.common.tenant.core.TenantEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import org.dromara.flower.domain.FolwerOrderDvy;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serial;
-import java.math.BigDecimal;
+import jakarta.validation.constraints.*;
 
 /**
- * 订单物流对象 folwer_order_dvy
+ * 订单物流业务对象 folwer_order_dvy
  *
  * @author mlhxj
- * @date 2025-09-02
+ * @date 2025-09-28
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("folwer_order_dvy")
-public class FolwerAppletOrderDvy extends TenantEntity {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@AutoMapper(target = FolwerOrderDvy.class, reverseConvertGenerate = false)
+public class FolwerOrderDvyBo extends BaseEntity {
 
     /**
      * 订单物流ID
      */
-    @TableId(value = "order_dev_id")
     private Long orderDevId;
 
     /**
@@ -46,7 +43,7 @@ public class FolwerAppletOrderDvy extends TenantEntity {
     /**
      * 物流总重量
      */
-    private Double dvyWeight;
+    private Long dvyWeight;
 
     /**
      * 鲜花数量
@@ -61,27 +58,27 @@ public class FolwerAppletOrderDvy extends TenantEntity {
     /**
      * 计费首重
      */
-    private Double firstWeight;
+    private Long firstWeight;
 
     /**
      * 续重重量
      */
-    private Double additionalWeight;
+    private Long additionalWeight;
 
     /**
      * 首重价格
      */
-    private BigDecimal firstWeightPrice;
+    private Long firstWeightPrice;
 
     /**
      * 续重价格
      */
-    private BigDecimal additionalWeightPrice;
+    private Long additionalWeightPrice;
 
     /**
      * 订单运费
      */
-    private BigDecimal freightAmount;
+    private Long freightAmount;
 
     /**
      * 保温棉数量
@@ -91,7 +88,7 @@ public class FolwerAppletOrderDvy extends TenantEntity {
     /**
      * 保温棉费用
      */
-    private BigDecimal insulationAmount;
+    private Long insulationAmount;
 
     /**
      * 冰瓶数量
@@ -101,33 +98,22 @@ public class FolwerAppletOrderDvy extends TenantEntity {
     /**
      * 冰瓶费用
      */
-    private BigDecimal iceAmount;
+    private Long iceAmount;
 
     /**
      * 人工费
      */
-    private BigDecimal laborPrice;
+    private Long laborPrice;
 
     /**
      * 包装费
      */
-    private BigDecimal boxPrice;
-
-    /**
-     * 物料费
-     */
-    private BigDecimal materialPrace;
+    private Long boxPrice;
 
     /**
      * 小计
      */
-    private BigDecimal packingAmount;
-
-    /**
-     * 删除标志 0 否 2 是
-     */
-    @TableLogic
-    private Long delFlag;
+    private Long packingAmount;
 
 
 }
