@@ -81,6 +81,7 @@ public class FolwerAppletOrderSetServiceImpl implements IFolwerAppletOrderSetSer
         lqw.eq(StringUtils.isNotBlank(bo.getTerm()), FolwerAppletOrderSet::getTerm, bo.getTerm());
         lqw.eq(StringUtils.isNotBlank(bo.getOrderCancel()), FolwerAppletOrderSet::getOrderCancel, bo.getOrderCancel());
         lqw.eq(StringUtils.isNotBlank(bo.getAutoDvy()), FolwerAppletOrderSet::getAutoDvy, bo.getAutoDvy());
+        lqw.eq(bo.getTax() != null, FolwerAppletOrderSet::getTax, bo.getTax());
         return lqw;
     }
 

@@ -95,5 +95,11 @@ public class FolwerOrderSetVo implements Serializable {
     @ExcelProperty(value = "自动收货时间")
     private String autoDvy;
 
+    /**
+     * 税率
+     */
+    @ExcelProperty(value = "税率")
+    private Double tax;
+
 
 }

@@ -50,9 +50,9 @@ public class FolwerDeliveryBox extends TenantEntity {
     private Long height;
 
     /**
-     * 容积
+     * 人工费
      */
-    private Long volume;
+    private BigDecimal volume;
 
     /**
      * 箱子重量

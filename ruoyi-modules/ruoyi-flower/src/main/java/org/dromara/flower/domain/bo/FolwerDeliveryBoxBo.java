@@ -46,9 +46,9 @@ public class FolwerDeliveryBoxBo extends BaseEntity {
     private Long height;
 
     /**
-     * 容积
+     * 人工费
      */
-    private Long volume;
+    private BigDecimal volume;
 
     /**
      * 箱子重量

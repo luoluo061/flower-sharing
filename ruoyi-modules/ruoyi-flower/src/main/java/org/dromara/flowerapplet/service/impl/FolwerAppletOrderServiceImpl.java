@@ -312,6 +312,19 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
         }
 
+        FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
+        List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
+        if (folwerOrderSetVos != null){
+            if(folwerOrderSetVos.get(0).getStartPrice() != null){
+                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
+                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
+                    BigDecimal num2 = new BigDecimal("100");
+                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
+                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
+                }
+            }
+        }
+
         FolwerAppletOrderBo orderBo = new FolwerAppletOrderBo();
         orderBo.setUserId(String.valueOf(Long.valueOf(bo.getUserId())));
         orderBo.setUserName(appletUserInformationVo.getName());
@@ -353,7 +366,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
                 //从计算中获取运费
                 FolwerAppletOrderDvyVo folwerAppletOrderDvyVo = folwerAppletOrderDvyService.insertByBo(folwerAppletOrderDvyBo);
                 if (folwerAppletOrderDvyVo != null){
-                    transfee = folwerAppletOrderDvyVo.getPackingAmount();
+                    transfee = folwerAppletOrderDvyVo.getPackingAmount().setScale(0, RoundingMode.HALF_EVEN);
                 }else {
                     transfee = new BigDecimal(0);
                 }
@@ -620,23 +633,23 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
         //满额包邮
 ////        orderBo.setFreightAmount(transfee);
-//        FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
-//        List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
-//        if (folwerOrderSetVos != null){
-//            if(folwerOrderSetVos.get(0).getFreeShippingPrice() != null){
-////                if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
-////                    transfee = BigDecimal.valueOf(0);
-////                    orderBo.setFreightAmount( transfee);
-////                }
-//
-//                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
-//                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
-//                    BigDecimal num2 = new BigDecimal("100");
-//                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
-//                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
+        FolwerOrderSetBo folwerOrderSetBo = new FolwerOrderSetBo();
+        List<FolwerOrderSetVo> folwerOrderSetVos = folwerOrderSetService.queryList(folwerOrderSetBo);
+        if (folwerOrderSetVos != null){
+            if(folwerOrderSetVos.get(0).getStartPrice() != null){
+//                if(total.compareTo(BigDecimal.valueOf(folwerOrderSetVos.get(0).getFreeShippingPrice())) >= 0){
+//                    transfee = BigDecimal.valueOf(0);
+//                    orderBo.setFreightAmount( transfee);
 //                }
-//            }
-//        }
+
+                if(total.compareTo(folwerOrderSetVos.get(0).getStartPrice()) < 0){
+                    BigDecimal num1 = new BigDecimal(String.valueOf(folwerOrderSetVos.get(0).getStartPrice()));
+                    BigDecimal num2 = new BigDecimal("100");
+                    BigDecimal result = num1.divide(num2, RoundingMode.HALF_EVEN);
+                    throw new Exception("您的支付金额未达" + result +"元以上，未满足支付需求");
+                }
+            }
+        }
 
         orderBo.setActualTotal(total.add(transfee));
 //        FolwerPickAddrBo folwerPickAddrBo = new FolwerPickAddrBo();
@@ -820,6 +833,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         if(folwerAppletOrderVo == null){
             return R.fail("订单不存在");
         }
+
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(folwerAppletOrderVo.getUserId());
         if (appletUserInformationVo == null){
             return R.fail("用户不存在");
@@ -844,6 +858,18 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             return R.fail("支付失败");
         }
 //        RedisUtils.deleteObject(CONFIRM_ORDER_CACHE_KEY + folwerAppletOrderVo.getOrderId());
+        FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
+        folwerAppletOrderDetailBo.setOrderId(payParam.getOrderNumbers());
+        List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
+        for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos) {
+            FolwerAppletSkuVo folwerAppletSkuVo = folwerAppletSkuService.queryById(folwerAppletOrderDetailVo.getSkuId());
+            if(folwerAppletSkuVo.getActualStocks() != null){
+                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+                folwerAppletSkuBo.setSkuId(folwerAppletSkuVo.getSkuId());
+                folwerAppletSkuBo.setActualStocks(folwerAppletSkuVo.getActualStocks() - folwerAppletOrderDetailVo.getNumber());
+                folwerAppletSkuService.updateByBo(folwerAppletSkuBo);
+            }
+        }
         return R.ok(wxJsapiResponse);
     }
 

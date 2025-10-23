@@ -55,7 +55,7 @@ public interface IFolwerDeliverySetService {
      * @param bo 物流设置
      * @return 是否修改成功
      */
-    Boolean updateByBo(FolwerDeliverySetBo bo);
+    Boolean updateByBo(List<FolwerDeliverySetBo> bos);
 
     /**
      * 校验并批量删除物流设置信息

@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.flowerapplet.domain.FolwerAppletOrderSet;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -71,6 +72,11 @@ public class FolwerAppletOrderSetBo extends BaseEntity {
      * 自动收货时间
      */
     private String autoDvy;
+
+    /**
+     * 税率
+     */
+    private Double tax;
 
 
 }

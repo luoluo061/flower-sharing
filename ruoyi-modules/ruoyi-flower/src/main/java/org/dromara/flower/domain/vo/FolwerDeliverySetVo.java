@@ -48,6 +48,12 @@ public class FolwerDeliverySetVo implements Serializable {
     private Long skuId;
 
     /**
+     * 规格名称
+     */
+    @ExcelProperty(value = "规格名称")
+    private String skuName;
+
+    /**
      * 是否使用 0否 1是
      */
     @ExcelProperty(value = "是否使用 0否 1是")

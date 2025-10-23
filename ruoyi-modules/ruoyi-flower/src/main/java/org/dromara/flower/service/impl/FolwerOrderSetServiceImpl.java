@@ -80,6 +80,7 @@ public class FolwerOrderSetServiceImpl implements IFolwerOrderSetService {
         lqw.eq(StringUtils.isNotBlank(bo.getTerm()), FolwerOrderSet::getTerm, bo.getTerm());
         lqw.eq(StringUtils.isNotBlank(bo.getOrderCancel()), FolwerOrderSet::getOrderCancel, bo.getOrderCancel());
         lqw.eq(StringUtils.isNotBlank(bo.getAutoDvy()), FolwerOrderSet::getAutoDvy, bo.getAutoDvy());
+        lqw.eq(bo.getTax() != null, FolwerOrderSet::getTax, bo.getTax());
         return lqw;
     }
 
