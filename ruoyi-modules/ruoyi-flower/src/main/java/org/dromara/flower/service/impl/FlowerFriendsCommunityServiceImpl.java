@@ -1,245 +1,105 @@
 package org.dromara.flower.service.impl;
 
-import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.mybatis.core.page.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.mybatis.handler.MapResultHandler;
-import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
-import org.dromara.flower.mapper.FlowerFriendsCommunityCommentMapper;
-import org.dromara.flower.mapper.MemberLevelMapper;
-import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
-import org.dromara.system.service.ISysOssService;
-import org.springframework.stereotype.Service;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.flower.domain.FlowerFriendsCommunity;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
-import org.dromara.flower.domain.FlowerFriendsCommunity;
 import org.dromara.flower.mapper.FlowerFriendsCommunityMapper;
 import org.dromara.flower.service.IFlowerFriendsCommunityService;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
 
-/**
- * 花友圈Service业务层处理
- *
- * @author mlhxj
- * @date 2024-12-30
- */
+/** 弹窗管理 Service（精简版） */
 @RequiredArgsConstructor
 @Service
 public class FlowerFriendsCommunityServiceImpl implements IFlowerFriendsCommunityService {
 
     private final FlowerFriendsCommunityMapper baseMapper;
-    private final MemberLevelMapper memberLevelMapper;
-    private final ISysOssService iSysOssService;
-    private final FlowerFriendsCommunityCommentMapper communityCommentMapper;
-    private final AppletUserInformationMapper appletUserInformationMapper;
 
-
-    /**
-     * 查询花友圈
-     *
-     * @param id 主键
-     * @return 花友圈
-     */
     @Override
-    public FlowerFriendsCommunityVo queryById(Long id){
-        FlowerFriendsCommunityVo vo = baseMapper.selectVoById(id);
-        if (vo != null && vo.getVideoImagesIds() != null){
-            List<Long> idList = convertToLongList(vo.getVideoImagesIds());
-            Map<String, String> url = iSysOssService.listUrlByIds(idList);
-            if (!url.isEmpty()){
-                vo.setVideoImagesUrl(url.values().stream().toList());
-            }
-        }
-        // 查询用户的头像url
-        if (vo != null && vo.getMemberId() != null){
-            String avatarUrl = appletUserInformationMapper.getUserAvatarUrlByMemberId(vo.getMemberId());
-            vo.setUrl(avatarUrl);
-        }
-        // 查询评论详情
-        if (vo != null){
-            vo.setCommentVos(this.getCommentById(id));
-        }
-        return vo;
+    public FlowerFriendsCommunityVo queryById(Long id) {
+        return baseMapper.selectVoById(id);
     }
 
-    /**
-     * 分页查询花友圈列表
-     *
-     * @param bo        查询条件
-     * @param pageQuery 分页参数
-     * @return 花友圈分页列表
-     */
     @Override
     public TableDataInfo<FlowerFriendsCommunityVo> queryPageList(FlowerFriendsCommunityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FlowerFriendsCommunity> lqw = buildQueryWrapper(bo);
-        Page<FlowerFriendsCommunityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        if (!result.getRecords().isEmpty()){
-            List<Long> list = result.getRecords().stream()
-                .filter(Objects::nonNull) // 过滤掉 null 值
-                .map(FlowerFriendsCommunityVo::getGrade)
-                .distinct()
-                .filter(grade -> {
-                    try {
-                        Long.parseLong(grade); // 尝试转换为 Long
-                        return true; // 转换成功，保留
-                    } catch (NumberFormatException e) {
-                        return false; // 转换失败，过滤掉
-                    }
-                })
-                .map(Long::parseLong) // 转换为 Long
-                .toList();
-            // 查询会员等级 中文
-            MapResultHandler<Long,String> resultHandler = new MapResultHandler<>();
-            if (!list.isEmpty()){
-                memberLevelMapper.selectMapByIds(resultHandler,list);
-            }
-            Map<Long,String> map = resultHandler.getMappedResults();
-            if (!map.isEmpty()){
-                result.getRecords().forEach(v -> {
-                    if (v.getGrade() != null && map.containsKey(Long.parseLong(v.getGrade()))) {
-                        v.setGradeName(map.get(Long.parseLong(v.getGrade())));
-                    }
-                });
-            }
-        }
-        return TableDataInfo.build(result);
+        Page<FlowerFriendsCommunityVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(page);
     }
 
-    /**
-     * 查询符合条件的花友圈列表
-     *
-     * @param bo 查询条件
-     * @return 花友圈列表
-     */
     @Override
     public List<FlowerFriendsCommunityVo> queryList(FlowerFriendsCommunityBo bo) {
         LambdaQueryWrapper<FlowerFriendsCommunity> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
+    /** 列表查询条件（含 id 精确筛选） */
     private LambdaQueryWrapper<FlowerFriendsCommunity> buildQueryWrapper(FlowerFriendsCommunityBo bo) {
-        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<FlowerFriendsCommunity> lqw = Wrappers.lambdaQuery();
-        lqw.eq(bo.getDeptId() != null, FlowerFriendsCommunity::getDeptId, bo.getDeptId());
-        lqw.eq(StringUtils.isNotBlank(bo.getTitle()), FlowerFriendsCommunity::getTitle, bo.getTitle());
-        lqw.eq(bo.getType() != null, FlowerFriendsCommunity::getType, bo.getType());
-        lqw.like(StringUtils.isNotBlank(bo.getMemberId()), FlowerFriendsCommunity::getMemberId, bo.getMemberId());
-        lqw.like(StringUtils.isNotBlank(bo.getMemberName()), FlowerFriendsCommunity::getMemberName, bo.getMemberName());
-        lqw.eq(StringUtils.isNotBlank(bo.getGrade()), FlowerFriendsCommunity::getGrade, bo.getGrade());
-        lqw.eq(bo.getPageView() != null, FlowerFriendsCommunity::getPageView, bo.getPageView());
-        lqw.eq(bo.getLikes() != null, FlowerFriendsCommunity::getLikes, bo.getLikes());
-        lqw.eq(StringUtils.isNotBlank(bo.getContent()), FlowerFriendsCommunity::getContent, bo.getContent());
-        lqw.eq(StringUtils.isNotBlank(bo.getVideoImagesIds()), FlowerFriendsCommunity::getVideoImagesIds, bo.getVideoImagesIds());
-        lqw.eq(bo.getStatus() != null, FlowerFriendsCommunity::getStatus, bo.getStatus());
+
+        // ① 主键精确过滤
+        lqw.eq(bo.getId() != null, FlowerFriendsCommunity::getId, bo.getId());
+
+        // ② 其他搜索项
+        lqw.like(StringUtils.isNotBlank(bo.getTitle()), FlowerFriendsCommunity::getTitle, bo.getTitle());
+        lqw.like(StringUtils.isNotBlank(bo.getTextContent()), FlowerFriendsCommunity::getTextContent, bo.getTextContent());
+        lqw.eq(StringUtils.isNotBlank(bo.getPopupImageId()), FlowerFriendsCommunity::getPopupImageId, bo.getPopupImageId());
+        lqw.eq(bo.getIsUsed() != null, FlowerFriendsCommunity::getIsUsed, bo.getIsUsed());
+        lqw.eq(bo.getPublishType() != null, FlowerFriendsCommunity::getPublishType, bo.getPublishType());
+
+        // 可选排序（按需要保留/删除）
+        lqw.orderByDesc(FlowerFriendsCommunity::getCreateTime);
         return lqw;
     }
 
-    /**
-     * 新增花友圈
-     *
-     * @param bo 花友圈
-     * @return 是否新增成功
-     */
     @Override
     public Boolean insertByBo(FlowerFriendsCommunityBo bo) {
-        FlowerFriendsCommunity add = MapstructUtils.convert(bo, FlowerFriendsCommunity.class);
-        validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setId(add.getId());
+        FlowerFriendsCommunity e = new FlowerFriendsCommunity();
+        e.setId(bo.getId());
+        e.setTitle(bo.getTitle());
+        e.setTextContent(bo.getTextContent());
+        e.setPopupImageId(bo.getPopupImageId());
+        e.setIsUsed(bo.getIsUsed());
+        e.setPublishType(bo.getPublishType());
+        validEntityBeforeSave(e);
+        boolean ok = baseMapper.insert(e) > 0;
+        if (ok) {
+            bo.setId(e.getId());
         }
-        return flag;
+        return ok;
     }
 
-    /**
-     * 修改花友圈
-     *
-     * @param bo 花友圈
-     * @return 是否修改成功
-     */
     @Override
     public Boolean updateByBo(FlowerFriendsCommunityBo bo) {
-        FlowerFriendsCommunity update = MapstructUtils.convert(bo, FlowerFriendsCommunity.class);
-        validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        FlowerFriendsCommunity e = new FlowerFriendsCommunity();
+        e.setId(bo.getId());
+        e.setTitle(bo.getTitle());
+        e.setTextContent(bo.getTextContent());
+        e.setPopupImageId(bo.getPopupImageId());
+        e.setIsUsed(bo.getIsUsed());
+        e.setPublishType(bo.getPublishType());
+        validEntityBeforeSave(e);
+        return baseMapper.updateById(e) > 0;
     }
 
-    /**
-     * 保存前的数据校验
-     */
-    private void validEntityBeforeSave(FlowerFriendsCommunity entity){
-        //TODO 做一些数据校验,如唯一约束
+    private void validEntityBeforeSave(FlowerFriendsCommunity e) {
+        // 可补充唯一性/启用规则等校验
     }
 
-    /**
-     * 校验并批量删除花友圈信息
-     *
-     * @param ids     待删除的主键集合
-     * @param isValid 是否进行有效性校验
-     * @return 是否删除成功
-     */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
-            //TODO 做一些业务上的校验,判断是否需要校验
+        if (Boolean.TRUE.equals(isValid)) {
+            // 业务删除校验（可选）
         }
         return baseMapper.deleteByIds(ids) > 0;
-    }
-
-    @Override
-    public List<FlowerFriendsCommunityCommentVo> getCommentById(Long communityId) {
-        List<FlowerFriendsCommunityCommentVo> list = communityCommentMapper.selectVoListByCommunityId(communityId);
-        if (!list.isEmpty()){
-            list = buildTree(list);
-        }
-        return list;
-    }
-
-    public static List<Long> convertToLongList(String ids) {
-        if (ids == null || ids.trim().isEmpty()) {
-            return List.of();  // 返回空列表
-        }
-
-        return List.of(ids.split(","))  // 将字符串按逗号分割为数组
-            .stream()            // 转换为 Stream
-            .map(String::trim)   // 去除空格
-            .map(Long::valueOf)
-            .distinct()
-            .collect(Collectors.toList());  // 收集为 List<Long>
-    }
-
-    public static List<FlowerFriendsCommunityCommentVo> buildTree(List<FlowerFriendsCommunityCommentVo> nodes) {
-        // 存储所有节点的 Map，key 是节点 ID，value 是节点对象
-        Map<Long, FlowerFriendsCommunityCommentVo> nodeMap = new HashMap<>();
-        // 存储根节点
-        List<FlowerFriendsCommunityCommentVo> roots = new ArrayList<>();
-
-        // 1. 将所有节点放入 nodeMap
-        for (FlowerFriendsCommunityCommentVo node : nodes) {
-            nodeMap.put(node.getId(), node);
-        }
-
-        // 2. 遍历节点，根据 parentId 将子节点加入父节点的 child 列表
-        for (FlowerFriendsCommunityCommentVo node : nodes) {
-            if (node.getParentId() == null || node.getParentId() == 0) {
-                // 如果 parentId 为 null 或 0，表示是根节点
-                roots.add(node);
-            } else {
-                // 找到父节点并加入 child 列表
-                FlowerFriendsCommunityCommentVo parent = nodeMap.get(node.getParentId());
-                if (parent != null) {
-                    parent.getReplies().add(node);
-                }
-            }
-        }
-
-        return roots;
     }
 }

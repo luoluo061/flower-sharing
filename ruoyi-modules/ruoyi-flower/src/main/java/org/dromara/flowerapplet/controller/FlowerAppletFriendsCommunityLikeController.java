@@ -17,9 +17,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.flower.domain.bo.FlowerFriendsCommunityLikeBo;
 import org.dromara.flower.domain.vo.FlowerFriendsCommunityLikeVo;
-import org.dromara.flower.service.IFlowerFriendsCommunityLikeService;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityLikeService;
-import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

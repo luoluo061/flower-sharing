@@ -2,12 +2,10 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
-import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
 import org.dromara.flower.service.IFlowerFriendsCommunityService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
@@ -38,83 +36,54 @@ public class FlowerFriendsCommunityController extends BaseController {
 
     private final IFlowerFriendsCommunityService flowerFriendsCommunityService;
 
-    /**
-     * 查询花友圈列表
-     */
+    /** 列表 */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
     public TableDataInfo<FlowerFriendsCommunityVo> list(FlowerFriendsCommunityBo bo, PageQuery pageQuery) {
         return flowerFriendsCommunityService.queryPageList(bo, pageQuery);
     }
 
-    /**
-     * 导出花友圈列表
-     */
+    /** 导出 */
     @SaCheckPermission("flower:friendsCommunity:export")
-    @Log(title = "花友圈", businessType = BusinessType.EXPORT)
+    @Log(title = "弹窗管理", businessType = BusinessType.EXPORT) // ← 改文案
     @PostMapping("/export")
     public void export(FlowerFriendsCommunityBo bo, HttpServletResponse response) {
         List<FlowerFriendsCommunityVo> list = flowerFriendsCommunityService.queryList(bo);
-        ExcelUtil.exportExcel(list, "花友圈", FlowerFriendsCommunityVo.class, response);
+        ExcelUtil.exportExcel(list, "弹窗管理", FlowerFriendsCommunityVo.class, response); // ← 改文件名
     }
 
-    /**
-     * 获取花友圈详细信息
-     *
-     * @param id 主键
-     */
+    /** 详情 */
     @SaCheckPermission("flower:friendsCommunity:query")
     @GetMapping("/{id}")
-    public R<FlowerFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+    public R<FlowerFriendsCommunityVo> getInfo(@NotNull @PathVariable Long id) {
         return R.ok(flowerFriendsCommunityService.queryById(id));
     }
 
-    /**
-     * 新增花友圈
-     */
+    /** 新增 */
     @SaCheckPermission("flower:friendsCommunity:add")
-    @Log(title = "花友圈", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
-    @PostMapping()
+    @Log(title = "弹窗管理", businessType = BusinessType.INSERT)
+    @RepeatSubmit
+    @PostMapping
     public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
         return toAjax(flowerFriendsCommunityService.insertByBo(bo));
     }
 
-    /**
-     * 修改花友圈
-     */
+    /** 修改 */
     @SaCheckPermission("flower:friendsCommunity:edit")
-    @Log(title = "花友圈", businessType = BusinessType.UPDATE)
-    @RepeatSubmit()
-    @PutMapping()
+    @Log(title = "弹窗管理", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PutMapping
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
         return toAjax(flowerFriendsCommunityService.updateByBo(bo));
     }
 
-    /**
-     * 删除花友圈
-     *
-     * @param ids 主键串
-     */
+    /** 删除 */
     @SaCheckPermission("flower:friendsCommunity:remove")
-    @Log(title = "花友圈", businessType = BusinessType.DELETE)
+    @Log(title = "弹窗管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] ids) {
+    public R<Void> remove(@NotEmpty @PathVariable Long[] ids) {
         return toAjax(flowerFriendsCommunityService.deleteWithValidByIds(List.of(ids), true));
     }
 
-    /**
-     * 获取评论信息
-     *
-     * @param communityId 主键串
-     */
-    @Log(title = "花友圈", businessType = BusinessType.DELETE)
-    @GetMapping("/comment/{communityId}")
-    @SaIgnore
-    public List<FlowerFriendsCommunityCommentVo> getComment(@NotNull(message = "主键不能为空")
-                          @PathVariable Long communityId) {
-        return flowerFriendsCommunityService.getCommentById(communityId);
-    }
 }
+

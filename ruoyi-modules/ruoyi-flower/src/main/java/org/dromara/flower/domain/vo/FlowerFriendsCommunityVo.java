@@ -1,28 +1,21 @@
 package org.dromara.flower.domain.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import org.dromara.flower.domain.FlowerFriendsCommunity;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import org.dromara.common.excel.annotation.ExcelDictFormat;
-import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import org.dromara.flower.domain.FlowerFriendsCommunity;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 
 /**
- * 花友圈视图对象 flower_friends_community
+ * 弹窗管理 VO（对应表：flower_friends_community）
  *
- * @author mlhxj
- * @date 2024-12-30
+ * @author mlhx
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -32,115 +25,36 @@ public class FlowerFriendsCommunityVo implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
-    @ExcelProperty(value = "主键")
+    /** 弹窗ID */
+    @ExcelProperty(value = "弹窗ID")
     private Long id;
 
-    /**
-     * 部门id
-     */
-    @ExcelProperty(value = "部门id")
-    private Long deptId;
-
-    /**
-     * 标题
-     */
+    /** 弹窗标题 */
     @ExcelProperty(value = "标题")
     private String title;
 
-    /**
-     * 发布类型 0 视频 1 图文 2 其它
-     */
-    @ExcelProperty(value = "发布类型 0 视频 1 图文 2 其它")
-    private Long type;
+    /** 弹窗文字内容 */
+    @ExcelProperty(value = "文字内容")
+    private String textContent;
 
-    /**
-     * 会员ID
-     */
-    @ExcelProperty(value = "会员ID")
-    private String memberId;
+    /** 弹窗图片ID（popup_image_id） */
+    @ExcelProperty(value = "图片ID")
+    private String popupImageId;
 
-    /**
-     * 会员名称
-     */
-    @ExcelProperty(value = "会员名称")
-    private String memberName;
+    /** 弹窗图片URL（自动翻译） */
+    @ExcelProperty(value = "图片URL")
+    @Translation(type = TransConstant.OSS_ID_TO_URL, mapper = "popupImageId")
+    private String popupImageUrl;
 
-    /**
-     * 会员等级
-     */
-    @ExcelProperty(value = "会员等级")
-    private String grade;
+    /** 是否启用 0=否 1=是 */
+    @ExcelProperty(value = "是否启用")
+    private Integer isUsed;
 
-    /**
-     * 会员等级名称
-     */
-    @ExcelProperty(value = "会员等级会员等级名称")
-    private String gradeName;
+    /** 发布类型 1=首页 2=商品页 3=活动页 */
+    @ExcelProperty(value = "发布类型")
+    private Integer publishType;
 
-    /**
-     * 浏览量
-     */
-    @ExcelProperty(value = "浏览量")
-    private Long pageView;
-
-    /**
-     * 点赞数
-     */
-    @ExcelProperty(value = "点赞数")
-    private Long likes;
-
-    /**
-     * 是否点赞
-     */
-    @ExcelProperty(value = "是否点赞")
-    private int isLike;
-
-    /**
-     * 发表文本内容
-     */
-    @ExcelProperty(value = "发表文本内容")
-    private String content;
-
-    /**
-     * 视频或图片ID，多个文件逗号(,)分隔
-     */
-    @ExcelProperty(value = "视频或图片ID，多个文件逗号(,)分隔")
-    private String videoImagesIds;
-    /**
-     * 视频或图片URL 时间倒序
-     */
-    @ExcelProperty(value = "视频或图片URL")
-    private List<String> videoImagesUrl;
-
-    /**
-     * 是否隐匿 0 否 1是
-     */
-    @ExcelProperty(value = "是否隐匿 0 否 1是")
-    private Long status;
-
-    /**
-     * 创建时间
-     */
+    /** 创建时间 */
     @ExcelProperty(value = "创建时间")
     private Date createTime;
-
-    /**
-     * 创建人
-     */
-    @ExcelProperty(value = "创建人")
-    private Long createBy;
-
-    /**
-     * 头像url
-     */
-    @ExcelProperty(value = "头像url")
-    private String url;
-
-    /**
-     * 评论详情
-     */
-    private List<FlowerFriendsCommunityCommentVo> commentVos;
 }
