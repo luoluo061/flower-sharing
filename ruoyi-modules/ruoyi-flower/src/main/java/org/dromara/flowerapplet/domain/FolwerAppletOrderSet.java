@@ -78,6 +78,11 @@ public class FolwerAppletOrderSet extends TenantEntity {
     private String autoDvy;
 
     /**
+     * 税率
+     */
+    private Double tax;
+
+    /**
      * 删除标志 0 否 2 是
      */
     @TableLogic

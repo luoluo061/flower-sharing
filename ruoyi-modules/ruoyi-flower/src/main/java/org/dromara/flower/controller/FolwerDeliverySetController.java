@@ -86,8 +86,8 @@ public class FolwerDeliverySetController extends BaseController {
     @Log(title = "物流设置", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FolwerDeliverySetBo bo) {
-        return toAjax(folwerDeliverySetService.updateByBo(bo));
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody List<FolwerDeliverySetBo> bos) {
+        return toAjax(folwerDeliverySetService.updateByBo(bos));
     }
 
     /**

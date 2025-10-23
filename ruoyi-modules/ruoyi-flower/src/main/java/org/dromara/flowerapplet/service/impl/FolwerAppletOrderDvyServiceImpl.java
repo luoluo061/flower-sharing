@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 订单物流Service业务层处理
@@ -197,7 +194,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
 //            BigDecimal transfeeOld = folwerOrderVo.getFreightAmount();
 //            BigDecimal total = folwerOrderVo.getActualTotal().subtract(transfeeOld);
 
-            BigDecimal transfee = folwerAppletOrderDvy.getPackingAmount();
+            BigDecimal transfee = folwerAppletOrderDvy.getPackingAmount().setScale(0, RoundingMode.HALF_EVEN);
             BigDecimal total = folwerOrderVo.getTotal().add(transfee);
             FolwerOrderBo folwerOrderBo = new FolwerOrderBo();
             BeanUtil.copyProperties(folwerOrderVo, folwerOrderBo);
@@ -469,6 +466,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
         Double size = 0.0;
         //购买花的数量
         Integer productNum = 0;
+        Map<Long, FolwerSkuVo> folwerSkuVoMap = new HashMap<>();
         if (bo.getBasketIds() != null) {
             for (String basketId : bo.getBasketIds()) {
                 FolwerAppletBasketVo folwerAppletBasketVo = folwerBasketService.queryById(Long.parseLong(basketId));
@@ -479,6 +477,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                     size = skuSize;
                 }
                 productNum = Math.toIntExact(productNum + folwerAppletBasketVo.getBasketCount());
+                folwerSkuVoMap.put(folwerSkuVo.getSkuId(), folwerSkuVo);
             }
         } else {
             if (bo.getSkuId() != null) {
@@ -486,6 +485,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                 flowerWeight = flowerWeight + folwerSkuVo.getWeight() * bo.getProdCount();
                 size = Double.valueOf(folwerSkuVo.getSize());
                 productNum = bo.getProdCount();
+                folwerSkuVoMap.put(folwerSkuVo.getSkuId(), folwerSkuVo);
             }
         }
 
@@ -503,8 +503,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                     deliveryBoxVo = folwerDeliveryBoxVo;
                 }
             }
-            //箱子的冰瓶数
-            Integer iceBottleBoxNum = (int)Math.ceil(productNum * deliveryBoxVo.getIceBunch());
+
             //花的冰瓶数
             Integer iceBottleFlowerNum = 0;
             if (bo.getBasketIds() != null) {
@@ -518,12 +517,12 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                         Integer iceBottlePNum = (int) Math.ceil(folwerDeliverySetVo.getIceBottleNum() * folwerAppletBasketVo.getBasketCount());
                         iceBottleFlowerNum = Math.toIntExact(iceBottleFlowerNum + iceBottlePNum);
                     }
-                    BigDecimal laborFlowerPrace = folwerDeliverySetVo.getLaborPrice().multiply(new BigDecimal(folwerAppletBasketVo.getBasketCount()));
+//                    BigDecimal laborFlowerPrace = folwerDeliverySetVo.getLaborPrice().multiply(new BigDecimal(folwerAppletBasketVo.getBasketCount()));
                     BigDecimal materialFlowerPrace = new BigDecimal(0);
                     if (folwerDeliverySetVo.getStatus() == 1L){
                         materialFlowerPrace = folwerDeliverySetVo.getSecondLaborPrice().multiply(new BigDecimal(folwerAppletBasketVo.getBasketCount()));
                     }
-                    BigDecimal flowerLab = laborFlowerPrace.add(materialFlowerPrace);
+                    BigDecimal flowerLab = materialFlowerPrace.add(materialFlowerPrace);
                     laborPrace = laborPrace.add(flowerLab);
                 }
             } else {
@@ -537,41 +536,48 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                         iceBottleFlowerNum = Math.toIntExact(iceBottleFlowerNum + iceBottlePNum);
                     }
 
-                    BigDecimal laborFlowerPrace = folwerDeliverySetVo.getLaborPrice().multiply(new BigDecimal(bo.getProdCount()));
+//                    BigDecimal laborFlowerPrace = folwerDeliverySetVo.getLaborPrice().multiply(new BigDecimal(bo.getProdCount()));
                     BigDecimal materialFlowerPrace = new BigDecimal(0);
                     if (folwerDeliverySetVo.getStatus() == 1L){
                         materialFlowerPrace = folwerDeliverySetVo.getSecondLaborPrice().multiply(new BigDecimal(bo.getProdCount()));
                     }
-                    laborPrace = laborFlowerPrace.add(materialFlowerPrace);
-
+                    laborPrace = laborPrace.add(materialFlowerPrace);
                 }
             }
 
+            //箱子的冰瓶数
+//            Integer iceBottleBoxNum = (int)Math.ceil(productNum * deliveryBoxVo.getIceBunch());
+            Integer iceBottleBoxNum = (int)Math.ceil(deliveryBoxVo.getBundle() * deliveryBoxVo.getIceBunch());
+            //每箱冰瓶重量
+            Double iceBottleBoxWeight = deliveryBoxVo.getIceBottleWeight() * iceBottleBoxNum;
+            double flowerBoxWeight = deliveryBoxVo.getPackagPrice() - iceBottleBoxWeight;
+            boxNum = (int)Math.ceil(flowerWeight / flowerBoxWeight);
             //冰瓶总数
-            Integer iceBottleTotalNum = iceBottleBoxNum + iceBottleFlowerNum;
+            Integer iceBottleTotalNum = iceBottleBoxNum * boxNum + iceBottleFlowerNum;
             //冰瓶价格
             BigDecimal iceBottlePrace = deliveryBoxVo.getIceBottleCost().multiply(new BigDecimal(iceBottleTotalNum));
             //冰瓶总重量
-            Double iceBottleWeight = iceBottleTotalNum * deliveryBoxVo.getIceBottleWeight();
-            Double combinedFlowerIceWeight = flowerWeight + iceBottleWeight;
+            Double iceBottleWeight = boxNum * iceBottleBoxWeight;
+//            Double combinedFlowerIceWeight = flowerWeight + iceBottleWeight;
 
-            Integer boxNumWeight = (int)Math.ceil(combinedFlowerIceWeight/deliveryBoxVo.getPackagPrice());
-            Integer boxNumbunch = (int)Math.ceil(productNum / deliveryBoxVo.getIceBunch());
-            if (boxNumWeight > boxNumbunch){
-                boxNum = boxNumbunch;
-            }else if (boxNumWeight < boxNumbunch){
-                boxNum = boxNumWeight;
-            }
+//            Integer boxNumWeight = (int)Math.ceil(combinedFlowerIceWeight/deliveryBoxVo.getPackagPrice());
+//            Integer boxNumbunch = (int)Math.ceil(productNum / deliveryBoxVo.getIceBunch());
+//            if (boxNumWeight > boxNumbunch){
+//                boxNum = boxNumbunch;
+//            }else if (boxNumWeight < boxNumbunch){
+//                boxNum = boxNumWeight;
+//            }
             Double boxWeight = boxNum * deliveryBoxVo.getBoxWeight();
             weight = flowerWeight + iceBottleWeight + boxWeight;
-
             //箱子费用
             BigDecimal boxPrace = deliveryBoxVo.getCostPrice().multiply(new BigDecimal(boxNum));
+            //人工费
+            laborPrace = laborPrace.add(deliveryBoxVo.getVolume());
+
             Integer insulationTotalNum = 0;
             BigDecimal insulationPrace = new BigDecimal(0);
-
             //保温棉
-            if(bo.getInsulationNum() == null || bo.getInsulationNum().equals(0L)){
+            if(bo.getInsulationNum() == null){ // || bo.getInsulationNum().equals(0L)){
                 double insulationTemperature = Math.abs(Math.ceil(weatherByTemperature - deliveryBoxVo.getUseInsulationStarttime()));
                 double insulationTemperatureNum = Math.ceil(insulationTemperature / deliveryBoxVo.getUseInsulationEndtime());
                 BigDecimal insulationPra= deliveryBoxVo.getInsulationCotton().multiply(new BigDecimal(insulationTemperatureNum));
@@ -582,7 +588,6 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
                 insulationPrace = insulationPra.multiply(new BigDecimal(boxNum));
                 insulationTotalNum = Math.multiplyExact(boxNum, bo.getInsulationNum().intValue());
             }
-
 
         // 调用累加方法
         materialPrace = insulationPrace.add(iceBottlePrace);
@@ -673,15 +678,15 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
         folwerAppletOrderDvy.setDvyWeight(keepTwoDecimal(weight));
         folwerAppletOrderDvy.setFlowerNum(Long.valueOf(productNum));
         folwerAppletOrderDvy.setDvyNum(Long.valueOf(boxNum));
-        folwerAppletOrderDvy.setFreightAmount(transfee);
+        folwerAppletOrderDvy.setFreightAmount(transfee.setScale(0, RoundingMode.HALF_EVEN));
         folwerAppletOrderDvy.setInsulationNum(Long.valueOf(insulationTotalNum));
-        folwerAppletOrderDvy.setInsulationAmount(insulationPrace);
+        folwerAppletOrderDvy.setInsulationAmount(insulationPrace.setScale(0, RoundingMode.HALF_EVEN));
         folwerAppletOrderDvy.setIceNum(Long.valueOf(iceBottleTotalNum));
-        folwerAppletOrderDvy.setIceAmount(iceBottlePrace);
-        folwerAppletOrderDvy.setLaborPrice(laborPrace);
-        folwerAppletOrderDvy.setBoxPrice(packagePrace);
-        folwerAppletOrderDvy.setMaterialPrace(materialTotalPrace);
-        folwerAppletOrderDvy.setPackingAmount(totalPrice);
+        folwerAppletOrderDvy.setIceAmount(iceBottlePrace.setScale(0, RoundingMode.HALF_EVEN));
+        folwerAppletOrderDvy.setLaborPrice(laborPrace.setScale(0, RoundingMode.HALF_EVEN));
+        folwerAppletOrderDvy.setBoxPrice(packagePrace.setScale(0, RoundingMode.HALF_EVEN));
+        folwerAppletOrderDvy.setMaterialPrace(materialTotalPrace.setScale(0, RoundingMode.HALF_EVEN));
+        folwerAppletOrderDvy.setPackingAmount(totalPrice.setScale(0, RoundingMode.HALF_EVEN));
 
         return folwerAppletOrderDvy;
         }

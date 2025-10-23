@@ -87,5 +87,10 @@ public class FolwerOrderSetBo extends BaseEntity {
 //    @NotBlank(message = "自动收货时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private String autoDvy;
 
+    /**
+     * 税率
+     */
+    private Double tax;
+
 
 }

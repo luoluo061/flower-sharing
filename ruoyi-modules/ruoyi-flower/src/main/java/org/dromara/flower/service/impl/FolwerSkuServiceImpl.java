@@ -36,10 +36,7 @@ import org.dromara.flower.service.IFolwerSkuService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 单品SKUService业务层处理
@@ -245,36 +242,52 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
             folwerProductBo.setTotalStocks(maxStocks);
             folwerAppletProductService.updateByBo(folwerProductBo);
 
-//            FolwerDeliverySetBo folwerDeliverySetBo = new FolwerDeliverySetBo();
-//            folwerDeliverySetBo.setProdId(add.getProdId());
-//            folwerDeliverySetBo.setSkuId(add.getSkuId());
-//            List<SysDictDataVo> sysDictDataVos = dictTypeService.selectDictDataByType("folwer_delivery_set");
-//            SysDictDataVo dataVo = getDictData(sysDictDataVos, "冰瓶每个费用");
-//            folwerDeliverySetBo.setIceBottle(new BigDecimal(dataVo.getDictLabel()));
-//            SysDictDataVo dataVo1 = getDictData(sysDictDataVos, "冰瓶每箱数量");
-//            folwerDeliverySetBo.setIceBottleNum(Long.valueOf(dataVo1.getDictLabel()));
-//            SysDictDataVo dataVo2 = getDictData(sysDictDataVos, "冰瓶重量");
-//            folwerDeliverySetBo.setIceBottleWeight(Double.valueOf(dataVo2.getDictLabel()));
-//            SysDictDataVo dataVo3 = getDictData(sysDictDataVos, "保温棉费用");
-//            folwerDeliverySetBo.setInsulationCotton(new BigDecimal(dataVo3.getDictLabel()));
-//            SysDictDataVo dataVo4 = getDictData(sysDictDataVos, "保温棉开始使用温度");
-//            folwerDeliverySetBo.setUseInsulationStarttime(Long.valueOf(dataVo4.getDictLabel()));
-//            SysDictDataVo dataVo5 = getDictData(sysDictDataVos, "保温棉温度梯度");
-//            folwerDeliverySetBo.setUseInsulationEndtime(Long.valueOf(dataVo5.getDictLabel()));
-//            SysDictDataVo dataVo6 = getDictData(sysDictDataVos, "人工费");
-//            folwerDeliverySetBo.setLaborPrice(new BigDecimal(dataVo6.getDictLabel()));
-//
-//            Boolean b = folwerDeliverySetService.insertByBo(folwerDeliverySetBo);
+            FolwerDeliverySetBo folwerDeliverySetBo = new FolwerDeliverySetBo();
+            folwerDeliverySetBo.setProdId(add.getProdId());
+            folwerDeliverySetBo.setSkuId(add.getSkuId());
+            folwerDeliverySetBo.setSkuName(add.getColour());
+            List<SysDictDataVo> sysDictDataVos = dictTypeService.selectDictDataByType("folwer_delivery_set");
+            SysDictDataVo dataVo6 = getDictData(sysDictDataVos, "人工费");
+            folwerDeliverySetBo.setLaborPrice(new BigDecimal(dataVo6.getDictLabel()));
+            SysDictDataVo dataVo = getDictData(sysDictDataVos, "二次人工费");
+            folwerDeliverySetBo.setSecondLaborPrice(new BigDecimal(dataVo.getDictLabel()));
+            SysDictDataVo dataVo1 = getDictData(sysDictDataVos, "冰瓶数量/扎");
+            folwerDeliverySetBo.setIceBottleNum(Double.valueOf(dataVo1.getDictLabel()));
+            Boolean b = folwerDeliverySetService.insertByBo(folwerDeliverySetBo);
         }
         return flag;
     }
 
+//    private SysDictDataVo getDictData(List<SysDictDataVo> sysDictDataVos, String dictValue) {
+////        SysDictDataVo dataVo = sysDictDataVos.stream()
+////            .filter(sysDictDataVo -> sysDictDataVo.getDictValue() == dictValue)
+////            .findFirst()
+////            .orElse(null);
+//
+//        if (sysDictDataVos == null){
+//            return null;
+//        }
+//        SysDictDataVo dataVo = new SysDictDataVo();
+//        for (SysDictDataVo sysDictDataVo : sysDictDataVos){
+//            if (sysDictDataVo.getDictValue().equals(dictValue)){
+//                dataVo = sysDictDataVo;
+//            }
+//        }
+//
+//        return dataVo;
+//    }
+
     private SysDictDataVo getDictData(List<SysDictDataVo> sysDictDataVos, String dictValue) {
-        SysDictDataVo dataVo = sysDictDataVos.stream()
-            .filter(sysDictDataVo -> sysDictDataVo.getDictValue() == dictValue)
-            .findFirst()
+        // 使用Optional对集合进行判空处理
+        return Optional.ofNullable(sysDictDataVos)
+            // 如果集合不为空，则进行流处理
+            .flatMap(list -> list.stream()
+                // 过滤出dictValue匹配的元素
+                .filter(vo -> dictValue.equals(vo.getDictValue()))
+                // 取第一个匹配的元素
+                .findFirst())
+            // 如果集合为空或没有匹配元素，返回null
             .orElse(null);
-        return dataVo;
     }
 
     @Override

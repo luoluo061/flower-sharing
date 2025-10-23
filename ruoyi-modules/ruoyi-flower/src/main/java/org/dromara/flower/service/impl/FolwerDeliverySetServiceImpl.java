@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.domain.FolwerDeliveryPrice;
+import org.dromara.flower.domain.bo.FolwerDeliveryPriceBo;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerDeliverySetBo;
 import org.dromara.flower.domain.vo.FolwerDeliverySetVo;
@@ -15,6 +17,7 @@ import org.dromara.flower.domain.FolwerDeliverySet;
 import org.dromara.flower.mapper.FolwerDeliverySetMapper;
 import org.dromara.flower.service.IFolwerDeliverySetService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -105,14 +108,19 @@ public class FolwerDeliverySetServiceImpl implements IFolwerDeliverySetService {
     /**
      * 修改物流设置
      *
-     * @param bo 物流设置
+     * @param bos 物流设置
      * @return 是否修改成功
      */
     @Override
-    public Boolean updateByBo(FolwerDeliverySetBo bo) {
-        FolwerDeliverySet update = MapstructUtils.convert(bo, FolwerDeliverySet.class);
-        validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+    public Boolean updateByBo(List<FolwerDeliverySetBo> bos) {
+        List<FolwerDeliverySet> deliverySetList = new ArrayList<>();
+        for (FolwerDeliverySetBo bo : bos){
+            FolwerDeliverySet update = MapstructUtils.convert(bo, FolwerDeliverySet.class);
+            validEntityBeforeSave(update);
+            deliverySetList.add(update);
+        }
+        boolean b = baseMapper.insertOrUpdateBatch(deliverySetList);
+        return b;
     }
 
     /**

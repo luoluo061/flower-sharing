@@ -15,6 +15,7 @@ import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IAppletUserAuthService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.AppletUserAuthlogBo;
 import org.dromara.flower.domain.vo.AppletUserAuthlogVo;

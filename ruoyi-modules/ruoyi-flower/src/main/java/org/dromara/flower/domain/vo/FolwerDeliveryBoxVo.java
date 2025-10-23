@@ -56,10 +56,10 @@ public class FolwerDeliveryBoxVo implements Serializable {
     private Long height;
 
     /**
-     * 容积
+     * 人工费
      */
-    @ExcelProperty(value = "容积")
-    private Long volume;
+    @ExcelProperty(value = "人工费")
+    private BigDecimal volume;
 
     /**
      * 箱子重量

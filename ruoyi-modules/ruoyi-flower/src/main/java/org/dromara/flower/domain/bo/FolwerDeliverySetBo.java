@@ -36,6 +36,11 @@ public class FolwerDeliverySetBo extends BaseEntity {
     private Long skuId;
 
     /**
+     * 规格名称
+     */
+    private String skuName;
+
+    /**
      * 是否使用 0否 1是
      */
     private Long status;
