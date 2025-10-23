@@ -8,10 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serial;
 
 /**
- * 花友圈对象 flower_friends_community
- *
- * @author mlhxj
- * @date 2024-12-30
+ * 弹窗管理实体 对应表：flower_friends_community
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -21,71 +18,33 @@ public class FlowerFriendsCommunity extends TenantEntity {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
+    /** 主键ID */
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
-    /**
-     * 部门id
-     */
+    /** 部门ID（保留即可） */
     private Long deptId;
 
-    /**
-     * 删除标志 0 否 2 是
-     */
+    /** 逻辑删除 0=否 1=是（与你DDL一致的话用0/1） */
     @TableLogic
-    private Long delFlag;
+    private Integer delFlag;
 
-    /**
-     * 标题
-     */
+    /** 弹窗标题 */
     private String title;
 
-    /**
-     * 发布类型 0 视频 1 图文 2 其它
-     */
-    private Long type;
+    /** 弹窗文字内容（text_content） */
+    @TableField("text_content")
+    private String textContent;
 
-    /**
-     * 会员ID
-     */
-    private String memberId;
+    /** 弹窗图片ID（popup_image_id） */
+    @TableField("popup_image_id")
+    private String popupImageId;
 
-    /**
-     * 会员名称
-     */
-    private String memberName;
+    /** 是否启用 0=否 1=是（is_used） */
+    @TableField("is_used")
+    private Integer isUsed;
 
-    /**
-     * 会员等级
-     */
-    private String grade;
-
-    /**
-     * 浏览量
-     */
-    private Long pageView;
-
-    /**
-     * 点赞数
-     */
-    private Long likes;
-
-    /**
-     * 发表文本内容
-     */
-    private String content;
-
-    /**
-     * 视频或图片ID，多个文件逗号(,)分隔
-     */
-    private String videoImagesIds;
-
-    /**
-     * 是否隐匿 0 否 1是
-     */
-    private Long status;
-
-
+    /** 发布类型 1=首页 2=商品页 3=活动页（publish_type） */
+    @TableField("publish_type")
+    private Integer publishType;
 }

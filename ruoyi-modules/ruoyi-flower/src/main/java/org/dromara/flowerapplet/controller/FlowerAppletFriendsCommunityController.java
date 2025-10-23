@@ -1,40 +1,38 @@
 package org.dromara.flowerapplet.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.*;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
+import org.dromara.common.log.annotation.Log;
+import org.dromara.common.web.core.BaseController;
+import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
-import org.dromara.common.excel.utils.ExcelUtil;
-import org.dromara.common.idempotent.annotation.RepeatSubmit;
-import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
-import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.excel.utils.ExcelUtil;
+import org.dromara.flowerapplet.domain.vo.FlowerAppletFriendsCommunityVo;
+import org.dromara.flowerapplet.domain.bo.FlowerAppletFriendsCommunityBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.web.core.BaseController;
-import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
-import org.dromara.flower.domain.vo.FlowerFriendsCommunityCommentVo;
-import org.dromara.flower.domain.vo.FlowerFriendsCommunityVo;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
- * 小程序端 花友圈
+ * 花友圈
  *
  * @author mlhxj
- * @date 2024-12-30
+ * @date 2025-10-20
  */
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/flowerApplet/friendsCommunity")
+@RequestMapping("/applet/flower/friendsCommunity")
+
 public class FlowerAppletFriendsCommunityController extends BaseController {
 
     private final IFlowerAppletFriendsCommunityService flowerAppletFriendsCommunityService;
@@ -44,7 +42,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
-    public TableDataInfo<FlowerFriendsCommunityVo> list(FlowerFriendsCommunityBo bo, PageQuery pageQuery) {
+    public TableDataInfo<FlowerAppletFriendsCommunityVo> list(FlowerAppletFriendsCommunityBo bo, PageQuery pageQuery) {
         return flowerAppletFriendsCommunityService.queryPageList(bo, pageQuery);
     }
 
@@ -54,9 +52,9 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @SaCheckPermission("flower:friendsCommunity:export")
     @Log(title = "花友圈", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(FlowerFriendsCommunityBo bo, HttpServletResponse response) {
-        List<FlowerFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
-        ExcelUtil.exportExcel(list, "花友圈", FlowerFriendsCommunityVo.class, response);
+    public void export(FlowerAppletFriendsCommunityBo bo, HttpServletResponse response) {
+        List<FlowerAppletFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
+        ExcelUtil.exportExcel(list, "花友圈", FlowerAppletFriendsCommunityVo.class, response);
     }
 
     /**
@@ -66,7 +64,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:query")
     @GetMapping("/{id}")
-    public R<FlowerFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<FlowerAppletFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(flowerAppletFriendsCommunityService.queryById(id));
     }
@@ -78,7 +76,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
         return toAjax(flowerAppletFriendsCommunityService.insertByBo(bo));
     }
 
@@ -89,7 +87,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     @Log(title = "花友圈", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerFriendsCommunityBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
         return toAjax(flowerAppletFriendsCommunityService.updateByBo(bo));
     }
 
@@ -104,18 +102,5 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(flowerAppletFriendsCommunityService.deleteWithValidByIds(List.of(ids), true));
-    }
-
-    /**
-     * 获取评论信息
-     *
-     * @param communityId 主键串
-     */
-    @Log(title = "花友圈", businessType = BusinessType.DELETE)
-    @GetMapping("/comment/{communityId}")
-    @SaIgnore
-    public List<FlowerFriendsCommunityCommentVo> getComment(@NotNull(message = "主键不能为空")
-                          @PathVariable Long communityId) {
-        return flowerAppletFriendsCommunityService.getCommentById(communityId);
     }
 }

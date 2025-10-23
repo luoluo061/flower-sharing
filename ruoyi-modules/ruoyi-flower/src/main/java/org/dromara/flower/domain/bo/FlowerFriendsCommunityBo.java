@@ -10,87 +10,35 @@ import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
 /**
- * 花友圈业务对象 flower_friends_community
- *
- * @author mlhxj
- * @date 2024-12-30
+ * 弹窗管理 BO（对应表：flower_friends_community）
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = FlowerFriendsCommunity.class, reverseConvertGenerate = false)
 public class FlowerFriendsCommunityBo extends BaseEntity {
 
-    /**
-     * 主键
-     */
-//    @NotNull(message = "主键不能为空", groups = { AddGroup.class, EditGroup.class })
+    /** 弹窗ID */
+    @NotNull(message = "主键不能为空", groups = { EditGroup.class })
     private Long id;
 
-    /**
-     * 部门id
-     */
-//    @NotNull(message = "部门id不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long deptId;
-
-    /**
-     * 标题
-     */
-//    @NotBlank(message = "标题不能为空", groups = { AddGroup.class, EditGroup.class })
+    /** 弹窗标题 */
+    @Size(max = 255, message = "标题长度不能超过255")
     private String title;
 
-    /**
-     * 发布类型 0 视频 1 图文 2 其它
-     */
-//    @NotNull(message = "发布类型 0 视频 1 图文 2 其它不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long type;
+    /** 弹窗文字内容 */
+    @Size(max = 255, message = "文字长度不能超过255")
+    private String textContent;     // ← 对应列 text_content
 
-    /**
-     * 会员ID
-     */
-//    @NotBlank(message = "会员ID不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String memberId;
+    /** 弹窗图片ID（或URL） */
+    @Size(max = 64, message = "图片ID长度不能超过64")
+    private String popupImageId;    // ← 对应列 popup_image_id
 
-    /**
-     * 会员名称
-     */
-//    @NotBlank(message = "会员名称不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String memberName;
+    /** 是否启用 0=否 1=是 */
+    @NotNull(message = "是否启用不能为空", groups = { AddGroup.class, EditGroup.class })
+    @Min(0) @Max(1)
+    private Integer isUsed;
 
-    /**
-     * 会员等级
-     */
-//    @NotBlank(message = "会员等级不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String grade;
-
-    /**
-     * 浏览量
-     */
-//    @NotNull(message = "浏览量不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long pageView;
-
-    /**
-     * 点赞数
-     */
-//    @NotNull(message = "点赞数不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long likes;
-
-    /**
-     * 发表文本内容
-     */
-//    @NotBlank(message = "发表文本内容不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String content;
-
-    /**
-     * 视频或图片ID，多个文件逗号(,)分隔
-     */
-//    @NotBlank(message = "视频或图片URL，多个文件逗号(,)分隔不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String videoImagesIds;
-
-    /**
-     * 是否隐匿 0 否 1是
-     */
-//    @NotNull(message = "是否隐匿 0 否 1是不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long status;
-
-
+    /** 发布类型 1=首页 2=商品页 3=活动页 */
+    @NotNull(message = "发布类型不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Integer publishType;
 }
