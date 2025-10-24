@@ -23,7 +23,7 @@ import org.dromara.flower.domain.bo.FlowerFriendsCommunityBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
- * 花友圈
+ * 弹窗管理
  *
  * @author mlhxj
  * @date 2024-12-30

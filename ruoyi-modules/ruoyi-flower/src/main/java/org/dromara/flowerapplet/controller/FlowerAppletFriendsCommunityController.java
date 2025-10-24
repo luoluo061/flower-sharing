@@ -23,7 +23,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
 
 /**
- * 花友圈
+ * 弹窗管理
  *
  * @author mlhxj
  * @date 2025-10-20
@@ -32,13 +32,12 @@ import org.dromara.flowerapplet.service.IFlowerAppletFriendsCommunityService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/applet/flower/friendsCommunity")
-
 public class FlowerAppletFriendsCommunityController extends BaseController {
 
     private final IFlowerAppletFriendsCommunityService flowerAppletFriendsCommunityService;
 
     /**
-     * 查询花友圈列表
+     * 查询弹窗管理列表
      */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
@@ -47,10 +46,10 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     }
 
     /**
-     * 导出花友圈列表
+     * 导出弹窗管理列表
      */
     @SaCheckPermission("flower:friendsCommunity:export")
-    @Log(title = "花友圈", businessType = BusinessType.EXPORT)
+    @Log(title = "管理列表", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(FlowerAppletFriendsCommunityBo bo, HttpServletResponse response) {
         List<FlowerAppletFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
@@ -58,7 +57,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     }
 
     /**
-     * 获取花友圈详细信息
+     * 获取弹窗管理详细信息
      *
      * @param id 主键
      */
@@ -70,10 +69,10 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     }
 
     /**
-     * 新增花友圈
+     * 新增弹窗管理
      */
     @SaCheckPermission("flower:friendsCommunity:add")
-    @Log(title = "花友圈", businessType = BusinessType.INSERT)
+    @Log(title = "管理列表", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
@@ -81,10 +80,10 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     }
 
     /**
-     * 修改花友圈
+     * 修改弹窗管理
      */
     @SaCheckPermission("flower:friendsCommunity:edit")
-    @Log(title = "花友圈", businessType = BusinessType.UPDATE)
+    @Log(title = "管理列表", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowerAppletFriendsCommunityBo bo) {
@@ -92,12 +91,12 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
     }
 
     /**
-     * 删除花友圈
+     * 删除弹窗管理
      *
      * @param ids 主键串
      */
     @SaCheckPermission("flower:friendsCommunity:remove")
-    @Log(title = "花友圈", businessType = BusinessType.DELETE)
+    @Log(title = "管理列表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {

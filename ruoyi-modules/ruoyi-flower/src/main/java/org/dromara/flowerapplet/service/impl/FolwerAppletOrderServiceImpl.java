@@ -357,6 +357,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //            if (bo.getDvyId() != null) {
                 FolwerAppletOrderDvyBo folwerAppletOrderDvyBo = new FolwerAppletOrderDvyBo();
                 folwerAppletOrderDvyBo.setOrderId(add.getOrderId());
+                if (bo.getDvyId() != null) {
+                    folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
+                }
 //                folwerAppletOrderDvyBo.setDvyId(Long.valueOf(bo.getDvyId()));
 //                folwerAppletOrderDvyBo.setInsulationNum(Long.valueOf(bo.getInsulationNum()));
                 folwerAppletOrderDvyBo.setBasketIds(bo.getBasketIds());
