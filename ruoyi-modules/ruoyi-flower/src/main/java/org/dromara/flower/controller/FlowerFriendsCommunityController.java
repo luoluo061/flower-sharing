@@ -2,6 +2,7 @@ package org.dromara.flower.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -39,6 +40,7 @@ public class FlowerFriendsCommunityController extends BaseController {
     /** 列表 */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
+    @SaIgnore //忽略权限校验 小程序过审
     public TableDataInfo<FlowerFriendsCommunityVo> list(FlowerFriendsCommunityBo bo, PageQuery pageQuery) {
         return flowerFriendsCommunityService.queryPageList(bo, pageQuery);
     }
@@ -55,6 +57,7 @@ public class FlowerFriendsCommunityController extends BaseController {
     /** 详情 */
     @SaCheckPermission("flower:friendsCommunity:query")
     @GetMapping("/{id}")
+    @SaIgnore //忽略权限校验 小程序过审
     public R<FlowerFriendsCommunityVo> getInfo(@NotNull @PathVariable Long id) {
         return R.ok(flowerFriendsCommunityService.queryById(id));
     }

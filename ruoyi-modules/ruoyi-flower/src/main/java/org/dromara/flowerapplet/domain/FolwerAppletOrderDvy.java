@@ -1,5 +1,6 @@
 package org.dromara.flowerapplet.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.tenant.core.TenantEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -87,6 +88,11 @@ public class FolwerAppletOrderDvy extends TenantEntity {
      * 保温棉数量
      */
     private Long insulationNum;
+
+    /**
+     * 保温棉总数量
+     */
+    private Long insulationTotalNum;
 
     /**
      * 保温棉费用

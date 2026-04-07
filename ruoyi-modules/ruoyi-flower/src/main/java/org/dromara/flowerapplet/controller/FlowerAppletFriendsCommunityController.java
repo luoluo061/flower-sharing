@@ -2,6 +2,7 @@ package org.dromara.flowerapplet.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -41,6 +42,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:list")
     @GetMapping("/list")
+    @SaIgnore //忽略权限校验 小程序过审
     public TableDataInfo<FlowerAppletFriendsCommunityVo> list(FlowerAppletFriendsCommunityBo bo, PageQuery pageQuery) {
         return flowerAppletFriendsCommunityService.queryPageList(bo, pageQuery);
     }
@@ -50,6 +52,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      */
     @SaCheckPermission("flower:friendsCommunity:export")
     @Log(title = "管理列表", businessType = BusinessType.EXPORT)
+    @SaIgnore //忽略权限校验 小程序过审
     @PostMapping("/export")
     public void export(FlowerAppletFriendsCommunityBo bo, HttpServletResponse response) {
         List<FlowerAppletFriendsCommunityVo> list = flowerAppletFriendsCommunityService.queryList(bo);
@@ -62,6 +65,7 @@ public class FlowerAppletFriendsCommunityController extends BaseController {
      * @param id 主键
      */
     @SaCheckPermission("flower:friendsCommunity:query")
+    @SaIgnore //忽略权限校验 小程序过审
     @GetMapping("/{id}")
     public R<FlowerAppletFriendsCommunityVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {

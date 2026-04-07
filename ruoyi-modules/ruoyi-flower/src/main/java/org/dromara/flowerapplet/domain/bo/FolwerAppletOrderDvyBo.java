@@ -137,5 +137,9 @@ public class FolwerAppletOrderDvyBo extends BaseEntity {
      */
     private String userId;
 
+    /**
+     * 是否是继续付款 1继续付款，0不是
+     */
+    private int isContinuePay;
 
 }

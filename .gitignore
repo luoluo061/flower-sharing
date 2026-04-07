@@ -21,6 +21,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+.run
 *.iws
 *.iml
 *.ipr
@@ -48,3 +49,10 @@ nbdist/
 .flattened-pom.xml
 /logs/
 /ruoyi-admin/target/
+/ruoyi-extend/**/target/
+/ruoyi-modules/**/target/
+hs_err_pid*
+replay_pid*
+/.m2/
+/.msp/
+/.tools/

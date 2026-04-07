@@ -166,12 +166,12 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
                 } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
                     if (categoryId == 0L) {
                         List<FolwerAppletProductVo> productVos = baseMapper.selectListByAll(pageSize, offset);
-                        if (!productVos.isEmpty()) {
-                            productVos.forEach(item -> {
-                                item.setOriPrice(new BigDecimal("-2"));
-                                item.setDerlinePrice(new BigDecimal("-2"));
-                            });
-                        }
+//                        if (!productVos.isEmpty()) {
+//                            productVos.forEach(item -> {
+//                                item.setOriPrice(new BigDecimal("-2"));
+//                                item.setDerlinePrice(new BigDecimal("-2"));
+//                            });
+//                        }
                         return productVos;
                     }
 //                    List<FolwerAppletProductVo> productVos = baseMapper.selectAllByCategoryId(categoryId, pageSize, offset);
@@ -201,12 +201,12 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
                         productVoAll.addAll(productVos);
                     }
                     List<FolwerAppletProductVo> productVos = productVoAll.stream().skip(offset).limit(pageSize).collect(Collectors.toList());
-                    if (!productVos.isEmpty()) {
-                        productVos.forEach(item -> {
-                            item.setOriPrice(new BigDecimal("-2"));
-                            item.setDerlinePrice(new BigDecimal("-2"));
-                        });
-                    }
+//                    if (!productVos.isEmpty()) {
+//                        productVos.forEach(item -> {
+//                            item.setOriPrice(new BigDecimal("-2"));
+//                            item.setDerlinePrice(new BigDecimal("-2"));
+//                        });
+//                    }
                     return productVos;
                 }
 
@@ -372,20 +372,20 @@ public class FolwerAppletProductServiceImpl implements IFolwerAppletProductServi
 //                  bo.setStatus(1L);
                     LambdaQueryWrapper<FolwerAppletProduct> lqw = buildQueryWrapper(bo);
                     Page<FolwerAppletProductVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-                    if (!result.getRecords().isEmpty()) {
-                        result.getRecords().forEach(item -> {
-//                            if (item.getNormsType().equals(1L)) {
-//                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
-//                                folwerAppletSkuBo.setProdId(item.getId());
-//                                folwerAppletSkuBo.setStatus(1L);
-//                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
-//                                item.setSkuList(folwerAppletSkuVos);
-//
-//                            }
-                            item.setOriPrice(new BigDecimal("-2"));
-                            item.setDerlinePrice(new BigDecimal("-2"));
-                        });
-                    }
+//                    if (!result.getRecords().isEmpty()) {
+//                        result.getRecords().forEach(item -> {
+////                            if (item.getNormsType().equals(1L)) {
+////                                FolwerAppletSkuBo folwerAppletSkuBo = new FolwerAppletSkuBo();
+////                                folwerAppletSkuBo.setProdId(item.getId());
+////                                folwerAppletSkuBo.setStatus(1L);
+////                                List<FolwerAppletSkuVo> folwerAppletSkuVos = folwerAppletSkuService.queryList(folwerAppletSkuBo);
+////                                item.setSkuList(folwerAppletSkuVos);
+////
+////                            }
+//                            item.setOriPrice(new BigDecimal("-2"));
+//                            item.setDerlinePrice(new BigDecimal("-2"));
+//                        });
+//                    }
 
 //                    if (!result.getRecords().isEmpty()) {
 //                        // 批量查询 SKU 数据

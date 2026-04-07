@@ -104,6 +104,12 @@ public class FolwerAppletOrderDvyVo implements Serializable {
     private Long insulationNum;
 
     /**
+     * 保温棉总数量
+     */
+    @ExcelProperty(value = "保温棉总数量")
+    private Long insulationTotalNum;
+
+    /**
      * 保温棉费用
      */
     @ExcelProperty(value = "保温棉费用")

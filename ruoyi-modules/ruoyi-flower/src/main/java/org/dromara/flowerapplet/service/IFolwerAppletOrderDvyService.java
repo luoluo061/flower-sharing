@@ -4,6 +4,7 @@ import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderDvyVo;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDvyBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -56,6 +57,9 @@ public interface IFolwerAppletOrderDvyService {
      * @return 是否修改成功
      */
     FolwerAppletOrderDvyVo updateByBo(FolwerAppletOrderDvyBo bo) throws Exception;
+
+    @Transactional(rollbackFor = Exception.class)
+    FolwerAppletOrderDvyVo continuationUpdateByBo(FolwerAppletOrderDvyBo bo) throws Exception;
 
     /**
      * 校验并批量删除订单物流信息

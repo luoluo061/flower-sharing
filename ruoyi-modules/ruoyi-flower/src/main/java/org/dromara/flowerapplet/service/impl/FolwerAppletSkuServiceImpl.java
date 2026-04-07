@@ -59,7 +59,8 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
                         folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
                     } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
                         folwerAppletSkuVo.setSkuName(getSkuName(folwerAppletSkuVo));
-                        folwerAppletSkuVo.setPrice(new BigDecimal("-2"));
+//                        返回正常价格
+//                        folwerAppletSkuVo.setPrice(new BigDecimal("-2"));
                     }
                 }
             }
@@ -109,9 +110,13 @@ public class FolwerAppletSkuServiceImpl implements IFolwerAppletSkuService {
                         record.setSkuName(getSkuName(record));
                     });
                 } else if (flowerAppletUserInformationVo.getIsAuth() == 0L) {
+//                    result.getRecords().forEach(record -> {
+//                        record.setSkuName(getSkuName(record));
+//                        record.setPrice(new BigDecimal("-2"));
+//                    });
+                    // 不管认不认证都返回价格
                     result.getRecords().forEach(record -> {
-                        record.setSkuName(getSkuName(record));
-                        record.setPrice(new BigDecimal("-2"));
+                    record.setSkuName(getSkuName(record));
                     });
                 }
             }
