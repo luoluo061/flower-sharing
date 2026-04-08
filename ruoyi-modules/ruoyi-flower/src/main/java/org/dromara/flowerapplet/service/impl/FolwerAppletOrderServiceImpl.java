@@ -850,6 +850,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     @Override
     public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
         Refund refund = payService.refundOrder(wxRefundRequest);
+        if (Objects.nonNull(refund) || Objects.isNull(refund)) {
+            return buildRefundResult(refund);
+        }
 //                log.info("请求退款返回：" + refund);
         //接收退款返回参数
         //  Status status = refund.getStatus();
@@ -876,10 +879,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     @Override
     @Transactional
     public FolwerAppletOrderVo queryOrder(String orderId) throws Exception {
-        if (orderId.isEmpty()){
+        if (StringUtils.isBlank(orderId)){
             return null;
         }
         Transaction transaction = payService.transactionsOrder(orderId);
+        if (Objects.nonNull(transaction) || Objects.isNull(transaction)) {
+            return applySuccessfulPayment(transaction, 5L);
+        }
         if (transaction == null){
             return null;
         }
@@ -948,6 +954,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     @Override
     public FolwerAppletOrderVo payCallbackOrder(Transaction transaction) throws Exception {
+        if (Objects.nonNull(transaction) || Objects.isNull(transaction)) {
+            return applySuccessfulPayment(transaction, 1L);
+        }
         log.info("支付回调===>{}", transaction);
         if (transaction.getTradeState().equals(Transaction.TradeStateEnum.SUCCESS)){
             FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(transaction.getOutTradeNo()));
@@ -1009,6 +1018,117 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         }
 
         return null;
+    }
+
+    private R<String> buildRefundResult(Refund refund) {
+        if (Objects.isNull(refund) || Objects.isNull(refund.getStatus())) {
+            return R.fail("退款状态未知");
+        }
+        Status status = refund.getStatus();
+        if (Status.SUCCESS.equals(status)) {
+            return R.ok("退款成功");
+        }
+        if (Status.PROCESSING.equals(status)) {
+            return R.ok("退款处理中");
+        }
+        if (Status.ABNORMAL.equals(status)) {
+            return R.fail("退款异常");
+        }
+        if (Status.CLOSED.equals(status)) {
+            return R.fail("退款关闭");
+        }
+        return R.fail("退款状态未知");
+    }
+
+    private FolwerAppletOrderVo applySuccessfulPayment(Transaction transaction, Long targetStatus) throws Exception {
+        if (Objects.isNull(transaction) || !Transaction.TradeStateEnum.SUCCESS.equals(transaction.getTradeState())) {
+            return null;
+        }
+
+        FolwerAppletOrderVo folwerAppletOrderVo = this.queryById(Long.valueOf(transaction.getOutTradeNo()));
+        if (Objects.isNull(folwerAppletOrderVo)) {
+            return null;
+        }
+        if (!Long.valueOf(0L).equals(folwerAppletOrderVo.getStatus())) {
+            return folwerAppletOrderVo;
+        }
+
+        FolwerAppletOrderBo folwerAppletOrderBo = new FolwerAppletOrderBo();
+        BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrderBo);
+        folwerAppletOrderBo.setStatus(targetStatus);
+        folwerAppletOrderBo.setOrderNumber(transaction.getTransactionId());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        folwerAppletOrderBo.setPayTime(simpleDateFormat.parse(transaction.getSuccessTime()));
+        folwerAppletOrderBo.setPayCallback(transaction.toString());
+
+        AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
+        applyProfitSharingIfNeeded(folwerAppletOrderVo, transaction, folwerAppletOrderBo, appletUserInformationVo);
+
+        Boolean updated = this.updateByBo(folwerAppletOrderBo);
+        if (Boolean.TRUE.equals(updated)) {
+            applyPostPaymentSideEffects(folwerAppletOrderVo, appletUserInformationVo);
+        }
+        return folwerAppletOrderVo;
+    }
+
+    private void applyProfitSharingIfNeeded(FolwerAppletOrderVo orderVo, Transaction transaction,
+                                            FolwerAppletOrderBo orderBo, AppletUserInformationVo userVo) throws Exception {
+        if (!Long.valueOf(1L).equals(orderVo.getIsProfitSharing())) {
+            return;
+        }
+        if (Objects.isNull(userVo)) {
+            throw new Exception("用户不存在");
+        }
+        if (Objects.isNull(userVo.getParentId()) || Long.valueOf(0L).equals(userVo.getParentId())) {
+            return;
+        }
+
+        AppletUserInformationVo informationParentVo = appletUserInformationService.queryById(userVo.getParentId());
+        if (Objects.isNull(informationParentVo)) {
+            return;
+        }
+
+        AddReceiverResponse addReceiverResponse = sharingService.addReceiver("PERSONAL_OPENID", informationParentVo.getOpenid(), "USER");
+        if (Objects.isNull(addReceiverResponse) || Objects.isNull(addReceiverResponse.getAccount())) {
+            return;
+        }
+
+        PayProfitsharingParam profitSharingParam = new PayProfitsharingParam();
+        profitSharingParam.setOutOrderNo(String.valueOf(orderVo.getOrderId()));
+        profitSharingParam.setType("PERSONAL_OPENID");
+        profitSharingParam.setTransactionId(transaction.getTransactionId());
+        profitSharingParam.setAccount(informationParentVo.getOpenid());
+        double mul = Arith.mul(orderVo.getActualTotal(), 0.06);
+        profitSharingParam.setAmount((long) mul);
+        profitSharingParam.setDescription("分账");
+
+        OrdersEntity ordersEntity = sharingService.ordersSharing(profitSharingParam, "0");
+        if (Objects.nonNull(ordersEntity) && "FINISHED".equals(ordersEntity.getState())) {
+            orderBo.setIsProfitSharing(0L);
+        }
+    }
+
+    private void applyPostPaymentSideEffects(FolwerAppletOrderVo orderVo, AppletUserInformationVo userVo) {
+        if (Objects.nonNull(userVo)) {
+            AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(userVo, AppletUserInformationBo.class);
+            appletUserInformationBo.setPoints((long) Arith.add(userVo.getPoints(), orderVo.getRebate()));
+            appletUserInformationService.updateByBo(appletUserInformationBo);
+        }
+
+        if (CollectionUtil.isEmpty(orderVo.getOrderDetails())) {
+            return;
+        }
+
+        for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : orderVo.getOrderDetails()) {
+            FolwerAppletProductVo folwerAppletProductVo = folwerAppletProductService.queryById(folwerAppletOrderDetailVo.getProductId());
+            if (Objects.isNull(folwerAppletProductVo)) {
+                continue;
+            }
+            FolwerAppletProductBo folwerAppletProductBo = BeanUtil.copyProperties(folwerAppletProductVo, FolwerAppletProductBo.class);
+            folwerAppletProductBo.setTotalStocks((long) Arith.mul(folwerAppletProductVo.getTotalStocks(), folwerAppletOrderDetailVo.getNumber()));
+            folwerAppletProductBo.setSoldNum((long) Arith.add(folwerAppletProductVo.getSoldNum(), folwerAppletOrderDetailVo.getNumber()));
+            folwerAppletProductService.updateByBo(folwerAppletProductBo);
+        }
     }
 
 

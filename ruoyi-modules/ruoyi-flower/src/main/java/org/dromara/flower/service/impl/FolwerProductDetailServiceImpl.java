@@ -84,7 +84,7 @@ public class FolwerProductDetailServiceImpl implements IFolwerProductDetailServi
      */
     @Override
     public Boolean insertByBo(FolwerProductDetailBo bo) {
-        FolwerProductDetail add = MapstructUtils.convert(bo, FolwerProductDetail.class);
+        FolwerProductDetail add = toEntity(bo);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -101,9 +101,13 @@ public class FolwerProductDetailServiceImpl implements IFolwerProductDetailServi
      */
     @Override
     public Boolean updateByBo(FolwerProductDetailBo bo) {
-        FolwerProductDetail update = MapstructUtils.convert(bo, FolwerProductDetail.class);
+        FolwerProductDetail update = toEntity(bo);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
+    }
+
+    protected FolwerProductDetail toEntity(FolwerProductDetailBo bo) {
+        return MapstructUtils.convert(bo, FolwerProductDetail.class);
     }
 
     /**

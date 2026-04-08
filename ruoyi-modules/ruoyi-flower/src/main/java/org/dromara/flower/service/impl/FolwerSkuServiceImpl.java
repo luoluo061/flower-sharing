@@ -1,41 +1,31 @@
 package org.dromara.flower.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.mybatis.core.page.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.dromara.flower.domain.FolwerProduct;
-import org.dromara.flower.domain.FolwerProductComm;
-import org.dromara.flower.domain.bo.FolwerProductBo;
-import org.dromara.flower.domain.vo.FolwerProductVo;
-import org.dromara.flower.service.IFolwerProductService;
-import org.dromara.flowerapplet.domain.FolwerAppletProduct;
-import org.dromara.flowerapplet.domain.FolwerAppletSku;
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.flower.domain.FolwerSku;
+import org.dromara.flower.domain.bo.FolwerSkuBo;
+import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flower.mapper.FolwerSkuMapper;
+import org.dromara.flower.service.IFolwerSkuService;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
-import org.dromara.system.service.impl.SysOssServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.dromara.flower.domain.bo.FolwerSkuBo;
-import org.dromara.flower.domain.vo.FolwerSkuVo;
-import org.dromara.flower.domain.FolwerSku;
-import org.dromara.flower.mapper.FolwerSkuMapper;
-import org.dromara.flower.service.IFolwerSkuService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 /**
  * 单品SKUService业务层处理
@@ -53,9 +43,6 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
 
     private final IFolwerAppletProductService folwerProductService;
 
-//    private final IFolwerAppletProductService folwerAppletProductService;
-
-
     /**
      * 查询单品SKU
      *
@@ -63,22 +50,8 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
      * @return 单品SKU
      */
     @Override
-    public FolwerSkuVo queryById(Long skuId){
-        FolwerSkuVo folwerSkuVo = baseMapper.selectVoById(skuId);
-
-//        if (folwerSkuVo.getSkuPicid() != null && !folwerSkuVo.getSkuPicid().isEmpty())
-//        {
-//            Collection<Long> ossIds = new ArrayList<>();
-//
-//            ossIds.add(Long.valueOf(folwerSkuVo.getSkuPicid()));
-//            Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-//            if (!stringStringMap.isEmpty()){
-//                // 设置图片Url
-//                folwerSkuVo.setSkuPicidURL(stringStringMap.get(folwerSkuVo.getSkuPicid()));
-//            }
-//        }
-
-        return folwerSkuVo;
+    public FolwerSkuVo queryById(Long skuId) {
+        return baseMapper.selectVoById(skuId);
     }
 
     /**
@@ -92,24 +65,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     public TableDataInfo<FolwerSkuVo> queryPageList(FolwerSkuBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerSku> lqw = buildQueryWrapper(bo);
         Page<FolwerSkuVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-
-        List<Long> longList = new ArrayList<>();
-        result.getRecords().forEach(record ->{
-                if (record.getSkuPicid() != null && !record.getSkuPicid().isEmpty()){
-                    longList.add(Long.valueOf(record.getSkuPicid()));
-                }
-            }
-        );
-        if (!longList.isEmpty()){
-            Map<String, String> longStringMap = sysOssService.listUrlByIds(longList);
-            if (!longStringMap.isEmpty()){
-                // 设置图片Url
-                result.getRecords().forEach(record ->
-                    record.setSkuPicidURL(longStringMap.get(record.getSkuPicid()))
-                );
-            }
-        }
-
+        applySkuPictureUrls(result.getRecords());
         return TableDataInfo.build(result);
     }
 
@@ -123,19 +79,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     public List<FolwerSkuVo> queryList(FolwerSkuBo bo) {
         LambdaQueryWrapper<FolwerSku> lqw = buildQueryWrapper(bo);
         List<FolwerSkuVo> folwerSkuVos = baseMapper.selectVoList(lqw);
-        for (FolwerSkuVo vo : folwerSkuVos){
-            if (vo.getSkuPicid() != null && !vo.getSkuPicid().isEmpty())
-            {
-                Collection<Long> ossIds = new ArrayList<>();
-
-                ossIds.add(Long.valueOf(vo.getSkuPicid()));
-                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                if (!stringStringMap.isEmpty()){
-                    // 设置图片Url
-                    vo.setSkuPicidURL(stringStringMap.get(vo.getSkuPicid()));
-                }
-            }
-        }
+        applySkuPictureUrls(folwerSkuVos);
         return folwerSkuVos;
     }
 
@@ -148,24 +92,39 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     @Override
     public List<FolwerSkuVo> queryListByProdId(long prodId) {
         FolwerSkuBo bo = new FolwerSkuBo();
-//        bo.setStatus(1L);
         bo.setProdId(prodId);
         LambdaQueryWrapper<FolwerSku> lqw = buildQueryWrapper(bo);
         List<FolwerSkuVo> folwerSkuVos = baseMapper.selectVoList(lqw);
-        for (FolwerSkuVo vo : folwerSkuVos){
-            if (vo.getSkuPicid() != null && !vo.getSkuPicid().isEmpty())
-            {
-                Collection<Long> ossIds = new ArrayList<>();
+        applySkuPictureUrls(folwerSkuVos);
+        return folwerSkuVos;
+    }
 
+    protected void applySkuPictureUrls(List<FolwerSkuVo> skuVos) {
+        if (skuVos == null || skuVos.isEmpty()) {
+            return;
+        }
+
+        List<Long> ossIds = new ArrayList<>();
+        for (FolwerSkuVo vo : skuVos) {
+            if (StringUtils.isNotBlank(vo.getSkuPicid())) {
                 ossIds.add(Long.valueOf(vo.getSkuPicid()));
-                Map<String, String> stringStringMap = sysOssService.listUrlByIds(ossIds);
-                if (!stringStringMap.isEmpty()){
-                    // 设置图片Url
-                    vo.setSkuPicidURL(stringStringMap.get(vo.getSkuPicid()));
-                }
             }
         }
-        return folwerSkuVos;
+
+        if (ossIds.isEmpty()) {
+            return;
+        }
+
+        Map<String, String> urlMap = sysOssService.listUrlByIds(ossIds);
+        if (urlMap.isEmpty()) {
+            return;
+        }
+
+        for (FolwerSkuVo vo : skuVos) {
+            if (StringUtils.isNotBlank(vo.getSkuPicid())) {
+                vo.setSkuPicidURL(urlMap.get(vo.getSkuPicid()));
+            }
+        }
     }
 
     private LambdaQueryWrapper<FolwerSku> buildQueryWrapper(FolwerSkuBo bo) {
@@ -183,7 +142,6 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         lqw.eq(bo.getActualStocks() != null, FolwerSku::getActualStocks, bo.getActualStocks());
         lqw.eq(bo.getStatus() != null, FolwerSku::getStatus, bo.getStatus());
         lqw.between(bo.getStartTime() != null && bo.getEndTime() != null, FolwerSku::getCreateTime, bo.getStartTime(), bo.getEndTime());
-
         lqw.like(StringUtils.isNotBlank(bo.getColor()), FolwerSku::getColor, bo.getColor());
         lqw.like(StringUtils.isNotBlank(bo.getColorCode()), FolwerSku::getColorCode, bo.getColorCode());
         lqw.like(StringUtils.isNotBlank(bo.getColorPic()), FolwerSku::getColorPic, bo.getColorPic());
@@ -207,48 +165,21 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setSkuId(add.getSkuId());
-
-//            intermediateBean.updateProductInfo(add.getProdId());
-
-            List<FolwerSkuVo> folwerSkuVos = this.queryListByProdId(add.getProdId());
-            BigDecimal maxPrace = new BigDecimal(-999999999);
-            BigDecimal minPrace = new BigDecimal(999999999);
-            Long maxStocks = 0L;
-            if (folwerSkuVos.size() > 0){
-                for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
-                    if(folwerSkuVo.getStatus().equals(0L)){
-                        continue;
-                    }
-                    if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
-                        maxPrace = folwerSkuVo.getPrice().setScale(2, RoundingMode.HALF_UP);
-                    }
-                    if (folwerSkuVo.getMinPrice().compareTo(minPrace) < 0) {
-                        minPrace = folwerSkuVo.getMinPrice().setScale(2, RoundingMode.HALF_UP);
-                    }
-                    maxStocks =+ folwerSkuVo.getActualStocks();
-                }
-            }
-            FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(add.getProdId());
-            FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
-            folwerProductBo.setOriPrice(maxPrace);
-            folwerProductBo.setDerlinePrice(minPrace);
-            folwerProductBo.setTotalStocks(maxStocks);
-            folwerProductService.updateByBo(folwerProductBo);
+            refreshProductAggregateAfterSkuInsert(add.getProdId());
         }
         return flag;
     }
 
     @Override
-    public Boolean batchInsertByBo(List<FolwerSkuBo> bos){
+    public Boolean batchInsertByBo(List<FolwerSkuBo> bos) {
         List<FolwerSku> skuArrayList = new ArrayList<>();
-        for (FolwerSkuBo bo : bos){
+        for (FolwerSkuBo bo : bos) {
             validEntityBeforeSave(MapstructUtils.convert(bo, FolwerSku.class));
             skuArrayList.add(MapstructUtils.convert(bo, FolwerSku.class));
         }
 
         Collection<FolwerSku> entityList = skuArrayList;
-        boolean b = baseMapper.insertBatch(entityList);
-        return b;
+        return baseMapper.insertBatch(entityList);
     }
 
     /**
@@ -262,40 +193,80 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         FolwerSku update = MapstructUtils.convert(bo, FolwerSku.class);
         validEntityBeforeSave(update);
         boolean b = baseMapper.updateById(update) > 0;
-        if (b){
-            if (update.getProdId() != null){
-                List<FolwerSkuVo> folwerSkuVos = this.queryListByProdId(update.getProdId());
-                BigDecimal maxPrace = new BigDecimal(0);
-                BigDecimal minPrace = new BigDecimal(0);
-                Long maxStocks = 0L;
-                if (folwerSkuVos.size() > 0){
-                    for (FolwerSkuVo folwerSkuVo : folwerSkuVos){
-                        if (folwerSkuVo.getPrice().compareTo(maxPrace) > 0) {
-                            maxPrace = folwerSkuVo.getPrice();
-                        }
-                        if (folwerSkuVo.getMinPrice().compareTo(minPrace) < 0) {
-                            minPrace = folwerSkuVo.getMinPrice();
-                        }
-                        maxStocks =+ folwerSkuVo.getActualStocks();
-                    }
-                }
-                FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(update.getProdId());
-                FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
-                folwerProductBo.setOriPrice(maxPrace);
-                folwerProductBo.setDerlinePrice(minPrace);
-                folwerProductBo.setTotalStocks(maxStocks);
-                folwerProductService.updateByBo(folwerProductBo);
+        if (b) {
+            if (update.getProdId() != null) {
+                refreshProductAggregateAfterSkuUpdate(update.getProdId());
             }
         }
 
         return b;
     }
 
+    protected void refreshProductAggregateAfterSkuInsert(Long prodId) {
+        ProductAggregateSnapshot snapshot = buildInsertAggregateSnapshot(queryListByProdId(prodId));
+        applyProductAggregateUpdate(prodId, snapshot);
+    }
+
+    protected void refreshProductAggregateAfterSkuUpdate(Long prodId) {
+        ProductAggregateSnapshot snapshot = buildUpdateAggregateSnapshot(queryListByProdId(prodId));
+        applyProductAggregateUpdate(prodId, snapshot);
+    }
+
+    private ProductAggregateSnapshot buildInsertAggregateSnapshot(List<FolwerSkuVo> skuVos) {
+        BigDecimal maxPrice = new BigDecimal(-999999999);
+        BigDecimal minPrice = new BigDecimal(999999999);
+        Long totalStocks = 0L;
+        if (skuVos.isEmpty()) {
+            return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
+        }
+        for (FolwerSkuVo skuVo : skuVos) {
+            if (Long.valueOf(0L).equals(skuVo.getStatus())) {
+                continue;
+            }
+            if (skuVo.getPrice().compareTo(maxPrice) > 0) {
+                maxPrice = skuVo.getPrice().setScale(2, RoundingMode.HALF_UP);
+            }
+            if (skuVo.getMinPrice().compareTo(minPrice) < 0) {
+                minPrice = skuVo.getMinPrice().setScale(2, RoundingMode.HALF_UP);
+            }
+            totalStocks = +skuVo.getActualStocks();
+        }
+        return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
+    }
+
+    private ProductAggregateSnapshot buildUpdateAggregateSnapshot(List<FolwerSkuVo> skuVos) {
+        BigDecimal maxPrice = BigDecimal.ZERO;
+        BigDecimal minPrice = BigDecimal.ZERO;
+        Long totalStocks = 0L;
+        if (skuVos.isEmpty()) {
+            return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
+        }
+        for (FolwerSkuVo skuVo : skuVos) {
+            if (skuVo.getPrice().compareTo(maxPrice) > 0) {
+                maxPrice = skuVo.getPrice();
+            }
+            if (skuVo.getMinPrice().compareTo(minPrice) < 0) {
+                minPrice = skuVo.getMinPrice();
+            }
+            totalStocks = +skuVo.getActualStocks();
+        }
+        return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
+    }
+
+    private void applyProductAggregateUpdate(Long prodId, ProductAggregateSnapshot snapshot) {
+        FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(prodId);
+        FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
+        folwerProductBo.setOriPrice(snapshot.maxPrice());
+        folwerProductBo.setDerlinePrice(snapshot.minPrice());
+        folwerProductBo.setTotalStocks(snapshot.totalStocks());
+        folwerProductService.updateByBo(folwerProductBo);
+    }
+
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(FolwerSku entity){
-        //TODO 做一些数据校验,如唯一约束
+    private void validEntityBeforeSave(FolwerSku entity) {
+        // TODO 做一些数据校验,如唯一约束
     }
 
     /**
@@ -307,9 +278,12 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
-            //TODO 做一些业务上的校验,判断是否需要校验
+        if (isValid) {
+            // TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    private record ProductAggregateSnapshot(BigDecimal maxPrice, BigDecimal minPrice, Long totalStocks) {
     }
 }

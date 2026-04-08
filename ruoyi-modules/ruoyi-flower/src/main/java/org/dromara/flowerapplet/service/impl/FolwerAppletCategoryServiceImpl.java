@@ -58,15 +58,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
 //            }
 
             //二级分类
-            if (!folwerCategoryVo.getParentId().equals(0L)){
-                FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
-                childrenBo.setParentId(folwerCategoryVo.getId());
-                List<FolwerAppletCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-                List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerCategoryVos.stream()
-                    .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
-                    .collect(Collectors.toList());
-                folwerCategoryVo.setChildren(sortedFolwerAppletCategoryVo);
-            }
+            populateChildrenIfNeeded(folwerCategoryVo);
         }
         return folwerCategoryVo;
     }
@@ -96,17 +88,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
 //                );
 //            }
             //二级分类
-            result.getRecords().forEach(record ->{
-                if(!record.getParentId().equals(0)){
-                    FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
-                    childrenBo.setParentId(record.getId());
-                    List<FolwerAppletCategoryVo> childrenFolwerCategoryVos = this.queryList(childrenBo);
-                    List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerCategoryVos.stream()
-                        .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
-                        .collect(Collectors.toList());
-                    record.setChildren(sortedFolwerAppletCategoryVo);
-                }
-            });
+            result.getRecords().forEach(this::populateChildrenIfNeeded);
         }
 
         return TableDataInfo.build(result);
@@ -137,20 +119,24 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
 //            }
 
             //二级分类
-            folwerAppletCategoryVos.forEach(record ->{
-                if(!record.getParentId().equals(0)){
-                    FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
-                    childrenBo.setParentId(record.getId());
-                    List<FolwerAppletCategoryVo> childrenFolwerAppletCategoryVos = this.queryList(childrenBo);
-                    List<FolwerAppletCategoryVo> sortedFolwerAppletCategoryVo = childrenFolwerAppletCategoryVos.stream()
-                        .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
-                        .collect(Collectors.toList());
-                    record.setChildren(sortedFolwerAppletCategoryVo);
-                }
-
-            });
+            folwerAppletCategoryVos.forEach(this::populateChildrenIfNeeded);
         }
         return folwerAppletCategoryVos;
+    }
+
+    private void populateChildrenIfNeeded(FolwerAppletCategoryVo categoryVo) {
+        if (categoryVo == null || Objects.equals(categoryVo.getParentId(), 0L)) {
+            return;
+        }
+        categoryVo.setChildren(loadSortedChildren(categoryVo.getId()));
+    }
+
+    private List<FolwerAppletCategoryVo> loadSortedChildren(Long parentId) {
+        FolwerAppletCategoryBo childrenBo = new FolwerAppletCategoryBo();
+        childrenBo.setParentId(parentId);
+        return queryList(childrenBo).stream()
+            .sorted(Comparator.comparingLong(FolwerAppletCategoryVo::getSeq).reversed())
+            .collect(Collectors.toList());
     }
 
     private LambdaQueryWrapper<FolwerAppletCategory> buildQueryWrapper(FolwerAppletCategoryBo bo) {
