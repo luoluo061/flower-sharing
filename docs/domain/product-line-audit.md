@@ -167,3 +167,16 @@ Current stable verification commands:
 
 - Shared product-domain extraction design
 - Naming and API consolidation design
+
+## Product-Center Migration Direction
+
+The current branch is now ready for a design-led migration phase instead of another broad testing phase.
+
+- The shared-boundary definition lives in `product-line-shared-boundary.md`
+- The write-path lock rules live in `product-write-flow-prep.md`
+- The next design artifact should be a product-center migration blueprint that splits:
+  - category domain behavior
+  - product core write behavior
+  - SKU aggregate behavior
+  - product-detail subdomain behavior
+  - adapter-only response decoration

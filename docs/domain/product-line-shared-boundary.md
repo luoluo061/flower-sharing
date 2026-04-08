@@ -25,6 +25,18 @@ The backend `org.dromara.flower.*` stack and the mini-program `org.dromara.flowe
 - Backend and mini-program both expose product-detail records, but through different service stacks.
 - The current implementation duplicates query entrypoints instead of centralizing detail lookup.
 
+6. Product write defaults
+- Backend product writes currently normalize `deliveryPrice` inside `FolwerProductServiceImpl`.
+- This is not a controller concern and should stay in the product service boundary until a shared product write service exists.
+
+7. SKU aggregate refresh
+- Backend SKU writes recalculate product price and stock snapshots after insert and update.
+- This is product-domain behavior, even though the current implementation lives inside the SKU service.
+
+8. Product detail writes
+- Backend product-detail writes are still direct CRUD pass-throughs with no shared write abstraction.
+- This is a separate detail subdomain and should not be folded into product core write rules until the migration blueprint is executed.
+
 ## Target Ownership
 
 The long-term ownership of these behaviors should be:
@@ -34,6 +46,9 @@ The long-term ownership of these behaviors should be:
   - Product/category relationship
   - SKU-to-product relationship
   - Product detail lookup semantics
+  - Product write defaults
+  - SKU aggregate refresh semantics
+  - Product detail write semantics
 - API adapter layer:
   - Price masking
   - Category display-name formatting
@@ -45,7 +60,27 @@ The long-term ownership of these behaviors should be:
 Until a dedicated shared product module exists:
 
 - Do not merge backend and mini-program services.
-- Do not introduce new duplicated helper logic for the 5 shared behaviors above.
+- Do not introduce new duplicated helper logic for the shared behaviors above.
 - New logic should either:
   - reuse an existing helper inside the current stack, or
   - be documented here first if it changes one of the shared behaviors.
+
+## Immediate Migration Targets
+
+The next product-center extraction steps should treat the current shared boundary as three buckets:
+
+1. Product-domain candidates
+- category hierarchy helpers
+- product write default normalization
+- SKU aggregate recalculation
+- product-detail lookup semantics
+
+2. API-adapter candidates
+- category display names
+- OSS id to display URL expansion
+- mini-program price masking
+
+3. Deferred compatibility layer
+- duplicated backend/applet service entrypoints
+- historical `Folwer` naming
+- current URL layout under `/flower/*` and `/flowerapplet/*`

@@ -184,7 +184,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         if (isValid) {
             // TODO add business validation when delete-path cleanup starts.
         }
-        return baseMapper.deleteByIds(ids) > 0;
+        return performCurrentDirectDelete(ids);
     }
 
     @Override
@@ -207,5 +207,9 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
         // Keep the existing batch-update behavior locked until the write-path fix is designed.
         product.setStatus(0L);
         baseMapper.updateById(product);
+    }
+
+    protected boolean performCurrentDirectDelete(Collection<Long> ids) {
+        return baseMapper.deleteByIds(ids) > 0;
     }
 }

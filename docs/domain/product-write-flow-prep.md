@@ -31,6 +31,7 @@ Current write-side behavior:
   - the batch status update loop is now expressed through a dedicated helper to make the locked behavior explicit without changing it
   - create / update / delete success paths are now covered in controller and service tests
   - create keeps the current `deliveryPrice -> 0` default when the incoming field is blank
+  - direct delete is now isolated behind an explicit helper so the current semantics stay visible without adding new validation
   - update conversion is isolated behind an overridable helper so tests can avoid the static Spring-backed mapper dependency
 
 ### SKU
@@ -103,6 +104,15 @@ Before touching SKU or full product write flows, the following must already stay
 - mini-program product read controller tests
 - mini-program product read service tests
 - payment callback tests
+
+## Current Product Write Stabilization Rule
+
+The next implementation batches may continue to refactor product write helpers, but they must not change:
+
+- create-path `deliveryPrice -> 0` defaulting
+- update-path current conversion shape
+- direct delete semantics
+- batch status update `status -> 0` behavior
 
 ## Current SKU Stabilization Rule
 
