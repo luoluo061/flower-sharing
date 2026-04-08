@@ -37,6 +37,22 @@ The backend `org.dromara.flower.*` stack and the mini-program `org.dromara.flowe
 - Backend product-detail writes are still direct CRUD pass-throughs with no shared write abstraction.
 - This is a separate detail subdomain and should not be folded into product core write rules until the migration blueprint is executed.
 
+## Shared Helper Layer
+
+The current branch now has a first shared-helper layer under `org.dromara.flower.service.support`.
+
+- `ProductCategoryHierarchySupport`
+  - owns the current shared "should children be populated" rule and generic children attachment helper
+  - is now used by both backend and mini-program category services
+- `ProductWriteDefaultsSupport`
+  - owns the current backend product write default normalization for `deliveryPrice`
+  - is now the single place for the current `null -> 0` default
+- `ProductSkuAggregateSupport`
+  - owns the current SKU aggregate snapshot rules already locked by tests
+  - keeps current insert/update semantics unchanged while moving calculation out of `FolwerSkuServiceImpl`
+
+This layer is intentionally helper-only. It does not yet introduce shared product services or cross-stack BO/VO unification.
+
 ## Target Ownership
 
 The long-term ownership of these behaviors should be:

@@ -16,6 +16,8 @@ Both stacks currently own the same core product concepts:
 
 The backend stack additionally exposes `ProductComm`, which is not part of the minimum mall product backbone.
 
+The current branch also now contains a shared helper layer under `org.dromara.flower.service.support`, used to centralize a small set of already-locked product-line rules without merging backend and mini-program services.
+
 ## Current HTTP Surface
 
 ### Backend management
@@ -46,6 +48,10 @@ The backend stack additionally exposes `ProductComm`, which is not part of the m
   - `IFolwerProductService` / `FolwerProductServiceImpl`
   - `IFolwerSkuService` / `FolwerSkuServiceImpl`
   - `IFolwerProductDetailService` / `FolwerProductDetailServiceImpl`
+  - shared helper layer:
+    - `ProductCategoryHierarchySupport`
+    - `ProductWriteDefaultsSupport`
+    - `ProductSkuAggregateSupport`
 - Domain models:
   - `FolwerCategory*`
   - `FolwerProduct*`
@@ -64,6 +70,8 @@ The backend stack additionally exposes `ProductComm`, which is not part of the m
   - `IFolwerAppletProductService` / `FolwerAppletProductServiceImpl`
   - `IFolwerAppletSkuService` / `FolwerAppletSkuServiceImpl`
   - `IFolwerAppletProductDetailService` / `FolwerAppletProductDetailServiceImpl`
+  - selected shared helper entrypoint:
+    - `ProductCategoryHierarchySupport`
 - Domain models:
   - `FolwerAppletCategory*`
   - `FolwerAppletProduct*`
@@ -77,6 +85,7 @@ The backend stack additionally exposes `ProductComm`, which is not part of the m
 3. Public mini-program read APIs are the safest first stabilization target because they are mostly read-only and already exposed without strict permission checks.
 4. Backend product management currently mixes read and write operations in the same controllers, so it is a worse first target for code cleanup than the mini-program read chain.
 5. `ProductComm` should be treated as an adjacent extension, not part of the first-pass standard mall product backbone.
+6. The first shared-helper extraction has started, but only at helper level; backend and mini-program services still remain separate entrypoints.
 
 ## First Execution Batch
 
@@ -149,7 +158,7 @@ The current product-line branch should be verified with a single-process Maven r
 Current stable verification commands:
 
 - `mvn ... -pl ruoyi-admin -am -DskipTests compile`
-- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogWriteControllerTest,FolwerProductWriteControllerTest,FolwerProductDetailWriteControllerTest,FolwerSkuWriteControllerTest,FolwerCatalogReadServiceTest,FolwerCatalogWriteServiceTest,FolwerProductWriteServiceTest,FolwerProductDetailWriteServiceTest,FolwerSkuWriteServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest test`
+- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogWriteControllerTest,FolwerProductWriteControllerTest,FolwerProductDetailWriteControllerTest,FolwerSkuWriteControllerTest,FolwerCatalogReadServiceTest,FolwerCatalogWriteServiceTest,FolwerProductWriteServiceTest,FolwerProductDetailWriteServiceTest,FolwerSkuWriteServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest,ProductCategoryHierarchySupportTest,ProductWriteDefaultsSupportTest,ProductSkuAggregateSupportTest test`
 
 ## Follow-up Batches
 

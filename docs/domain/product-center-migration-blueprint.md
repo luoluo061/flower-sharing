@@ -112,6 +112,14 @@ The existing code should be treated as follows:
   - product-detail lookup
 - keep backend and mini-program services calling those helpers
 
+Current status:
+
+- started
+- `ProductCategoryHierarchySupport` is now used by backend and mini-program category services
+- `ProductWriteDefaultsSupport` now centralizes backend product `deliveryPrice` default normalization
+- `ProductSkuAggregateSupport` now centralizes the currently locked SKU aggregate snapshot rules
+- product-detail lookup remains the next unimplemented helper candidate in this phase
+
 ### Phase 3: introduce shared domain services
 
 - wrap the helper layer in shared product-domain services
