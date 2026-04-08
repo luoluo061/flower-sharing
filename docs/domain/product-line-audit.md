@@ -122,6 +122,7 @@ Current automated regression now covers both public mini-program reads and backe
 
 - Write-path controller tests:
   - backend category add / edit / remove
+  - backend product add / edit / remove
   - backend product batch status update
   - backend SKU add / batchAdd / edit / remove
   - backend product detail add / edit / remove
@@ -130,6 +131,9 @@ Current automated regression now covers both public mini-program reads and backe
   - backend product batch status update now expresses the locked `status -> 0` behavior explicitly
   - backend SKU aggregate refresh is isolated behind explicit insert/update helpers while preserving current semantics
 - Write-path service tests:
+  - product create defaulting current behavior
+  - product update current-shape persistence
+  - product direct delete current behavior
   - SKU insert aggregate refresh current behavior
   - SKU update aggregate refresh current behavior
   - product detail direct insert current behavior
@@ -145,7 +149,7 @@ The current product-line branch should be verified with a single-process Maven r
 Current stable verification commands:
 
 - `mvn ... -pl ruoyi-admin -am -DskipTests compile`
-- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogReadServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest test`
+- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogWriteControllerTest,FolwerProductWriteControllerTest,FolwerProductDetailWriteControllerTest,FolwerSkuWriteControllerTest,FolwerCatalogReadServiceTest,FolwerCatalogWriteServiceTest,FolwerProductWriteServiceTest,FolwerProductDetailWriteServiceTest,FolwerSkuWriteServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest test`
 
 ## Follow-up Batches
 

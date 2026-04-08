@@ -143,11 +143,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     public Boolean insertByBo(FolwerProductBo bo) {
         FolwerProduct folwerProduct = new FolwerProduct();
         BeanUtils.copyProperties(bo, folwerProduct);
-        if (bo.getDeliveryPrice() != null) {
-            folwerProduct.setDeliveryPrice(new BigDecimal(bo.getDeliveryPrice()));
-        } else {
-            folwerProduct.setDeliveryPrice(new BigDecimal(0));
-        }
+        applyCurrentWriteDefaults(folwerProduct, bo);
 
         validEntityBeforeSave(folwerProduct);
         boolean flag = baseMapper.insert(folwerProduct) > 0;
@@ -159,9 +155,24 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
 
     @Override
     public Boolean updateByBo(FolwerProductBo bo) {
-        FolwerProduct update = MapstructUtils.convert(bo, FolwerProduct.class);
+        FolwerProduct update = toEntity(bo);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
+    }
+
+    protected FolwerProduct toEntity(FolwerProductBo bo) {
+        return MapstructUtils.convert(bo, FolwerProduct.class);
+    }
+
+    protected void applyCurrentWriteDefaults(FolwerProduct product, FolwerProductBo bo) {
+        product.setDeliveryPrice(normalizeDeliveryPrice(bo.getDeliveryPrice()));
+    }
+
+    protected BigDecimal normalizeDeliveryPrice(String deliveryPrice) {
+        if (deliveryPrice == null) {
+            return BigDecimal.ZERO;
+        }
+        return new BigDecimal(deliveryPrice);
     }
 
     private void validEntityBeforeSave(FolwerProduct entity) {

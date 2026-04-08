@@ -27,7 +27,11 @@ Current write-side behavior:
 - delete is currently a direct pass-through service call
 - batch status update mutates each selected product through `updateStatusByIds`
 - current implementation sets selected product status to `0` regardless of the previous value; this behavior is now treated as locked current behavior until a later explicit write-path fix
-- current cleanup status: the batch status update loop is now expressed through a dedicated helper to make the locked behavior explicit without changing it
+- current cleanup status:
+  - the batch status update loop is now expressed through a dedicated helper to make the locked behavior explicit without changing it
+  - create / update / delete success paths are now covered in controller and service tests
+  - create keeps the current `deliveryPrice -> 0` default when the incoming field is blank
+  - update conversion is isolated behind an overridable helper so tests can avoid the static Spring-backed mapper dependency
 
 ### SKU
 
@@ -81,12 +85,14 @@ The current write-path test scope should stay limited to:
 - product detail add
 - product detail edit
 - product detail remove
+- product add
+- product edit
+- product remove
 
 The current write-path test scope should not yet include:
 
-- product full create/update payload coverage
-- SKU create/update/batchAdd side effects
 - product write-path side effects beyond current direct persistence
+- SKU create/update/batchAdd side effects
 
 ## Next Safe Implementation Boundary
 
