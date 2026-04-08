@@ -17,6 +17,7 @@ import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerProductService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.support.ProductWriteDefaultsSupport;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.beans.BeanUtils;
@@ -169,10 +170,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     }
 
     protected BigDecimal normalizeDeliveryPrice(String deliveryPrice) {
-        if (deliveryPrice == null) {
-            return BigDecimal.ZERO;
-        }
-        return new BigDecimal(deliveryPrice);
+        return ProductWriteDefaultsSupport.normalizeDeliveryPrice(deliveryPrice);
     }
 
     private void validEntityBeforeSave(FolwerProduct entity) {

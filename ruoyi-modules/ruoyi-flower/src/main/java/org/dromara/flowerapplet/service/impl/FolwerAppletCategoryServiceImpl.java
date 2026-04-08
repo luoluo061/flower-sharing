@@ -13,6 +13,7 @@ import org.dromara.flowerapplet.domain.bo.FolwerAppletCategoryBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCategoryVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletCategoryMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletCategoryService;
+import org.dromara.flower.service.support.ProductCategoryHierarchySupport;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
@@ -125,10 +126,13 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     }
 
     private void populateChildrenIfNeeded(FolwerAppletCategoryVo categoryVo) {
-        if (categoryVo == null || Objects.equals(categoryVo.getParentId(), 0L)) {
-            return;
-        }
-        categoryVo.setChildren(loadSortedChildren(categoryVo.getId()));
+        ProductCategoryHierarchySupport.populateChildrenIfNeeded(
+            categoryVo,
+            FolwerAppletCategoryVo::getParentId,
+            FolwerAppletCategoryVo::getId,
+            this::loadSortedChildren,
+            FolwerAppletCategoryVo::setChildren
+        );
     }
 
     private List<FolwerAppletCategoryVo> loadSortedChildren(Long parentId) {

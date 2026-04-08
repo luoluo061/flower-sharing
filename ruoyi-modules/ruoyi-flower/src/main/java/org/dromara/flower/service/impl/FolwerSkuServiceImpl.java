@@ -14,14 +14,13 @@ import org.dromara.flower.domain.bo.FolwerSkuBo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.support.ProductSkuAggregateSupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -203,57 +202,18 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     }
 
     protected void refreshProductAggregateAfterSkuInsert(Long prodId) {
-        ProductAggregateSnapshot snapshot = buildInsertAggregateSnapshot(queryListByProdId(prodId));
+        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
+            ProductSkuAggregateSupport.buildInsertSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
     protected void refreshProductAggregateAfterSkuUpdate(Long prodId) {
-        ProductAggregateSnapshot snapshot = buildUpdateAggregateSnapshot(queryListByProdId(prodId));
+        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
+            ProductSkuAggregateSupport.buildUpdateSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
-    private ProductAggregateSnapshot buildInsertAggregateSnapshot(List<FolwerSkuVo> skuVos) {
-        BigDecimal maxPrice = new BigDecimal(-999999999);
-        BigDecimal minPrice = new BigDecimal(999999999);
-        Long totalStocks = 0L;
-        if (skuVos.isEmpty()) {
-            return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
-        }
-        for (FolwerSkuVo skuVo : skuVos) {
-            if (Long.valueOf(0L).equals(skuVo.getStatus())) {
-                continue;
-            }
-            if (skuVo.getPrice().compareTo(maxPrice) > 0) {
-                maxPrice = skuVo.getPrice().setScale(2, RoundingMode.HALF_UP);
-            }
-            if (skuVo.getMinPrice().compareTo(minPrice) < 0) {
-                minPrice = skuVo.getMinPrice().setScale(2, RoundingMode.HALF_UP);
-            }
-            totalStocks = +skuVo.getActualStocks();
-        }
-        return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
-    }
-
-    private ProductAggregateSnapshot buildUpdateAggregateSnapshot(List<FolwerSkuVo> skuVos) {
-        BigDecimal maxPrice = BigDecimal.ZERO;
-        BigDecimal minPrice = BigDecimal.ZERO;
-        Long totalStocks = 0L;
-        if (skuVos.isEmpty()) {
-            return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
-        }
-        for (FolwerSkuVo skuVo : skuVos) {
-            if (skuVo.getPrice().compareTo(maxPrice) > 0) {
-                maxPrice = skuVo.getPrice();
-            }
-            if (skuVo.getMinPrice().compareTo(minPrice) < 0) {
-                minPrice = skuVo.getMinPrice();
-            }
-            totalStocks = +skuVo.getActualStocks();
-        }
-        return new ProductAggregateSnapshot(maxPrice, minPrice, totalStocks);
-    }
-
-    private void applyProductAggregateUpdate(Long prodId, ProductAggregateSnapshot snapshot) {
+    private void applyProductAggregateUpdate(Long prodId, ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot) {
         FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(prodId);
         FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
         folwerProductBo.setOriPrice(snapshot.maxPrice());
@@ -284,6 +244,4 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
-    private record ProductAggregateSnapshot(BigDecimal maxPrice, BigDecimal minPrice, Long totalStocks) {
-    }
 }

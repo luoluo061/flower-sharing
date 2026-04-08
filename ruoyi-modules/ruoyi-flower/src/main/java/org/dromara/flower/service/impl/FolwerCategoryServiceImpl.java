@@ -16,6 +16,7 @@ import org.dromara.flower.domain.bo.FolwerCategoryBo;
 import org.dromara.flower.domain.vo.FolwerCategoryVo;
 import org.dromara.flower.mapper.FolwerCategoryMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
+import org.dromara.flower.service.support.ProductCategoryHierarchySupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
@@ -25,7 +26,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -61,10 +61,13 @@ public class FolwerCategoryServiceImpl implements IFolwerCategoryService {
     }
 
     protected void populateChildrenIfNeeded(FolwerCategoryVo record) {
-        if (record == null || Objects.equals(record.getParentId(), 0L)) {
-            return;
-        }
-        record.setChildren(loadChildren(record.getId()));
+        ProductCategoryHierarchySupport.populateChildrenIfNeeded(
+            record,
+            FolwerCategoryVo::getParentId,
+            FolwerCategoryVo::getId,
+            this::loadChildren,
+            FolwerCategoryVo::setChildren
+        );
     }
 
     private List<FolwerCategoryVo> loadChildren(Long parentId) {
