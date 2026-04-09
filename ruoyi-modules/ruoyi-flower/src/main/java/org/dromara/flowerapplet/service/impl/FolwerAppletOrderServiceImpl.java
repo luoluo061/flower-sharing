@@ -34,6 +34,8 @@ import org.dromara.flower.platform.domain.bo.AppletUserInformationBo;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.*;
+import org.dromara.flower.service.domain.OrderDetailDomainService;
+import org.dromara.flower.service.domain.OrderLifecycleDomainService;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.*;
@@ -111,6 +113,9 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private final IFolwerAppletOrderDvyService folwerAppletOrderDvyService;
 
+    private final OrderDetailDomainService orderDetailDomainService;
+    private final OrderLifecycleDomainService orderLifecycleDomainService;
+
 //    private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;
 
     @Resource
@@ -132,17 +137,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     public FolwerAppletOrderVo queryById(Long orderId){
         FolwerAppletOrderVo folwerAppletOrderVo = baseMapper.selectVoById(orderId);
         if (folwerAppletOrderVo != null){
-            FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
-            folwerAppletOrderDetailBo.setOrderId(String.valueOf(folwerAppletOrderVo.getOrderId()));
-            List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
-            if (folwerAppletOrderDetailVos != null){
-                folwerAppletOrderVo.setOrderDetails(folwerAppletOrderDetailVos);
-                int totalNum = 0;
-                for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos){
-                    totalNum += folwerAppletOrderDetailVo.getNumber();
-                }
-                folwerAppletOrderVo.setTotalNum((long) totalNum);
-            }
+            orderDetailDomainService.attachAppletOrderDetails(folwerAppletOrderVo, loadOrderDetails(folwerAppletOrderVo.getOrderId()));
         }
         return folwerAppletOrderVo;
     }
@@ -158,21 +153,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     public TableDataInfo<FolwerAppletOrderVo> queryPageList(FolwerAppletOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletOrder> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletOrderVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        if (!result.getRecords().isEmpty()){
-            result.getRecords().forEach(folwerAppletOrderVo -> {
-                FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
-                folwerAppletOrderDetailBo.setOrderId(String.valueOf(folwerAppletOrderVo.getOrderId()));
-                List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
-                if (folwerAppletOrderDetailVos != null){
-                    folwerAppletOrderVo.setOrderDetails(folwerAppletOrderDetailVos);
-                    int totalNum = 0;
-                    for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos){
-                        totalNum += folwerAppletOrderDetailVo.getNumber();
-                    }
-                    folwerAppletOrderVo.setTotalNum((long) totalNum);
-                }
-            });
-        }
+        orderDetailDomainService.attachAppletOrderDetails(result.getRecords(), this::loadOrderDetails);
 
         return TableDataInfo.build(result);
     }
@@ -1049,17 +1030,18 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         if (Objects.isNull(folwerAppletOrderVo)) {
             return null;
         }
-        if (!Long.valueOf(0L).equals(folwerAppletOrderVo.getStatus())) {
+        if (!orderLifecycleDomainService.isPendingPayment(folwerAppletOrderVo.getStatus())) {
             return folwerAppletOrderVo;
         }
 
-        FolwerAppletOrderBo folwerAppletOrderBo = new FolwerAppletOrderBo();
-        BeanUtil.copyProperties(folwerAppletOrderVo, folwerAppletOrderBo);
-        folwerAppletOrderBo.setStatus(targetStatus);
-        folwerAppletOrderBo.setOrderNumber(transaction.getTransactionId());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        folwerAppletOrderBo.setPayTime(simpleDateFormat.parse(transaction.getSuccessTime()));
-        folwerAppletOrderBo.setPayCallback(transaction.toString());
+        FolwerAppletOrderBo folwerAppletOrderBo = orderLifecycleDomainService.preparePaidOrder(
+            folwerAppletOrderVo,
+            targetStatus,
+            transaction.getTransactionId(),
+            simpleDateFormat.parse(transaction.getSuccessTime()),
+            transaction.toString()
+        );
 
         AppletUserInformationVo appletUserInformationVo = appletUserInformationService.queryById(Long.valueOf(folwerAppletOrderVo.getUserId()));
         applyProfitSharingIfNeeded(folwerAppletOrderVo, transaction, folwerAppletOrderBo, appletUserInformationVo);
@@ -1129,6 +1111,12 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
             folwerAppletProductBo.setSoldNum((long) Arith.add(folwerAppletProductVo.getSoldNum(), folwerAppletOrderDetailVo.getNumber()));
             folwerAppletProductService.updateByBo(folwerAppletProductBo);
         }
+    }
+
+    private List<FolwerAppletOrderDetailVo> loadOrderDetails(Long orderId) {
+        FolwerAppletOrderDetailBo folwerAppletOrderDetailBo = new FolwerAppletOrderDetailBo();
+        folwerAppletOrderDetailBo.setOrderId(String.valueOf(orderId));
+        return folwerAppletOrderDetailService.queryList(folwerAppletOrderDetailBo);
     }
 
 

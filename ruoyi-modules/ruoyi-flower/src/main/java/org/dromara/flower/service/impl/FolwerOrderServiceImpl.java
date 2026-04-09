@@ -22,6 +22,9 @@ import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IFolwerOrderRefundService;
 import org.dromara.flower.service.IFolwerPickAddrService;
 import org.dromara.flower.service.IMemberLevelService;
+import org.dromara.flower.service.domain.OrderFulfillmentDomainService;
+import org.dromara.flower.service.domain.OrderLifecycleDomainService;
+import org.dromara.flower.service.domain.OrderRefundDomainService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderBo;
 import org.dromara.flower.domain.vo.FolwerOrderVo;
@@ -54,6 +57,9 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
     private final IFolwerPickAddrService folwerPickAddrService;
 
     private final IFolwerOrderRefundService folwerOrderRefundService;
+    private final OrderFulfillmentDomainService orderFulfillmentDomainService;
+    private final OrderLifecycleDomainService orderLifecycleDomainService;
+    private final OrderRefundDomainService orderRefundDomainService;
 
     /**
      * 查询订单
@@ -74,9 +80,7 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
         List<FolwerPickAddrVo> folwerPickAddrVos = folwerPickAddrService.queryList(folwerPickAddrBo);
         if (folwerPickAddrVos != null && folwerPickAddrVos.size() > 0){
             FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrVos.get(0);
-            folwerOrderVo.setAddr(folwerPickAddrVo.getProvince()+ folwerPickAddrVo.getCity()+ folwerPickAddrVo.getArea()+ folwerPickAddrVo.getAddr());
-            folwerOrderVo.setMobile(folwerPickAddrVo.getMobile());
-            folwerOrderVo.setAddrName(folwerPickAddrVo.getAddrName());
+            orderFulfillmentDomainService.applyAddress(folwerOrderVo, folwerPickAddrVo);
         }
         return folwerOrderVo;
     }
@@ -119,10 +123,7 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
 
             FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrService.queryById(folwerOrderVo.getAddrOrderId());
             if (folwerPickAddrVo != null){
-//                FolwerPickAddrVo folwerPickAddrVo = folwerPickAddrVos.get(0);
-                folwerOrderVo.setAddr(folwerPickAddrVo.getProvince()+ folwerPickAddrVo.getCity()+ folwerPickAddrVo.getArea()+ folwerPickAddrVo.getAddr());
-                folwerOrderVo.setMobile(folwerPickAddrVo.getMobile());
-                folwerOrderVo.setAddrName(folwerPickAddrVo.getAddrName());
+                orderFulfillmentDomainService.applyAddress(folwerOrderVo, folwerPickAddrVo);
             }
 
         });
@@ -227,11 +228,10 @@ public class FolwerOrderServiceImpl implements IFolwerOrderService {
         FolwerOrderVo folwerOrderVo = this.queryById(orderId);
         if (folwerOrderVo != null) {
             if (folwerOrderVo.getStatus() == 5L) {
-                FolwerOrderBo folwerOrderBo = BeanUtil.copyProperties(folwerOrderVo, FolwerOrderBo.class);
-                folwerOrderBo.setStatus(2L);
+                FolwerOrderBo folwerOrderBo = orderLifecycleDomainService.prepareRefundingOrder(folwerOrderVo);
                 Boolean b = this.updateByBo(folwerOrderBo);
                 if (b) {
-                    FolwerOrderRefundBo folwerOrderRefundBo = new FolwerOrderRefundBo();
+                    FolwerOrderRefundBo folwerOrderRefundBo = orderRefundDomainService.prepareBackendRefundCreation(folwerOrderVo);
                     folwerOrderRefundBo.setOrderId(String.valueOf(folwerOrderVo.getOrderId()));
                     folwerOrderRefundBo.setUserId(folwerOrderVo.getUserId());
                     folwerOrderRefundBo.setUserName(folwerOrderVo.getUserName());
