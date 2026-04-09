@@ -24,6 +24,7 @@ import org.dromara.flower.domain.bo.AppOrderConsumeBo;
 import org.dromara.flower.mapper.MarketingCouponMapper;
 import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
+import org.dromara.flower.service.domain.CouponAssetDomainService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponReceiveBo;
 import org.dromara.flower.domain.vo.MarketingCouponReceiveVo;
@@ -51,6 +52,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
     private  final MarketingCouponMapper marketingCouponMapper;
 
     private final AppletUserInformationMapper appletUserInformationMapper;
+    private final CouponAssetDomainService couponAssetDomainService;
 
     /**
      * 查询优惠卷领取记录
@@ -135,6 +137,8 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
 
         // 优惠卷剩余数量-1
+        add = couponAssetDomainService.prepareCouponReceive(add, appletUserInformation);
+
         UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id",add.getCouponId());
         updateWrapper.set("surplus_number",marketingCoupon.getSurplusNumber()-1);

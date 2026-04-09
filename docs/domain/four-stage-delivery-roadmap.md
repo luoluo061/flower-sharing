@@ -15,7 +15,7 @@ Execution principle:
 
 Current active branch:
 
-- `feature/order-fulfillment-backbone`
+- `feature/transaction-user-asset-backbone`
 
 ## Stage 1: Product Center Stabilization
 
@@ -150,6 +150,38 @@ Turn payment, membership, points, and coupons into standard mall transaction-sup
 - profit-sharing, promotion-reward, and other non-backbone transaction logic are detached from the main mall path
 - payment + user-asset interactions around order creation are clearly bounded
 
+### Current progress
+
+This stage is **in progress**.
+
+Already completed:
+
+- shared transaction/user-asset domain service layer:
+  - `PaymentTransactionDomainService`
+  - `CouponAssetDomainService`
+  - `PointsAssetDomainService`
+  - `MemberAssetDomainService`
+- first-batch rewiring:
+  - applet order paid/refund mutation preparation
+  - points record source-label shaping
+  - member privilege snapshot preparation
+  - coupon publish rule preparation
+  - coupon receive snapshot preparation
+- Stage 3 domain-service regression:
+  - `PaymentTransactionDomainServiceTest`
+  - `PointsAssetDomainServiceTest`
+  - `MemberAssetDomainServiceTest`
+  - `CouponAssetDomainServiceTest`
+- current combined gate:
+  - `compile`
+  - `Tests run: 170, Failures: 0, Errors: 0`
+
+Still required before Stage 3 is considered complete:
+
+- payment flow must be fully expressed through shared transaction rules
+- member, points, and coupon controller/service regression must be expanded
+- non-mainline transaction capabilities must be explicitly edge-isolated from the backbone
+
 ### Exit criteria
 
 Stage 3 is complete only when:
@@ -212,6 +244,6 @@ The current repository should be treated as being in:
 
 Default next priority:
 
-- start Stage 3 transaction and user-asset backbone work on top of the stabilized product and order centers
+- continue Stage 3 transaction and user-asset backbone work on top of the stabilized product and order centers
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.

@@ -14,6 +14,8 @@ import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.domain.OrderDetailDomainService;
 import org.dromara.flower.service.domain.OrderFulfillmentDomainService;
 import org.dromara.flower.service.domain.OrderLifecycleDomainService;
+import org.dromara.flower.service.domain.PaymentTransactionDomainService;
+import org.dromara.flower.service.domain.PointsAssetDomainService;
 import org.dromara.flower.service.IMarketingCouponService;
 import org.dromara.flower.service.IMarketingMemberPromotionPecordService;
 import org.dromara.flower.service.IOneselfMemberLevelPrivilegeService;
@@ -119,6 +121,8 @@ class FolwerAppletOrderServiceImplTest {
             new OrderDetailDomainService(),
             new OrderFulfillmentDomainService(),
             new OrderLifecycleDomainService(),
+            new PaymentTransactionDomainService(),
+            new PointsAssetDomainService(),
             payService,
             sharingService
         ));

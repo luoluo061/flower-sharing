@@ -19,6 +19,7 @@ import org.dromara.flower.platform.domain.AppletUserInformation;
 import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.service.IFolwerCouponService;
+import org.dromara.flower.service.domain.CouponAssetDomainService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.MarketingCouponBo;
 import org.dromara.flower.domain.vo.MarketingCouponVo;
@@ -46,6 +47,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
 
 
     private final MarketingCouponReceiveMapper couponReceiveMapper;
+    private final CouponAssetDomainService couponAssetDomainService;
 
 
     /**
@@ -76,9 +78,9 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         // 刷新已过期的优惠券
         List<MarketingCouponVo> records = result.getRecords();
         for (MarketingCouponVo record : records) {
-            Date endTime = record.getEndTime();
-            Date  currentTime= new Date();
-            if (endTime.before(currentTime) || record.getSurplusNumber().equals(0L)){
+            Date currentTime = new Date();
+            MarketingCoupon couponSnapshot = MapstructUtils.convert(record, MarketingCoupon.class);
+            if (!couponAssetDomainService.isCouponUsable(couponSnapshot, currentTime)) {
                 record.setState(0L);
                 UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id",record.getId());
@@ -139,7 +141,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         validEntityBeforeSave(add);
 
         // 设置剩余数量
-        add.setSurplusNumber(add.getCouponNumber());
+        couponAssetDomainService.prepareCouponPublish(add);
         boolean flag = baseMapper.insert(add) > 0;
         // 设置状态的默认值为0
         add.setState(0L);

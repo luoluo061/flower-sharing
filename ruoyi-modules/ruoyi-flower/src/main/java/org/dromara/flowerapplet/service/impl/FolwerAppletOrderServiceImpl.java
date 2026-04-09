@@ -37,6 +37,8 @@ import org.dromara.flower.service.*;
 import org.dromara.flower.service.domain.OrderDetailDomainService;
 import org.dromara.flower.service.domain.OrderFulfillmentDomainService;
 import org.dromara.flower.service.domain.OrderLifecycleDomainService;
+import org.dromara.flower.service.domain.PaymentTransactionDomainService;
+import org.dromara.flower.service.domain.PointsAssetDomainService;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
 import org.dromara.flowerapplet.domain.bo.*;
@@ -117,6 +119,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final OrderDetailDomainService orderDetailDomainService;
     private final OrderFulfillmentDomainService orderFulfillmentDomainService;
     private final OrderLifecycleDomainService orderLifecycleDomainService;
+    private final PaymentTransactionDomainService paymentTransactionDomainService;
+    private final PointsAssetDomainService pointsAssetDomainService;
 
 //    private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;
 
@@ -834,7 +838,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
         Refund refund = payService.refundOrder(wxRefundRequest);
         if (Objects.nonNull(refund) || Objects.isNull(refund)) {
-            return buildRefundResult(refund);
+            return paymentTransactionDomainService.prepareRefundResponse(refund);
         }
 //                log.info("请求退款返回：" + refund);
         //接收退款返回参数
@@ -1004,27 +1008,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     }
 
     private R<String> buildRefundResult(Refund refund) {
-        if (Objects.isNull(refund) || Objects.isNull(refund.getStatus())) {
-            return R.fail("退款状态未知");
-        }
-        Status status = refund.getStatus();
-        if (Status.SUCCESS.equals(status)) {
-            return R.ok("退款成功");
-        }
-        if (Status.PROCESSING.equals(status)) {
-            return R.ok("退款处理中");
-        }
-        if (Status.ABNORMAL.equals(status)) {
-            return R.fail("退款异常");
-        }
-        if (Status.CLOSED.equals(status)) {
-            return R.fail("退款关闭");
-        }
-        return R.fail("退款状态未知");
+        return paymentTransactionDomainService.prepareRefundResponse(refund);
     }
 
     private FolwerAppletOrderVo applySuccessfulPayment(Transaction transaction, Long targetStatus) throws Exception {
-        if (Objects.isNull(transaction) || !Transaction.TradeStateEnum.SUCCESS.equals(transaction.getTradeState())) {
+        if (!paymentTransactionDomainService.isPaid(transaction)) {
             return null;
         }
 
@@ -1037,7 +1025,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        FolwerAppletOrderBo folwerAppletOrderBo = orderLifecycleDomainService.preparePaidOrder(
+        FolwerAppletOrderBo folwerAppletOrderBo = paymentTransactionDomainService.preparePaidMutation(
             folwerAppletOrderVo,
             targetStatus,
             transaction.getTransactionId(),
@@ -1094,9 +1082,11 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private void applyPostPaymentSideEffects(FolwerAppletOrderVo orderVo, AppletUserInformationVo userVo) {
         if (Objects.nonNull(userVo)) {
-            AppletUserInformationBo appletUserInformationBo = BeanUtil.copyProperties(userVo, AppletUserInformationBo.class);
-            appletUserInformationBo.setPoints((long) Arith.add(userVo.getPoints(), orderVo.getRebate()));
+            AppletUserInformationBo appletUserInformationBo =
+                pointsAssetDomainService.preparePointsEarn(userVo, orderVo.getRebate());
+            if (Objects.nonNull(appletUserInformationBo)) {
             appletUserInformationService.updateByBo(appletUserInformationBo);
+            }
         }
 
         if (CollectionUtil.isEmpty(orderVo.getOrderDetails())) {

@@ -17,6 +17,7 @@ import org.dromara.flower.domain.vo.FolwerCreditGetrecordsVo;
 import org.dromara.flower.domain.FolwerCreditGetrecords;
 import org.dromara.flower.mapper.FolwerCreditGetrecordsMapper;
 import org.dromara.flower.service.IFolwerCreditGetrecordsService;
+import org.dromara.flower.service.domain.PointsAssetDomainService;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class FolwerCreditGetrecordsServiceImpl implements IFolwerCreditGetrecord
     private final FolwerCreditGetrecordsMapper baseMapper;
 
     private final ISysDictDataService dictDataService;
+    private final PointsAssetDomainService pointsAssetDomainService;
 
     /**
      * 查询积分获取记录
@@ -46,7 +48,7 @@ public class FolwerCreditGetrecordsServiceImpl implements IFolwerCreditGetrecord
     public FolwerCreditGetrecordsVo queryById(Long recordId){
         FolwerCreditGetrecordsVo folwerCreditGetrecordsVo = baseMapper.selectVoById(recordId);
         String creditSourName = dictDataService.selectDictLabel("source_points", String.valueOf(folwerCreditGetrecordsVo.getCreditSourId()));
-        folwerCreditGetrecordsVo.setCreditSourName(creditSourName);
+        pointsAssetDomainService.applySourceLabel(folwerCreditGetrecordsVo, creditSourName);
         return folwerCreditGetrecordsVo;
     }
 
@@ -61,10 +63,10 @@ public class FolwerCreditGetrecordsServiceImpl implements IFolwerCreditGetrecord
     public TableDataInfo<FolwerCreditGetrecordsVo> queryPageList(FolwerCreditGetrecordsBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerCreditGetrecords> lqw = buildQueryWrapper(bo);
         Page<FolwerCreditGetrecordsVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.getRecords().forEach(record -> {
-            String creditSourName = dictDataService.selectDictLabel("source_points", String.valueOf(record.getCreditSourId()));
-            record.setCreditSourName(creditSourName);
-        });
+        pointsAssetDomainService.applySourceLabels(
+            result.getRecords(),
+            creditSourId -> dictDataService.selectDictLabel("source_points", String.valueOf(creditSourId))
+        );
         return TableDataInfo.build(result);
     }
 
