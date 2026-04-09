@@ -12,6 +12,7 @@ import org.dromara.flower.domain.FolwerDelivery;
 import org.dromara.flower.domain.bo.FolwerSkuBo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.domain.OrderDetailDomainService;
 import org.springframework.stereotype.Service;
 import org.dromara.flower.domain.bo.FolwerOrderDetailBo;
 import org.dromara.flower.domain.vo.FolwerOrderDetailVo;
@@ -36,6 +37,7 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
     private final FolwerOrderDetailMapper baseMapper;
 
     private final IFolwerSkuService folwerSkuService;
+    private final OrderDetailDomainService orderDetailDomainService;
 
     /**
      * 查询订单详细
@@ -45,7 +47,8 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
      */
     @Override
     public FolwerOrderDetailVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        FolwerOrderDetailVo orderDetailVo = baseMapper.selectVoById(id);
+        return orderDetailDomainService.attachBackendSkuDetail(orderDetailVo, folwerSkuService::queryById);
     }
 
     /**
@@ -59,12 +62,7 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
     public TableDataInfo<FolwerOrderDetailVo> queryPageList(FolwerOrderDetailBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerOrderDetail> lqw = buildQueryWrapper(bo);
         Page<FolwerOrderDetailVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.getRecords().forEach(folwerOrderDetailVo -> {
-            FolwerSkuVo folwerSkuVos = folwerSkuService.queryById(folwerOrderDetailVo.getSkuId());
-            if (folwerSkuVos != null) {
-                folwerOrderDetailVo.setFolwerSkuVo(folwerSkuVos);
-            }
-        });
+        orderDetailDomainService.attachBackendSkuDetails(result.getRecords(), folwerSkuService::queryById);
         return TableDataInfo.build(result);
     }
 
@@ -77,7 +75,9 @@ public class FolwerOrderDetailServiceImpl implements IFolwerOrderDetailService {
     @Override
     public List<FolwerOrderDetailVo> queryList(FolwerOrderDetailBo bo) {
         LambdaQueryWrapper<FolwerOrderDetail> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<FolwerOrderDetailVo> orderDetailVos = baseMapper.selectVoList(lqw);
+        orderDetailDomainService.attachBackendSkuDetails(orderDetailVos, folwerSkuService::queryById);
+        return orderDetailVos;
     }
 
     private LambdaQueryWrapper<FolwerOrderDetail> buildQueryWrapper(FolwerOrderDetailBo bo) {

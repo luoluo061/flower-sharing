@@ -2,7 +2,7 @@
 
 ## Current status
 
-Stage 2 is in progress. The first batch focuses on read-chain stabilization and shared order-domain entrypoints, without changing public controller routes, BO/VO contracts, or database schema.
+Stage 2 is in progress. The second batch has now extended the backbone from read-chain stabilization into write-chain and refund/detail service rewiring, while still keeping public controller routes, BO/VO contracts, and database schema unchanged.
 
 ## First batch implemented
 
@@ -26,6 +26,30 @@ Stage 2 is in progress. The first batch focuses on read-chain stabilization and 
   - `OrderFulfillmentDomainServiceTest`
   - `OrderRefundDomainServiceTest`
 
+## Second batch implemented
+
+- Added backend order write/controller coverage:
+  - `FolwerOrderWriteControllerTest`
+  - `FolwerOrderDetailControllerTest`
+  - `FolwerOrderRefundControllerTest`
+- Added applet order write/delivery-record controller coverage:
+  - `FolwerAppletOrderWriteControllerTest`
+  - `FolwerAppletOrderDvyControllerTest`
+- Rewired backend order-detail aggregation through `OrderDetailDomainService`:
+  - backend SKU attachment now routes through shared detail-domain logic
+- Rewired backend refund flow through `OrderRefundDomainService`:
+  - refund status mutation is prepared centrally
+  - backend refund service no longer duplicates mutation shaping
+- Cleaned backend refund creation in `FolwerOrderServiceImpl`:
+  - refund BO creation now relies on lifecycle/refund domain services without duplicated manual field assignment
+- Added backend service regression:
+  - `FolwerOrderDetailServiceTest`
+  - `FolwerOrderRefundServiceTest`
+- Current Stage 2 combined regression gate:
+  - `compile`
+  - full product + payment + order regression
+  - `Tests run: 147, Failures: 0, Errors: 0`
+
 ## Stage 2 boundary
 
 Included in Stage 2:
@@ -37,12 +61,12 @@ Included in Stage 2:
 - backend refund creation preparation
 - base fulfillment address/logistics-view shaping
 
-Explicitly not in the first batch:
+Explicitly not yet complete in Stage 2:
 
-- checkout creation refactor
-- full submit-order cleanup
+- full checkout creation refactor
+- full applet submit-order cleanup
 - logistics module consolidation
-- order-delivery record rewrite
+- full delivery-record rewrite
 - after-sale system expansion
 - user asset and coupon settlement rules
 
@@ -50,7 +74,7 @@ Explicitly not in the first batch:
 
 Stage 2 next batches should continue in this order:
 
-1. extract more order-detail and lifecycle rules out of backend/applet services
-2. stabilize backend and applet order write-chain tests
+1. finish applet order write-chain cleanup around create/update/submit/refund/query flows
+2. move backend order management, refund, and detail services fully into adapter-facing entrypoints
 3. isolate basic fulfillment/logistics capabilities from flower-specific delivery expressions
 4. close Stage 2 only after backend and applet order rules no longer exist as separate implementations

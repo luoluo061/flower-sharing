@@ -57,4 +57,16 @@ class OrderDetailDomainServiceTest {
 
         assertEquals(9L, detailVo.getFolwerSkuVo().getSkuId());
     }
+
+    @Test
+    void attachBackendSkuDetailShouldAttachLoadedSkuToSingleRecord() {
+        FolwerOrderDetailVo detailVo = new FolwerOrderDetailVo();
+        detailVo.setSkuId(12L);
+        FolwerSkuVo skuVo = new FolwerSkuVo();
+        skuVo.setSkuId(12L);
+
+        service.attachBackendSkuDetail(detailVo, skuId -> skuVo);
+
+        assertEquals(12L, detailVo.getFolwerSkuVo().getSkuId());
+    }
 }

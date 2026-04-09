@@ -103,10 +103,21 @@ Already completed:
   - applet order detail aggregation
   - backend order address shaping
   - backend refund creation preparation
+- second-batch controller/service regression:
+  - backend order write/detail/refund controllers
+  - applet order write/delivery-record controllers
+  - backend order detail/refund service tests
+- second-batch service rewiring:
+  - backend order detail SKU attachment through `OrderDetailDomainService`
+  - backend refund mutation shaping through `OrderRefundDomainService`
+  - backend refund creation cleanup in `FolwerOrderServiceImpl`
+- current combined gate:
+  - `compile`
+  - `Tests run: 147, Failures: 0, Errors: 0`
 
 Still required before Stage 2 is considered complete:
 
-- finish backend/apply-side order write-chain stabilization
+- finish backend/applet-side order write-chain stabilization
 - make backend and applet order services adapter-facing entrypoints over shared order rules
 - isolate standard logistics/fulfillment backbone from flower-specific delivery expressions
 - complete stable order read/write regression coverage

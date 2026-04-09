@@ -12,6 +12,18 @@ import java.util.function.Function;
 @Service
 public class OrderDetailDomainService {
 
+    public FolwerOrderDetailVo attachBackendSkuDetail(FolwerOrderDetailVo orderDetailVo,
+                                                      Function<Long, FolwerSkuVo> skuLoader) {
+        if (orderDetailVo == null || orderDetailVo.getSkuId() == null) {
+            return orderDetailVo;
+        }
+        FolwerSkuVo skuVo = skuLoader.apply(orderDetailVo.getSkuId());
+        if (skuVo != null) {
+            orderDetailVo.setFolwerSkuVo(skuVo);
+        }
+        return orderDetailVo;
+    }
+
     public FolwerAppletOrderVo attachAppletOrderDetails(FolwerAppletOrderVo orderVo,
                                                         List<FolwerAppletOrderDetailVo> orderDetails) {
         if (orderVo == null || orderDetails == null) {
@@ -44,13 +56,7 @@ public class OrderDetailDomainService {
             return;
         }
         for (FolwerOrderDetailVo orderDetailVo : orderDetailVos) {
-            if (orderDetailVo.getSkuId() == null) {
-                continue;
-            }
-            FolwerSkuVo skuVo = skuLoader.apply(orderDetailVo.getSkuId());
-            if (skuVo != null) {
-                orderDetailVo.setFolwerSkuVo(skuVo);
-            }
+            attachBackendSkuDetail(orderDetailVo, skuLoader);
         }
     }
 }
