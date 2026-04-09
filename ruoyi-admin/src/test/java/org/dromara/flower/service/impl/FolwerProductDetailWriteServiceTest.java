@@ -3,6 +3,7 @@ package org.dromara.flower.service.impl;
 import org.dromara.flower.domain.FolwerProductDetail;
 import org.dromara.flower.domain.bo.FolwerProductDetailBo;
 import org.dromara.flower.mapper.FolwerProductDetailMapper;
+import org.dromara.flower.service.domain.ProductDetailDomainService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,20 +24,18 @@ class FolwerProductDetailWriteServiceTest {
 
     @Mock
     private FolwerProductDetailMapper detailMapper;
-
     @Test
     void insertByBoShouldPersistCurrentDetailShape() {
         FolwerProductDetailBo bo = new FolwerProductDetailBo();
         bo.setSkuId(100L);
         bo.setRemarks("detail-remarks");
 
-        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper);
+        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper, new ProductDetailDomainService());
         service.nextEntity.setSkuId(100L);
         service.nextEntity.setRemarks("detail-remarks");
         service.nextEntity.setDetailId(88L);
 
         when(detailMapper.insert(any(FolwerProductDetail.class))).thenReturn(1);
-
         boolean result = service.insertByBo(bo);
 
         assertTrue(result);
@@ -51,13 +50,12 @@ class FolwerProductDetailWriteServiceTest {
         bo.setSkuId(100L);
         bo.setRemarks("updated-remarks");
 
-        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper);
+        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper, new ProductDetailDomainService());
         service.nextEntity.setDetailId(22L);
         service.nextEntity.setSkuId(100L);
         service.nextEntity.setRemarks("updated-remarks");
 
         when(detailMapper.updateById(any(FolwerProductDetail.class))).thenReturn(1);
-
         boolean result = service.updateByBo(bo);
 
         assertTrue(result);
@@ -66,7 +64,7 @@ class FolwerProductDetailWriteServiceTest {
 
     @Test
     void deleteWithValidByIdsShouldDeleteDirectly() {
-        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper);
+        TestableFolwerProductDetailServiceImpl service = new TestableFolwerProductDetailServiceImpl(detailMapper, new ProductDetailDomainService());
 
         when(detailMapper.deleteByIds(List.of(33L))).thenReturn(1);
 
@@ -80,8 +78,9 @@ class FolwerProductDetailWriteServiceTest {
 
         private final FolwerProductDetail nextEntity = new FolwerProductDetail();
 
-        private TestableFolwerProductDetailServiceImpl(FolwerProductDetailMapper baseMapper) {
-            super(baseMapper);
+        private TestableFolwerProductDetailServiceImpl(FolwerProductDetailMapper baseMapper,
+                                                       ProductDetailDomainService productDetailDomainService) {
+            super(baseMapper, productDetailDomainService);
         }
 
         @Override

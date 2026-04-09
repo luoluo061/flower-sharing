@@ -14,6 +14,9 @@ import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.domain.ProductCategoryDomainService;
+import org.dromara.flower.service.domain.ProductCoreDomainService;
+import org.dromara.flower.service.domain.ProductSkuAggregateDomainService;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
@@ -58,7 +61,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void categoryQueryByIdShouldAttachChildrenForNonRootParent() {
-        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService);
+        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService, new ProductCategoryDomainService());
 
         FolwerCategoryVo parent = new FolwerCategoryVo();
         parent.setId(1L);
@@ -70,7 +73,6 @@ class FolwerCatalogReadServiceTest {
 
         when(categoryMapper.selectVoById(1L)).thenReturn(parent);
         when(categoryMapper.selectVoList(any())).thenReturn(List.of(child));
-
         FolwerCategoryVo result = service.queryById(1L);
 
         assertEquals(1, result.getChildren().size());
@@ -79,13 +81,12 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void categoryQueryByIdShouldSkipChildrenForRootParent() {
-        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService);
+        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService, new ProductCategoryDomainService());
 
         FolwerCategoryVo parent = new FolwerCategoryVo();
         parent.setId(1L);
         parent.setParentId(0L);
         when(categoryMapper.selectVoById(1L)).thenReturn(parent);
-
         FolwerCategoryVo result = service.queryById(1L);
 
         assertNull(result.getChildren());
@@ -94,7 +95,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void productQueryByIdShouldComposeParentAndChildCategoryName() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
 
         FolwerProductVo product = new FolwerProductVo();
         product.setId(10L);
@@ -121,7 +122,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void productQueryPageListShouldKeepCurrentShortParentRule() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
 
         FolwerProductVo product = new FolwerProductVo();
         product.setId(11L);
@@ -146,7 +147,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void productQueryPageListShouldFailWhenCategoryMissing() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
 
         FolwerProductVo product = new FolwerProductVo();
         product.setId(12L);
@@ -164,7 +165,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void skuQueryPageListShouldFillPictureUrlsFromSharedLookup() {
-        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService);
+        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService, new ProductSkuAggregateDomainService());
 
         FolwerSkuVo first = new FolwerSkuVo();
         first.setSkuId(21L);
@@ -187,7 +188,7 @@ class FolwerCatalogReadServiceTest {
 
     @Test
     void skuQueryListByProdIdShouldSkipLookupWhenNoPictureIds() {
-        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService);
+        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService, new ProductSkuAggregateDomainService());
 
         FolwerSkuVo sku = new FolwerSkuVo();
         sku.setSkuId(23L);

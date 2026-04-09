@@ -5,6 +5,7 @@ import org.dromara.flower.domain.bo.FolwerProductBo;
 import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.domain.ProductCoreDomainService;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
 import org.junit.jupiter.api.Tag;
@@ -36,10 +37,9 @@ class FolwerProductWriteServiceTest {
     private SysOssMapper sysOssMapper;
     @Mock
     private IFolwerSkuService skuService;
-
     @Test
     void insertByBoShouldDefaultDeliveryPriceToZero() {
-        TestableFolwerProductServiceImpl service = new TestableFolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        TestableFolwerProductServiceImpl service = new TestableFolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
         FolwerProductBo bo = new FolwerProductBo();
         bo.setProductName("write-product");
 
@@ -58,7 +58,7 @@ class FolwerProductWriteServiceTest {
 
     @Test
     void updateByBoShouldPersistConvertedCurrentShape() {
-        TestableFolwerProductServiceImpl service = new TestableFolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        TestableFolwerProductServiceImpl service = new TestableFolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
         FolwerProductBo bo = new FolwerProductBo();
         bo.setId(41L);
         bo.setProductName("update-product");
@@ -74,7 +74,7 @@ class FolwerProductWriteServiceTest {
 
     @Test
     void deleteWithValidByIdsShouldDeleteDirectly() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
         when(productMapper.deleteByIds(List.of(51L))).thenReturn(1);
 
         Boolean result = service.deleteWithValidByIds(List.of(51L), true);
@@ -91,8 +91,9 @@ class FolwerProductWriteServiceTest {
                                                  IFolwerCategoryService folwerCategoryService,
                                                  ISysOssService sysOssService,
                                                  SysOssMapper sysOssMapper,
-                                                 IFolwerSkuService folwerSkuService) {
-            super(baseMapper, folwerCategoryService, sysOssService, sysOssMapper, folwerSkuService);
+                                                 IFolwerSkuService folwerSkuService,
+                                                 ProductCoreDomainService productCoreDomainService) {
+            super(baseMapper, folwerCategoryService, sysOssService, sysOssMapper, folwerSkuService, productCoreDomainService);
         }
 
         @Override

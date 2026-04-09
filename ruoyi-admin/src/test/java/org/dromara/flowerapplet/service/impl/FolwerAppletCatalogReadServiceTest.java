@@ -14,6 +14,7 @@ import org.dromara.flowerapplet.mapper.FolwerAppletSkuMapper;
 import org.dromara.flowerapplet.service.IFlowerAppletUserInformationService;
 import org.dromara.flowerapplet.service.IFolwerAppletCategoryService;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
+import org.dromara.flower.service.domain.ProductCategoryDomainService;
 import org.dromara.system.service.ISysOssService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class FolwerAppletCatalogReadServiceTest {
 
     @Test
     void categoryQueryByIdShouldAttachSortedChildrenForNonRootParent() {
-        FolwerAppletCategoryServiceImpl service = new FolwerAppletCategoryServiceImpl(categoryMapper, ossService);
+        FolwerAppletCategoryServiceImpl service = new FolwerAppletCategoryServiceImpl(categoryMapper, ossService, new ProductCategoryDomainService());
         FolwerAppletCategoryVo parent = new FolwerAppletCategoryVo();
         parent.setId(1L);
         parent.setParentId(9L);
@@ -78,7 +79,7 @@ class FolwerAppletCatalogReadServiceTest {
 
     @Test
     void categoryQueryByIdShouldSkipChildrenForRootParent() {
-        FolwerAppletCategoryServiceImpl service = new FolwerAppletCategoryServiceImpl(categoryMapper, ossService);
+        FolwerAppletCategoryServiceImpl service = new FolwerAppletCategoryServiceImpl(categoryMapper, ossService, new ProductCategoryDomainService());
         FolwerAppletCategoryVo parent = new FolwerAppletCategoryVo();
         parent.setId(2L);
         parent.setParentId(0L);

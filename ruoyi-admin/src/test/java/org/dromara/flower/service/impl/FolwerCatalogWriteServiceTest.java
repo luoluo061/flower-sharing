@@ -8,6 +8,8 @@ import org.dromara.flower.mapper.FolwerCategoryMapper;
 import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.domain.ProductCategoryDomainService;
+import org.dromara.flower.service.domain.ProductCoreDomainService;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
@@ -48,7 +50,7 @@ class FolwerCatalogWriteServiceTest {
 
     @Test
     void categoryDeleteShouldFailWhenProductsExist() {
-        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService);
+        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService, new ProductCategoryDomainService());
 
         FolwerAppletProductVo productVo = new FolwerAppletProductVo();
         FolwerCategoryVo categoryVo = new FolwerCategoryVo();
@@ -66,7 +68,7 @@ class FolwerCatalogWriteServiceTest {
 
     @Test
     void categoryDeleteShouldDeleteWhenNoProductsExist() {
-        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService);
+        FolwerCategoryServiceImpl service = new FolwerCategoryServiceImpl(categoryMapper, ossService, appletProductService, new ProductCategoryDomainService());
 
         when(appletProductService.queryList(any(FolwerAppletProductBo.class))).thenReturn(List.of());
         when(categoryMapper.deleteByIds(List.of(6L))).thenReturn(1);
@@ -79,7 +81,7 @@ class FolwerCatalogWriteServiceTest {
 
     @Test
     void productUpdateStatusShouldReturnFalseWhenIdsEmpty() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
 
         Boolean result = service.updateStatusByIds(List.of(), true);
 
@@ -88,7 +90,7 @@ class FolwerCatalogWriteServiceTest {
 
     @Test
     void productUpdateStatusShouldPersistZeroStatusForEverySelectedProduct() {
-        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService);
+        FolwerProductServiceImpl service = new FolwerProductServiceImpl(productMapper, categoryService, ossService, sysOssMapper, skuService, new ProductCoreDomainService());
 
         FolwerProduct first = new FolwerProduct();
         first.setId(11L);

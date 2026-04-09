@@ -2,6 +2,7 @@ package org.dromara.flower.service.impl;
 
 import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.mapper.FolwerSkuMapper;
+import org.dromara.flower.service.domain.ProductSkuAggregateDomainService;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
@@ -31,10 +32,9 @@ class FolwerSkuWriteServiceTest {
     private ISysOssService ossService;
     @Mock
     private IFolwerAppletProductService appletProductService;
-
     @Test
     void refreshProductAggregateAfterSkuInsertShouldKeepCurrentInsertSemantics() {
-        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService);
+        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService, new ProductSkuAggregateDomainService());
 
         FolwerSkuVo disabled = skuVo(100L, new BigDecimal("99.999"), new BigDecimal("1.111"), 99L, 0L);
         FolwerSkuVo activeFirst = skuVo(100L, new BigDecimal("10.123"), new BigDecimal("8.111"), 5L, 1L);
@@ -57,7 +57,7 @@ class FolwerSkuWriteServiceTest {
 
     @Test
     void refreshProductAggregateAfterSkuUpdateShouldKeepCurrentUpdateSemantics() {
-        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService);
+        FolwerSkuServiceImpl service = new FolwerSkuServiceImpl(skuMapper, ossService, appletProductService, new ProductSkuAggregateDomainService());
 
         FolwerSkuVo first = skuVo(100L, new BigDecimal("10.123"), new BigDecimal("8.111"), 5L, 1L);
         FolwerSkuVo second = skuVo(100L, new BigDecimal("11.456"), new BigDecimal("7.777"), 3L, 0L);
