@@ -1,7 +1,6 @@
 package org.dromara.flower.service.domain;
 
 import org.dromara.flower.domain.vo.FolwerSkuVo;
-import org.dromara.flower.service.support.ProductSkuAggregateSupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.junit.jupiter.api.Tag;
@@ -19,7 +18,7 @@ class ProductSkuAggregateDomainServiceTest {
 
     @Test
     void buildInsertSnapshotShouldKeepCurrentSemantics() {
-        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot = service.buildInsertSnapshot(List.of(
+        ProductSkuAggregateDomainService.Snapshot snapshot = service.buildInsertSnapshot(List.of(
             skuVo(new BigDecimal("99.999"), new BigDecimal("1.111"), 99L, 0L),
             skuVo(new BigDecimal("10.123"), new BigDecimal("8.111"), 5L, 1L),
             skuVo(new BigDecimal("11.456"), new BigDecimal("7.777"), 3L, 1L)
@@ -32,7 +31,7 @@ class ProductSkuAggregateDomainServiceTest {
 
     @Test
     void buildUpdateSnapshotShouldKeepCurrentSemantics() {
-        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot = service.buildUpdateSnapshot(List.of(
+        ProductSkuAggregateDomainService.Snapshot snapshot = service.buildUpdateSnapshot(List.of(
             skuVo(new BigDecimal("10.123"), new BigDecimal("8.111"), 5L, 1L),
             skuVo(new BigDecimal("11.456"), new BigDecimal("7.777"), 3L, 0L)
         ));
@@ -46,8 +45,8 @@ class ProductSkuAggregateDomainServiceTest {
     void applySnapshotToProductBoShouldCopyCurrentAggregateFields() {
         FolwerAppletProductVo productVo = new FolwerAppletProductVo();
         productVo.setId(100L);
-        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
-            new ProductSkuAggregateSupport.ProductAggregateSnapshot(new BigDecimal("12.34"), new BigDecimal("5.67"), 8L);
+        ProductSkuAggregateDomainService.Snapshot snapshot =
+            new ProductSkuAggregateDomainService.Snapshot(new BigDecimal("12.34"), new BigDecimal("5.67"), 8L);
 
         FolwerAppletProductBo productBo = service.applySnapshotToProductBo(productVo, snapshot);
 
