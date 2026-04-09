@@ -96,6 +96,7 @@ The helper layer centralizes low-level reusable logic, while the domain-service 
 4. Backend product management currently mixes read and write operations in the same controllers, so it is a worse first target for code cleanup than the mini-program read chain.
 5. `ProductComm` should be treated as an adjacent extension, not part of the first-pass standard mall product backbone.
 6. The product line has now moved beyond helper-only extraction: backend and mini-program services are still separate entrypoints, but shared product-domain rules are routed through the new domain-service layer.
+7. Mini-program product, SKU, and detail services now have an explicit adapter-facing role. Price masking, display-name composition, paging assembly, and presentation sorting stay there rather than moving into product-domain services.
 
 ## First Execution Batch
 
@@ -189,7 +190,7 @@ Current stable verification commands:
 
 ## Product-Center Migration Direction
 
-The current branch is now at the end of Stage 1 product-center stabilization and ready to move from product-domain implementation into the next mall backbone domain.
+The current branch has completed Stage 1 product-center stabilization and is ready to move into the next mall backbone domain.
 
 - The shared-boundary definition lives in `product-line-shared-boundary.md`
 - The write-path lock rules live in `product-write-flow-prep.md`

@@ -134,6 +134,7 @@ Current status:
 - `ProductSkuAggregateDomainService` now owns SKU aggregate snapshot preparation and product snapshot application
 - `ProductDetailDomainService` now owns current product-detail create/update/delete preparation
 - backend and mini-program services remain adapter-facing compatibility entrypoints
+- support-layer types are no longer used as the external contract for product-domain rules
 
 ### Phase 4: compatibility cleanup
 
@@ -141,6 +142,12 @@ Current status:
   - consider naming cleanup
   - consider backend/applet service consolidation
   - consider path and API surface cleanup
+
+Next execution handoff:
+
+- Stage 1 product-center stabilization is complete
+- the next backbone domain is Stage 2 order and fulfillment
+- applet product, SKU, and detail services should now be treated as adapter-facing services over the stabilized product center
 
 ## Locked Compatibility Rules
 

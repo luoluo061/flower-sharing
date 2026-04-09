@@ -64,6 +64,12 @@ The support layer remains intentionally low-level. Product-domain ownership is n
 
 Backend and mini-program services still coexist, but product-domain rules should now flow through these domain services rather than being re-expressed inside each service implementation.
 
+Applet product, SKU, and detail services are now explicitly treated as adapter-facing services:
+
+- applet product service owns guest/pending-auth price masking, category paging assembly, and client-facing sorting
+- applet SKU service owns display-name composition, price masking, and client-facing sorting
+- applet product-detail service owns adapter-facing lookup and current direct CRUD pass-through semantics
+
 ## Target Ownership
 
 The long-term ownership of these behaviors should be:
@@ -111,3 +117,11 @@ The next product-center extraction steps should treat the current shared boundar
 - duplicated backend/applet service entrypoints
 - historical `Folwer` naming
 - current URL layout under `/flower/*` and `/flowerapplet/*`
+
+## Stage 1 Completion State
+
+Stage 1 product-center stabilization is now considered complete:
+
+- shared product rules route through domain services instead of duplicated backend/applet helper logic
+- support-layer types remain internal implementation details
+- backend and mini-program services now sit on top of a stabilized product center with explicit adapter responsibilities

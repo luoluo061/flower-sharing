@@ -34,7 +34,7 @@ Turn the current product-related code from a flower-coupled dual-stack implement
 
 ### Current progress
 
-This stage is **in progress and near complete**.
+This stage is **completed**.
 
 Already completed:
 
@@ -55,8 +55,7 @@ Already completed:
 
 Still required before Stage 1 is considered complete:
 
-- confirm the new domain-service layer is the default source of truth for product-domain rules
-- finish the final Stage 1 closeout and handoff into Stage 2 order work
+- none
 
 ### Exit criteria
 
@@ -170,10 +169,10 @@ These rules stay active across all 4 stages:
 
 The current repository should be treated as being in:
 
-- **Stage 1: Product Center Stabilization**
+- **Stage 2: Order and Fulfillment Backbone**
 
 Default next priority:
 
-- finish Stage 1 before shifting the main effort to Stage 2
+- start Stage 2 order and fulfillment backbone work on top of the stabilized product center
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.
