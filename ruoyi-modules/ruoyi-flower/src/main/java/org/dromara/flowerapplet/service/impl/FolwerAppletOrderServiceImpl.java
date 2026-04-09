@@ -35,6 +35,7 @@ import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.*;
 import org.dromara.flower.service.domain.OrderDetailDomainService;
+import org.dromara.flower.service.domain.OrderFulfillmentDomainService;
 import org.dromara.flower.service.domain.OrderLifecycleDomainService;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.common.mypay.domain.PayProfitsharingParam;
@@ -114,6 +115,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     private final IFolwerAppletOrderDvyService folwerAppletOrderDvyService;
 
     private final OrderDetailDomainService orderDetailDomainService;
+    private final OrderFulfillmentDomainService orderFulfillmentDomainService;
     private final OrderLifecycleDomainService orderLifecycleDomainService;
 
 //    private final IFolwerAppletDeliveryPriceService folwerAppletDeliveryPriceService;

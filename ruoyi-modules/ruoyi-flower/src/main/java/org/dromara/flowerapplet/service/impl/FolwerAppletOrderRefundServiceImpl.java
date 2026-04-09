@@ -1,7 +1,5 @@
 package org.dromara.flowerapplet.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -9,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.service.domain.OrderRefundDomainService;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.dromara.flowerapplet.service.IFolwerAppletOrderService;
@@ -36,6 +35,7 @@ public class FolwerAppletOrderRefundServiceImpl implements IFolwerAppletOrderRef
     private final FolwerAppletOrderRefundMapper baseMapper;
 
     private final IFolwerAppletOrderService folwerAppletOrderService;
+    private final OrderRefundDomainService orderRefundDomainService;
 
     /**
      * 查询订单退款
@@ -102,14 +102,14 @@ public class FolwerAppletOrderRefundServiceImpl implements IFolwerAppletOrderRef
      */
     @Override
     public String insertByBo(FolwerAppletOrderRefundBo bo) throws Exception {
-        FolwerAppletOrderRefund add = MapstructUtils.convert(bo, FolwerAppletOrderRefund.class);
+        FolwerAppletOrderRefundBo preparedRefundBo = orderRefundDomainService.prepareAppletRefundCreation(bo);
+        FolwerAppletOrderRefund add = toEntity(preparedRefundBo);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setRefundId(add.getRefundId());
             FolwerAppletOrderVo folwerAppletOrderVo = folwerAppletOrderService.queryOrder(bo.getOrderId());
-            FolwerAppletOrderBo folwerAppletOrderBo = BeanUtil.copyProperties(folwerAppletOrderVo, FolwerAppletOrderBo.class);
-            folwerAppletOrderBo.setIsRefund(2L);
+            FolwerAppletOrderBo folwerAppletOrderBo = orderRefundDomainService.prepareAppletRefundOrderMutation(folwerAppletOrderVo);
             Boolean b = folwerAppletOrderService.updateByBo(folwerAppletOrderBo);
         }
         return add.getRefundId().toString();
@@ -123,9 +123,29 @@ public class FolwerAppletOrderRefundServiceImpl implements IFolwerAppletOrderRef
      */
     @Override
     public Boolean updateByBo(FolwerAppletOrderRefundBo bo) {
-        FolwerAppletOrderRefund update = MapstructUtils.convert(bo, FolwerAppletOrderRefund.class);
+        FolwerAppletOrderRefund update = toEntity(bo);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
+    }
+
+    private FolwerAppletOrderRefund toEntity(FolwerAppletOrderRefundBo bo) {
+        FolwerAppletOrderRefund entity = new FolwerAppletOrderRefund();
+        entity.setRefundId(bo.getRefundId());
+        entity.setUserId(bo.getUserId());
+        entity.setUserName(bo.getUserName());
+        entity.setMemberLevelId(bo.getMemberLevelId());
+        entity.setOrderId(bo.getOrderId());
+        entity.setActualTotal(bo.getActualTotal());
+        entity.setRefundStatus(bo.getRefundStatus());
+        entity.setStatus(bo.getStatus());
+        entity.setApplyType(bo.getApplyType());
+        entity.setRefundMsg(bo.getRefundMsg());
+        entity.setRefundAmount(bo.getRefundAmount());
+        entity.setRefundTime(bo.getRefundTime());
+        entity.setBuyerMsg(bo.getBuyerMsg());
+        entity.setRefundRemark(bo.getRefundRemark());
+        entity.setRefundRemarkPic(bo.getRefundRemarkPic());
+        return entity;
     }
 
     /**

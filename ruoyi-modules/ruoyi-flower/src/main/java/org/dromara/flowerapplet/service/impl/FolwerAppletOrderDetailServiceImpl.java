@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.flower.service.domain.OrderDetailDomainService;
 import org.dromara.flowerapplet.service.IFolwerAppletSkuService;
 import org.springframework.stereotype.Service;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
@@ -33,6 +34,7 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
     private final FolwerAppletOrderDetailMapper baseMapper;
 
     private final IFolwerAppletSkuService folwerAppletSkuService;
+    private final OrderDetailDomainService orderDetailDomainService;
 
     /**
      * 查询订单详细
@@ -43,10 +45,7 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
     @Override
     public FolwerAppletOrderDetailVo queryById(Long id){
         FolwerAppletOrderDetailVo folwerAppletOrderDetailVo = baseMapper.selectVoById(id);
-        if(folwerAppletOrderDetailVo.getSkuId() != null){
-            folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.queryById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
-        }
-        return folwerAppletOrderDetailVo;
+        return orderDetailDomainService.attachAppletSkuName(folwerAppletOrderDetailVo, this::loadSkuName);
     }
 
     /**
@@ -60,6 +59,7 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
     public TableDataInfo<FolwerAppletOrderDetailVo> queryPageList(FolwerAppletOrderDetailBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<FolwerAppletOrderDetail> lqw = buildQueryWrapper(bo);
         Page<FolwerAppletOrderDetailVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        orderDetailDomainService.attachAppletSkuNames(result.getRecords(), this::loadSkuName);
         return TableDataInfo.build(result);
     }
 
@@ -73,12 +73,16 @@ public class FolwerAppletOrderDetailServiceImpl implements IFolwerAppletOrderDet
     public List<FolwerAppletOrderDetailVo> queryList(FolwerAppletOrderDetailBo bo) {
         LambdaQueryWrapper<FolwerAppletOrderDetail> lqw = buildQueryWrapper(bo);
         List<FolwerAppletOrderDetailVo> folwerAppletOrderDetailVos = baseMapper.selectVoList(lqw);
-        for (FolwerAppletOrderDetailVo folwerAppletOrderDetailVo : folwerAppletOrderDetailVos) {
-            if(folwerAppletOrderDetailVo.getSkuId() != null){
-                folwerAppletOrderDetailVo.setSkuName(folwerAppletSkuService.selsctById(folwerAppletOrderDetailVo.getSkuId()).getSkuName());
-            }
-        }
+        orderDetailDomainService.attachAppletSkuNames(folwerAppletOrderDetailVos, this::loadSkuName);
         return folwerAppletOrderDetailVos;
+    }
+
+    private String loadSkuName(Long skuId) {
+        if (skuId == null) {
+            return null;
+        }
+        var skuVo = folwerAppletSkuService.selsctById(skuId);
+        return skuVo == null ? null : skuVo.getSkuName();
     }
 
     private LambdaQueryWrapper<FolwerAppletOrderDetail> buildQueryWrapper(FolwerAppletOrderDetailBo bo) {

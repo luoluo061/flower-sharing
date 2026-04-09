@@ -16,6 +16,7 @@ import org.dromara.flower.domain.FolwerOrder;
 import org.dromara.flower.domain.bo.*;
 import org.dromara.flower.domain.vo.*;
 import org.dromara.flower.service.*;
+import org.dromara.flower.service.domain.OrderFulfillmentDomainService;
 import org.dromara.flowerapplet.domain.FolwerAppletDeliveryPrice;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletDeliveryPriceBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
@@ -71,6 +72,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
     private final IFolwerDeliveryTemperatureService folwerDeliveryTemperatureService;
 
     private final IFolwerOrderService folwerOrderService;
+    private final OrderFulfillmentDomainService orderFulfillmentDomainService;
 
     /**
      * 查询订单物流
@@ -198,7 +200,7 @@ public class FolwerAppletOrderDvyServiceImpl implements IFolwerAppletOrderDvySer
             BigDecimal transfeeOld = folwerOrderVo.getFreightAmount();
             BigDecimal total = folwerOrderVo.getTotal().subtract(transfeeOld);
 
-            BigDecimal transfee = folwerAppletOrderDvy.getFreightAmount();
+            BigDecimal transfee = orderFulfillmentDomainService.resolveFreightAmount(folwerAppletOrderDvyVo);
             FolwerOrderBo folwerOrderBo = new FolwerOrderBo();
             BeanUtil.copyProperties(folwerOrderVo, folwerOrderBo);
 

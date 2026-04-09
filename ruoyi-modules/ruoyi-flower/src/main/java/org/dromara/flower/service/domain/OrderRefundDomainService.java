@@ -3,6 +3,9 @@ package org.dromara.flower.service.domain;
 import org.dromara.flower.domain.bo.FolwerOrderRefundBo;
 import org.dromara.flower.domain.vo.FolwerOrderRefundVo;
 import org.dromara.flower.domain.vo.FolwerOrderVo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderRefundBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,5 +48,54 @@ public class OrderRefundDomainService {
         refundBo.setRefundStatus(refundStatus);
         refundBo.setRefundTime(refundTime);
         return refundBo;
+    }
+
+    public FolwerAppletOrderBo prepareAppletRefundOrderMutation(FolwerAppletOrderVo orderVo) {
+        FolwerAppletOrderBo orderBo = new FolwerAppletOrderBo();
+        orderBo.setOrderId(String.valueOf(orderVo.getOrderId()));
+        orderBo.setUserId(String.valueOf(orderVo.getUserId()));
+        orderBo.setUserName(orderVo.getUserName());
+        if (orderVo.getMemberLevelId() != null) {
+            orderBo.setMemberLevelId(String.valueOf(orderVo.getMemberLevelId()));
+        }
+        orderBo.setOrderNumber(orderVo.getOrderNumber());
+        orderBo.setTotal(orderVo.getTotal());
+        orderBo.setRebate(orderVo.getRebate());
+        orderBo.setActualTotal(new BigDecimal(orderVo.getActualTotal()));
+        orderBo.setPayType(orderVo.getPayType());
+        orderBo.setPayTime(orderVo.getPayTime());
+        orderBo.setRemarks(orderVo.getRemarks());
+        orderBo.setStatus(orderVo.getStatus());
+        orderBo.setPayCallback(orderVo.getPayCallback());
+        orderBo.setIsRefund(2L);
+        orderBo.setIsProfitSharing(orderVo.getIsProfitSharing());
+        orderBo.setFreightAmount(orderVo.getFreightAmount());
+        if (orderVo.getAddrOrderId() != null) {
+            orderBo.setAddrOrderId(String.valueOf(orderVo.getAddrOrderId()));
+        }
+        orderBo.setFinallyTime(orderVo.getFinallyTime());
+        orderBo.setCancelTime(orderVo.getCancelTime());
+        orderBo.setCancelMsg(orderVo.getCancelMsg());
+        return orderBo;
+    }
+
+    public FolwerAppletOrderRefundBo prepareAppletRefundCreation(FolwerAppletOrderRefundBo refundBo) {
+        FolwerAppletOrderRefundBo prepared = new FolwerAppletOrderRefundBo();
+        prepared.setRefundId(refundBo.getRefundId());
+        prepared.setUserId(refundBo.getUserId());
+        prepared.setUserName(refundBo.getUserName());
+        prepared.setMemberLevelId(refundBo.getMemberLevelId());
+        prepared.setOrderId(refundBo.getOrderId());
+        prepared.setActualTotal(refundBo.getActualTotal());
+        prepared.setRefundStatus(refundBo.getRefundStatus());
+        prepared.setStatus(refundBo.getStatus());
+        prepared.setApplyType(refundBo.getApplyType());
+        prepared.setRefundMsg(refundBo.getRefundMsg());
+        prepared.setRefundAmount(refundBo.getRefundAmount());
+        prepared.setRefundTime(refundBo.getRefundTime());
+        prepared.setBuyerMsg(refundBo.getBuyerMsg());
+        prepared.setRefundRemark(refundBo.getRefundRemark());
+        prepared.setRefundRemarkPic(refundBo.getRefundRemarkPic());
+        return prepared;
     }
 }

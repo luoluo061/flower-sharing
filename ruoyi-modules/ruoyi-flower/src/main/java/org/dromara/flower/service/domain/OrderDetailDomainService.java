@@ -2,10 +2,15 @@ package org.dromara.flower.service.domain;
 
 import org.dromara.flower.domain.vo.FolwerOrderDetailVo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
+import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderDetailBo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletBasketVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderDetailVo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
+import org.dromara.flowerapplet.domain.vo.FolwerAppletSkuVo;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 
@@ -48,6 +53,58 @@ public class OrderDetailDomainService {
         for (FolwerAppletOrderVo orderVo : orderVos) {
             attachAppletOrderDetails(orderVo, detailLoader.apply(orderVo.getOrderId()));
         }
+    }
+
+    public FolwerAppletOrderDetailVo attachAppletSkuName(FolwerAppletOrderDetailVo detailVo,
+                                                         Function<Long, String> skuNameLoader) {
+        if (detailVo == null || detailVo.getSkuId() == null) {
+            return detailVo;
+        }
+        String skuName = skuNameLoader.apply(detailVo.getSkuId());
+        if (skuName != null) {
+            detailVo.setSkuName(skuName);
+        }
+        return detailVo;
+    }
+
+    public void attachAppletSkuNames(List<FolwerAppletOrderDetailVo> detailVos,
+                                     Function<Long, String> skuNameLoader) {
+        if (detailVos == null || detailVos.isEmpty()) {
+            return;
+        }
+        for (FolwerAppletOrderDetailVo detailVo : detailVos) {
+            attachAppletSkuName(detailVo, skuNameLoader);
+        }
+    }
+
+    public FolwerAppletOrderDetailBo buildDirectBuyDetail(FolwerAppletProductVo productVo,
+                                                          FolwerAppletSkuVo skuVo,
+                                                          Integer prodCount) {
+        FolwerAppletOrderDetailBo detailBo = new FolwerAppletOrderDetailBo();
+        BigDecimal subtotal = skuVo.getPrice().multiply(BigDecimal.valueOf(prodCount));
+        detailBo.setOrderPrice(skuVo.getPrice());
+        detailBo.setProductListPictureUrl(skuVo.getSkuPicid());
+        detailBo.setProductId(productVo.getId());
+        detailBo.setProductName(productVo.getProductName());
+        detailBo.setNumber(Long.valueOf(prodCount));
+        detailBo.setSubtotal(subtotal);
+        detailBo.setSkuId(skuVo.getSkuId());
+        return detailBo;
+    }
+
+    public FolwerAppletOrderDetailBo buildBasketDetail(FolwerAppletBasketVo basketVo,
+                                                       FolwerAppletProductVo productVo,
+                                                       FolwerAppletSkuVo skuVo) {
+        FolwerAppletOrderDetailBo detailBo = new FolwerAppletOrderDetailBo();
+        BigDecimal subtotal = skuVo.getPrice().multiply(BigDecimal.valueOf(basketVo.getBasketCount()));
+        detailBo.setOrderPrice(skuVo.getPrice());
+        detailBo.setProductListPictureUrl(skuVo.getSkuPicid());
+        detailBo.setProductId(productVo.getId());
+        detailBo.setProductName(productVo.getProductName());
+        detailBo.setNumber(basketVo.getBasketCount());
+        detailBo.setSubtotal(subtotal);
+        detailBo.setSkuId(basketVo.getSkuId());
+        return detailBo;
     }
 
     public void attachBackendSkuDetails(List<FolwerOrderDetailVo> orderDetailVos,

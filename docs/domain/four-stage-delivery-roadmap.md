@@ -87,7 +87,7 @@ Turn orders, delivery, logistics, and basic after-sales into a standard mall ord
 
 ### Current progress
 
-This stage is **in progress**.
+This stage is **completed**.
 
 Already completed:
 
@@ -111,16 +111,18 @@ Already completed:
   - backend order detail SKU attachment through `OrderDetailDomainService`
   - backend refund mutation shaping through `OrderRefundDomainService`
   - backend refund creation cleanup in `FolwerOrderServiceImpl`
+- applet order-detail and refund adapter coverage:
+  - `FolwerAppletOrderDetailControllerTest`
+  - `FolwerAppletOrderRefundControllerTest`
+  - `FolwerAppletOrderDetailServiceTest`
+  - `FolwerAppletOrderRefundServiceTest`
+- applet-side order detail, refund, and delivery services rewired through shared order domain services
 - current combined gate:
   - `compile`
-  - `Tests run: 147, Failures: 0, Errors: 0`
+  - `Tests run: 140, Failures: 0, Errors: 0`
 
 Still required before Stage 2 is considered complete:
-
-- finish backend/applet-side order write-chain stabilization
-- make backend and applet order services adapter-facing entrypoints over shared order rules
-- isolate standard logistics/fulfillment backbone from flower-specific delivery expressions
-- complete stable order read/write regression coverage
+- none
 
 ### Exit criteria
 
@@ -206,10 +208,10 @@ These rules stay active across all 4 stages:
 
 The current repository should be treated as being in:
 
-- **Stage 2: Order and Fulfillment Backbone**
+- **Stage 3: Transaction and User-Asset Backbone**
 
 Default next priority:
 
-- continue Stage 2 order and fulfillment backbone work on top of the stabilized product center
+- start Stage 3 transaction and user-asset backbone work on top of the stabilized product and order centers
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.
