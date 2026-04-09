@@ -57,6 +57,7 @@ See:
 - [Backend Capability Matrix](docs/integration/backend-capability-matrix.md)
 - [Frontend + Database Integration Guide](docs/integration/frontend-database-integration-guide.md)
 - [Integration Acceptance Checklist](docs/integration/integration-acceptance-checklist.md)
+- [Database Backbone Audit](docs/integration/database-backbone-audit.md)
 
 ## Runtime
 
@@ -88,6 +89,7 @@ See:
 - [Backend Capability Matrix](docs/integration/backend-capability-matrix.md)
 - [Frontend + Database Integration Guide](docs/integration/frontend-database-integration-guide.md)
 - [Integration Acceptance Checklist](docs/integration/integration-acceptance-checklist.md)
+- [Database Backbone Audit](docs/integration/database-backbone-audit.md)
 
 ## Delivery Rules
 

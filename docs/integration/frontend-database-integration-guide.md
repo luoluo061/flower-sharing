@@ -55,6 +55,12 @@ Default integration database:
 
 - `flower_sharing`
 
+Current recommendation:
+
+- keep using the existing runtime database for integration
+- do not block frontend work on a clean-room database redesign
+- plan a later backbone-only database copy after admin and applet integration are stable
+
 Recommended usage rules:
 
 - use this database for backbone integration only
@@ -72,6 +78,10 @@ Recommended sample data buckets:
 - at least one member level and privilege record
 - at least one points configuration row
 - dedicated test orders for pay / refund verification
+
+See also:
+
+- [Database Backbone Audit](database-backbone-audit.md)
 
 ## Admin Frontend Integration
 
