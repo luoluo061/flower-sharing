@@ -12,20 +12,29 @@ import java.util.List;
 @Service
 public class ProductSkuAggregateDomainService {
 
-    public ProductSkuAggregateSupport.ProductAggregateSnapshot buildInsertSnapshot(List<FolwerSkuVo> skuVos) {
-        return ProductSkuAggregateSupport.buildInsertSnapshot(skuVos);
+    public Snapshot buildInsertSnapshot(List<FolwerSkuVo> skuVos) {
+        return Snapshot.from(ProductSkuAggregateSupport.buildInsertSnapshot(skuVos));
     }
 
-    public ProductSkuAggregateSupport.ProductAggregateSnapshot buildUpdateSnapshot(List<FolwerSkuVo> skuVos) {
-        return ProductSkuAggregateSupport.buildUpdateSnapshot(skuVos);
+    public Snapshot buildUpdateSnapshot(List<FolwerSkuVo> skuVos) {
+        return Snapshot.from(ProductSkuAggregateSupport.buildUpdateSnapshot(skuVos));
     }
 
-    public FolwerAppletProductBo applySnapshotToProductBo(FolwerAppletProductVo productVo,
-                                                          ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot) {
+    public FolwerAppletProductBo applySnapshotToProductBo(FolwerAppletProductVo productVo, Snapshot snapshot) {
         FolwerAppletProductBo productBo = BeanUtil.copyProperties(productVo, FolwerAppletProductBo.class);
-        productBo.setOriPrice(snapshot.maxPrice());
-        productBo.setDerlinePrice(snapshot.minPrice());
-        productBo.setTotalStocks(snapshot.totalStocks());
+        productBo.setOriPrice(snapshot.maxPrice);
+        productBo.setDerlinePrice(snapshot.minPrice);
+        productBo.setTotalStocks(snapshot.totalStocks);
         return productBo;
+    }
+
+    public record Snapshot(
+        java.math.BigDecimal maxPrice,
+        java.math.BigDecimal minPrice,
+        Long totalStocks
+    ) {
+        private static Snapshot from(ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot) {
+            return new Snapshot(snapshot.maxPrice(), snapshot.minPrice(), snapshot.totalStocks());
+        }
     }
 }

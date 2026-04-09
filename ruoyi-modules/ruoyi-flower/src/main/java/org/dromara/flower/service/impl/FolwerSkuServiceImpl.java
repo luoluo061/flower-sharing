@@ -14,7 +14,6 @@ import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerSkuService;
 import org.dromara.flower.service.domain.ProductSkuAggregateDomainService;
-import org.dromara.flower.service.support.ProductSkuAggregateSupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
@@ -203,18 +202,18 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     }
 
     protected void refreshProductAggregateAfterSkuInsert(Long prodId) {
-        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
+        ProductSkuAggregateDomainService.Snapshot snapshot =
             productSkuAggregateDomainService.buildInsertSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
     protected void refreshProductAggregateAfterSkuUpdate(Long prodId) {
-        ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
+        ProductSkuAggregateDomainService.Snapshot snapshot =
             productSkuAggregateDomainService.buildUpdateSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
-    private void applyProductAggregateUpdate(Long prodId, ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot) {
+    private void applyProductAggregateUpdate(Long prodId, ProductSkuAggregateDomainService.Snapshot snapshot) {
         FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(prodId);
         FolwerAppletProductBo folwerProductBo = productSkuAggregateDomainService.applySnapshotToProductBo(folwerProductVo, snapshot);
         folwerProductService.updateByBo(folwerProductBo);

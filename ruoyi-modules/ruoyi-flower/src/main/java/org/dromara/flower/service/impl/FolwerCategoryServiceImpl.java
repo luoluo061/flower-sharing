@@ -17,7 +17,6 @@ import org.dromara.flower.domain.vo.FolwerCategoryVo;
 import org.dromara.flower.mapper.FolwerCategoryMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.domain.ProductCategoryDomainService;
-import org.dromara.flower.service.support.ProductCategoryHierarchySupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.service.IFolwerAppletProductService;
 import org.dromara.system.service.ISysOssService;
