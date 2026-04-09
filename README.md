@@ -54,6 +54,9 @@ See:
 - [Stage Roadmap](docs/domain/four-stage-delivery-roadmap.md)
 - [Stage 4 Closure](docs/domain/legacy-isolation-backbone-closure.md)
 - [Backbone Regression Gate](docs/testing/backbone-regression-gate.md)
+- [Backend Capability Matrix](docs/integration/backend-capability-matrix.md)
+- [Frontend + Database Integration Guide](docs/integration/frontend-database-integration-guide.md)
+- [Integration Acceptance Checklist](docs/integration/integration-acceptance-checklist.md)
 
 ## Runtime
 
@@ -67,6 +70,24 @@ Primary runtime dependencies:
 - Redis
 
 The default delivery story is the mall backbone only. Legacy edge domains remain available for compatibility, but they are not part of the default acceptance gate for this repository.
+
+## Integration
+
+This repository is the backend side of the mall system.
+
+It is designed to integrate with:
+
+- an admin frontend
+- an applet / mini-program frontend
+- MySQL
+- Redis
+- payment callback infrastructure
+
+See:
+
+- [Backend Capability Matrix](docs/integration/backend-capability-matrix.md)
+- [Frontend + Database Integration Guide](docs/integration/frontend-database-integration-guide.md)
+- [Integration Acceptance Checklist](docs/integration/integration-acceptance-checklist.md)
 
 ## Delivery Rules
 
