@@ -114,17 +114,26 @@ The existing code should be treated as follows:
 
 Current status:
 
-- started
-- `ProductCategoryHierarchySupport` is now used by backend and mini-program category services
-- `ProductWriteDefaultsSupport` now centralizes backend product `deliveryPrice` default normalization
-- `ProductSkuAggregateSupport` now centralizes the currently locked SKU aggregate snapshot rules
-- product-detail lookup remains the next unimplemented helper candidate in this phase
+- implemented
+- `ProductCategoryHierarchySupport` is used by backend and mini-program category services
+- `ProductWriteDefaultsSupport` centralizes backend product `deliveryPrice` default normalization
+- `ProductSkuAggregateSupport` centralizes the currently locked SKU aggregate snapshot rules
+- the helper layer remains the low-level support base for the domain-service layer
 
 ### Phase 3: introduce shared domain services
 
 - wrap the helper layer in shared product-domain services
 - keep existing controller/service interfaces as compatibility entrypoints
 - avoid changing BO/VO contracts in the same batch
+
+Current status:
+
+- implemented for Stage 1 closure
+- `ProductCategoryDomainService` now owns category hierarchy semantics
+- `ProductCoreDomainService` now owns product write defaulting and current status-mutation preparation
+- `ProductSkuAggregateDomainService` now owns SKU aggregate snapshot preparation and product snapshot application
+- `ProductDetailDomainService` now owns current product-detail create/update/delete preparation
+- backend and mini-program services remain adapter-facing compatibility entrypoints
 
 ### Phase 4: compatibility cleanup
 
@@ -141,7 +150,7 @@ Before the blueprint is actively implemented, the following stay fixed:
 - no `/flower/*` or `/flowerapplet/*` path changes
 - no forced rename of `Folwer` symbols
 - no silent semantic change to current write-path defaults or SKU aggregate behavior
-- no weakening of the existing 75-test regression baseline
+- no weakening of the active product/payment regression baseline
 
 ## Required Validation During Blueprint Execution
 

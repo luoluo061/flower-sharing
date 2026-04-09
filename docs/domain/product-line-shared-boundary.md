@@ -37,9 +37,9 @@ The backend `org.dromara.flower.*` stack and the mini-program `org.dromara.flowe
 - Backend product-detail writes are still direct CRUD pass-throughs with no shared write abstraction.
 - This is a separate detail subdomain and should not be folded into product core write rules until the migration blueprint is executed.
 
-## Shared Helper Layer
+## Shared Helper and Domain-Service Layer
 
-The current branch now has a first shared-helper layer under `org.dromara.flower.service.support`.
+The current branch now has a first shared-helper layer under `org.dromara.flower.service.support`, and the first shared product-domain service layer under `org.dromara.flower.service.domain`.
 
 - `ProductCategoryHierarchySupport`
   - owns the current shared "should children be populated" rule and generic children attachment helper
@@ -51,7 +51,18 @@ The current branch now has a first shared-helper layer under `org.dromara.flower
   - owns the current SKU aggregate snapshot rules already locked by tests
   - keeps current insert/update semantics unchanged while moving calculation out of `FolwerSkuServiceImpl`
 
-This layer is intentionally helper-only. It does not yet introduce shared product services or cross-stack BO/VO unification.
+The support layer remains intentionally low-level. Product-domain ownership is now partially implemented above it through:
+
+- `ProductCategoryDomainService`
+  - owns category hierarchy semantics for backend and mini-program entry services
+- `ProductCoreDomainService`
+  - owns currently locked product write defaults and current status-mutation preparation
+- `ProductSkuAggregateDomainService`
+  - owns currently locked SKU aggregate snapshot semantics and applies them back to product BOs
+- `ProductDetailDomainService`
+  - owns current product-detail create/update/delete preparation semantics
+
+Backend and mini-program services still coexist, but product-domain rules should now flow through these domain services rather than being re-expressed inside each service implementation.
 
 ## Target Ownership
 
@@ -78,7 +89,7 @@ Until a dedicated shared product module exists:
 - Do not merge backend and mini-program services.
 - Do not introduce new duplicated helper logic for the shared behaviors above.
 - New logic should either:
-  - reuse an existing helper inside the current stack, or
+  - reuse an existing domain service or helper inside the current stack, or
   - be documented here first if it changes one of the shared behaviors.
 
 ## Immediate Migration Targets
@@ -86,10 +97,10 @@ Until a dedicated shared product module exists:
 The next product-center extraction steps should treat the current shared boundary as three buckets:
 
 1. Product-domain candidates
-- category hierarchy helpers
+- category hierarchy helpers and domain services
 - product write default normalization
 - SKU aggregate recalculation
-- product-detail lookup semantics
+- product-detail lookup and write-preparation semantics
 
 2. API-adapter candidates
 - category display names

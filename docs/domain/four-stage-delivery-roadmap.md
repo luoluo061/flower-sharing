@@ -34,7 +34,7 @@ Turn the current product-related code from a flower-coupled dual-stack implement
 
 ### Current progress
 
-This stage is **in progress and already beyond the midpoint**.
+This stage is **in progress and near complete**.
 
 Already completed:
 
@@ -45,18 +45,18 @@ Already completed:
   - `ProductCategoryHierarchySupport`
   - `ProductWriteDefaultsSupport`
   - `ProductSkuAggregateSupport`
+- shared product-domain service layer:
+  - `ProductCategoryDomainService`
+  - `ProductCoreDomainService`
+  - `ProductSkuAggregateDomainService`
+  - `ProductDetailDomainService`
 - product-center migration blueprint
 - shared-boundary documentation
 
 Still required before Stage 1 is considered complete:
 
-- move from shared helpers toward shared product service layer
-- finish product-domain ownership split:
-  - category subdomain
-  - product core
-  - SKU aggregate logic
-  - product-detail subdomain
-- confirm product write-path current semantics are fully locked before future semantic cleanup
+- confirm the new domain-service layer is the default source of truth for product-domain rules
+- finish the final Stage 1 closeout and handoff into Stage 2 order work
 
 ### Exit criteria
 

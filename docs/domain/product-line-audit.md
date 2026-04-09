@@ -16,7 +16,12 @@ Both stacks currently own the same core product concepts:
 
 The backend stack additionally exposes `ProductComm`, which is not part of the minimum mall product backbone.
 
-The current branch also now contains a shared helper layer under `org.dromara.flower.service.support`, used to centralize a small set of already-locked product-line rules without merging backend and mini-program services.
+The current branch now contains:
+
+- a shared helper layer under `org.dromara.flower.service.support`
+- a shared product-domain service layer under `org.dromara.flower.service.domain`
+
+The helper layer centralizes low-level reusable logic, while the domain-service layer is now the canonical place for product-domain rules that should be shared by backend and mini-program entry services.
 
 ## Current HTTP Surface
 
@@ -52,6 +57,11 @@ The current branch also now contains a shared helper layer under `org.dromara.fl
     - `ProductCategoryHierarchySupport`
     - `ProductWriteDefaultsSupport`
     - `ProductSkuAggregateSupport`
+  - shared domain-service layer:
+    - `ProductCategoryDomainService`
+    - `ProductCoreDomainService`
+    - `ProductSkuAggregateDomainService`
+    - `ProductDetailDomainService`
 - Domain models:
   - `FolwerCategory*`
   - `FolwerProduct*`
@@ -70,8 +80,8 @@ The current branch also now contains a shared helper layer under `org.dromara.fl
   - `IFolwerAppletProductService` / `FolwerAppletProductServiceImpl`
   - `IFolwerAppletSkuService` / `FolwerAppletSkuServiceImpl`
   - `IFolwerAppletProductDetailService` / `FolwerAppletProductDetailServiceImpl`
-  - selected shared helper entrypoint:
-    - `ProductCategoryHierarchySupport`
+  - shared domain-service entrypoint:
+    - `ProductCategoryDomainService`
 - Domain models:
   - `FolwerAppletCategory*`
   - `FolwerAppletProduct*`
@@ -85,7 +95,7 @@ The current branch also now contains a shared helper layer under `org.dromara.fl
 3. Public mini-program read APIs are the safest first stabilization target because they are mostly read-only and already exposed without strict permission checks.
 4. Backend product management currently mixes read and write operations in the same controllers, so it is a worse first target for code cleanup than the mini-program read chain.
 5. `ProductComm` should be treated as an adjacent extension, not part of the first-pass standard mall product backbone.
-6. The first shared-helper extraction has started, but only at helper level; backend and mini-program services still remain separate entrypoints.
+6. The product line has now moved beyond helper-only extraction: backend and mini-program services are still separate entrypoints, but shared product-domain rules are routed through the new domain-service layer.
 
 ## First Execution Batch
 
@@ -158,7 +168,7 @@ The current product-line branch should be verified with a single-process Maven r
 Current stable verification commands:
 
 - `mvn ... -pl ruoyi-admin -am -DskipTests compile`
-- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogWriteControllerTest,FolwerProductWriteControllerTest,FolwerProductDetailWriteControllerTest,FolwerSkuWriteControllerTest,FolwerCatalogReadServiceTest,FolwerCatalogWriteServiceTest,FolwerProductWriteServiceTest,FolwerProductDetailWriteServiceTest,FolwerSkuWriteServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest,ProductCategoryHierarchySupportTest,ProductWriteDefaultsSupportTest,ProductSkuAggregateSupportTest test`
+- `mvn ... -pl ruoyi-admin -am -Dtest=FolwerCatalogReadControllerTest,FolwerCatalogWriteControllerTest,FolwerProductWriteControllerTest,FolwerProductDetailWriteControllerTest,FolwerSkuWriteControllerTest,FolwerCatalogReadServiceTest,FolwerCatalogWriteServiceTest,FolwerProductWriteServiceTest,FolwerProductDetailWriteServiceTest,FolwerSkuWriteServiceTest,FolwerAppletCatalogReadControllerTest,FolwerAppletCatalogReadServiceTest,WxPayCallbackControllerTest,FolwerAppletOrderServiceImplTest,ProductCategoryHierarchySupportTest,ProductWriteDefaultsSupportTest,ProductSkuAggregateSupportTest,ProductCategoryDomainServiceTest,ProductCoreDomainServiceTest,ProductSkuAggregateDomainServiceTest,ProductDetailDomainServiceTest test`
 
 ## Follow-up Batches
 
@@ -174,16 +184,16 @@ Current stable verification commands:
 
 ### Batch 4
 
-- Shared product-domain extraction design
+- Shared product-domain extraction implementation
 - Naming and API consolidation design
 
 ## Product-Center Migration Direction
 
-The current branch is now ready for a design-led migration phase instead of another broad testing phase.
+The current branch is now at the end of Stage 1 product-center stabilization and ready to move from product-domain implementation into the next mall backbone domain.
 
 - The shared-boundary definition lives in `product-line-shared-boundary.md`
 - The write-path lock rules live in `product-write-flow-prep.md`
-- The next design artifact should be a product-center migration blueprint that splits:
+- The migration blueprint now defines and the code now partially implements:
   - category domain behavior
   - product core write behavior
   - SKU aggregate behavior
