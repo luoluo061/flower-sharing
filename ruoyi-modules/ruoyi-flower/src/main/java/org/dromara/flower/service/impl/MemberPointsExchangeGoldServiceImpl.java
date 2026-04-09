@@ -20,6 +20,7 @@ import org.dromara.flower.domain.vo.MemberPointsExchangeGoldVo;
 import org.dromara.flower.domain.MemberPointsExchangeGold;
 import org.dromara.flower.mapper.MemberPointsExchangeGoldMapper;
 import org.dromara.flower.service.IMemberPointsExchangeGoldService;
+import org.dromara.flower.service.domain.PointsAssetDomainService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class MemberPointsExchangeGoldServiceImpl implements IMemberPointsExchang
 
     private final MemberPointsExchangeGoldMapper baseMapper;
     private final AppletUserInformationMapper appletUserInformationMapper;
+    private final PointsAssetDomainService pointsAssetDomainService;
 
     private static Long ZERO = 0L;
 
@@ -162,30 +164,11 @@ public class MemberPointsExchangeGoldServiceImpl implements IMemberPointsExchang
             throw new RuntimeException("没有积分，不能兑换");
         }
         // TODO 后期从配置表去积分兑换金币规则
-        Long exchange = ZERO;
-        if (app.getPoints() - bo.getModifiedValue() > 0) {
-            exchange = app.getPoints() - bo.getModifiedValue();
-            app.setPoints(exchange);
-        } else {
-            exchange = bo.getModifiedValue();
-            app.setPoints(ZERO);
-        }
-        // 修改金币数
-        if (app.getGold() < 0) {
-            app.setGold(ZERO);
-        }
-        app.setGold(app.getGold() + exchange);
+        Long exchange = pointsAssetDomainService.resolveExchangePoints(app.getPoints(), bo.getModifiedValue());
+        pointsAssetDomainService.applyPointsExchange(app, bo.getModifiedValue());
         appletUserInformationMapper.updateById(app);
-        // TODO 存入记录 兑换记录 计算金币
-        MemberPointsExchangeGold pxg = new MemberPointsExchangeGold();
-        pxg.setPoints(bo.getPoints());
-        pxg.setBalance(exchange);
-        pxg.setGold(exchange / 10);
-        pxg.setCreateName(loginUser.getUsername());
+        MemberPointsExchangeGold pxg = pointsAssetDomainService.preparePointsExchangeRecord(bo.getPoints(), exchange, loginUser.getUsername());
         boolean flag = baseMapper.insert(pxg) > 0;
-        if (flag){
-            return true;
-        }
-        return false;
+        return flag;
     }
 }

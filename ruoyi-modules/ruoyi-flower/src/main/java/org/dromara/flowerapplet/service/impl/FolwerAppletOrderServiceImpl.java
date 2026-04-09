@@ -816,12 +816,13 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 //            return R.fail("订单状态异常");
 //        }
 
-        WxPayRequest payJSAPIParam = new WxPayRequest();
-        payJSAPIParam.setClientIp(IpUtils.getIpAddr());
-        payJSAPIParam.setOutTradeNo(String.valueOf(folwerAppletOrderVo.getOrderId()));
-        payJSAPIParam.setAmount(folwerAppletOrderVo.getActualTotal());
-        payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
-        payJSAPIParam.setDescription("购买鲜花");
+        WxPayRequest payJSAPIParam = paymentTransactionDomainService.preparePaymentRequest(
+            IpUtils.getIpAddr(),
+            String.valueOf(folwerAppletOrderVo.getOrderId()),
+            folwerAppletOrderVo.getActualTotal(),
+            appletUserInformationVo.getOpenid(),
+            "购买鲜花"
+        );
         //是否分账
         if (folwerAppletOrderVo.getIsProfitSharing() == 1){
             payJSAPIParam.setProfitSharing(folwerAppletOrderVo.getIsProfitSharing() == 1?true:false);
@@ -837,30 +838,7 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
     @Override
     public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
         Refund refund = payService.refundOrder(wxRefundRequest);
-        if (Objects.nonNull(refund) || Objects.isNull(refund)) {
-            return paymentTransactionDomainService.prepareRefundResponse(refund);
-        }
-//                log.info("请求退款返回：" + refund);
-        //接收退款返回参数
-        //  Status status = refund.getStatus();
-        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
-            //说明退款成功，开始接下来的业务操作
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.ok("退款成功");
-        }
-        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.ok("退款中");
-        }
-        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.fail("退款异常");
-        }
-        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return  R.fail("退款关闭");
-        }
-        return null;
+        return paymentTransactionDomainService.prepareRefundResponse(refund);
     }
 
     @Override

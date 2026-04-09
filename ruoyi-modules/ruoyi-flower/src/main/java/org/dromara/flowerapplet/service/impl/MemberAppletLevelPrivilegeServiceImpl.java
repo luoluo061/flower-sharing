@@ -21,6 +21,7 @@ import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
 import org.dromara.flower.mapper.MemberPurchaseRecordMapper;
 import org.dromara.flower.service.IMemberLevelPrivilegeService;
+import org.dromara.flower.service.domain.MemberAssetDomainService;
 import org.dromara.flowerapplet.service.IMemberAppletLevelPrivilegeService;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class MemberAppletLevelPrivilegeServiceImpl implements IMemberAppletLevel
     private final MemberLevelPrivilegeMapper baseMapper;
     private final MemberPurchaseRecordMapper recordMapper;
     private final MemberLevelMapper memberLevelMapper;
+    private final MemberAssetDomainService memberAssetDomainService;
 
     /**
      * 查询会员中心--会员等级--权益名称
@@ -161,7 +163,7 @@ public class MemberAppletLevelPrivilegeServiceImpl implements IMemberAppletLevel
         // 查询会员相关信息
         if (mpr!= null && mpr.getMemberLevelId() != null){
             MemberLevelVo memberLevelVo = memberLevelMapper.selectMemberLevel(mpr.getMemberLevelId());
-            mpr.setMemberLevelVo(memberLevelVo);
+            memberAssetDomainService.attachMemberLevel(mpr, memberLevelVo);
         }
         return mpr;
     }

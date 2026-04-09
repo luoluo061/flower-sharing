@@ -20,6 +20,7 @@ import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
 import org.dromara.flower.domain.vo.MemberLevelVo;
 import org.dromara.flower.mapper.MemberLevelMapper;
 import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
+import org.dromara.flower.service.domain.MemberAssetDomainService;
 import org.dromara.flowerapplet.service.IMemberAppletLevelService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class MemberAppletLevelServiceImpl implements IMemberAppletLevelService {
     private final MemberLevelMapper baseMapper;
     private final ISysOssService sysOssService;
     private final MemberLevelPrivilegeMapper memberLevelPrivilegeMapper;
+    private final MemberAssetDomainService memberAssetDomainService;
 
     /**
      * 查询会员等级
@@ -56,7 +58,7 @@ public class MemberAppletLevelServiceImpl implements IMemberAppletLevelService {
             LambdaQueryWrapper<MemberLevelPrivilege> lqw = new LambdaQueryWrapper<>();
             lqw.eq(MemberLevelPrivilege::getMemberLevelId,id);
             List<MemberLevelPrivilegeVo> privilege = memberLevelPrivilegeMapper.selectVoList(lqw);
-            vo.setPrivilegeVos(privilege);
+            memberAssetDomainService.attachPrivileges(vo, privilege);
         }
         return vo;
     }

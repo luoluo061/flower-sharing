@@ -5,6 +5,7 @@ import com.wechat.pay.java.service.payments.model.Transaction;
 import com.wechat.pay.java.service.refund.model.Refund;
 import com.wechat.pay.java.service.refund.model.Status;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.mypay.domain.WxPayRequest;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletOrderBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,20 @@ import java.util.Objects;
 
 @Service
 public class PaymentTransactionDomainService {
+
+    public WxPayRequest preparePaymentRequest(String clientIp,
+                                              String outTradeNo,
+                                              Long amount,
+                                              String openId,
+                                              String description) {
+        WxPayRequest request = new WxPayRequest();
+        request.setClientIp(clientIp);
+        request.setOutTradeNo(outTradeNo);
+        request.setAmount(amount);
+        request.setOpenId(openId);
+        request.setDescription(description);
+        return request;
+    }
 
     public FolwerAppletOrderBo preparePaidMutation(FolwerAppletOrderVo orderVo,
                                                    Long targetStatus,

@@ -39,4 +39,8 @@ public class CouponAssetDomainService {
         }
         return Objects.nonNull(coupon.getEndTime()) && !coupon.getEndTime().before(now);
     }
+
+    public Long toggleCouponState(Long currentState) {
+        return Objects.equals(currentState, 0L) ? 1L : 0L;
+    }
 }

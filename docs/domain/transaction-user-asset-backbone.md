@@ -2,58 +2,70 @@
 
 ## Current status
 
-Stage 3 has started. The codebase now has an initial shared transaction and user-asset rule layer, while product and order backbones from Stages 1 and 2 remain stable and fully covered by regression.
+Stage 3 is **completed**. The codebase now has a shared transaction and user-asset backbone on top of the stabilized product and order backbones from Stages 1 and 2.
 
-The current Stage 3 entry batch keeps all public routes, BO/VO contracts, and database schema unchanged.
+Stage 3 preserved all public routes, BO/VO contracts, and database schema while finishing the transaction/user-asset rule split.
 
 ## Shared Stage 3 domain services
 
-The current Stage 3 shared rule layer is centered on:
+The shared Stage 3 rule layer is centered on:
 
 - `PaymentTransactionDomainService`
 - `CouponAssetDomainService`
 - `PointsAssetDomainService`
 - `MemberAssetDomainService`
 
-These services currently provide the first canonical entrypoints for:
+These services are now the default canonical entrypoints for:
 
-- paid/refund mutation preparation
+- paid/query/refund mutation preparation
 - refund response shaping
-- coupon publish/receive rules
-- points earn and points-source labeling
-- member privilege snapshot preparation
+- coupon publish/receive/consume/rollback rules
+- points earn/consume/refund-facing semantics and source labeling
+- member privilege snapshot and purchase-record preparation
 
-## Current Stage 3 rewiring
+## Stage 3 rewiring result
 
-The first Stage 3 batch has already rewired these areas into the shared transaction and asset layer:
+Stage 3 has rewired these mainline areas into the shared transaction and asset layer:
 
 - applet order payment/refund state preparation in `FolwerAppletOrderServiceImpl`
+- payment request shaping and refund response shaping in applet membership purchase flow
 - points record source-label shaping in `FolwerCreditGetrecordsServiceImpl`
-- member privilege snapshot creation in `MemberPurchaseRecordServiceImpl`
-- coupon publish rule preparation in `MarketingCouponServiceImpl`
-- coupon receive snapshot preparation in `MarketingCouponReceiveServiceImpl`
+- points exchange preparation in `MemberPointsExchangeGoldServiceImpl`
+- member privilege snapshot creation and purchase-record preparation in backend/applet member purchase services
+- coupon publish and state-toggle rules in `MarketingCouponServiceImpl`
+- coupon receive preparation in `MarketingCouponReceiveServiceImpl`
 
-The intent is now explicit:
+The resulting backbone is now explicit:
 
 - payment is treated as a transaction capability
 - points, membership, and coupons are treated as user assets
 - order services remain adapter-facing and consume the shared transaction rules rather than owning them
 
-## Current Stage 3 regression coverage
+## Stage 3 regression coverage
 
-The current Stage 3 opening gate is:
+The Stage 3 completion gate is:
 
 - `compile`
 - full Stage 1 + Stage 2 regression
-- Stage 3 transaction/user-asset domain tests
-- `Tests run: 170, Failures: 0, Errors: 0`
+- Stage 3 transaction/user-asset controller, service, and domain tests
+- `Tests run: 201, Failures: 0, Errors: 0`
 
-Current Stage 3-specific tests include:
+Stage 3-specific tests now include:
 
 - `PaymentTransactionDomainServiceTest`
 - `PointsAssetDomainServiceTest`
 - `MemberAssetDomainServiceTest`
 - `CouponAssetDomainServiceTest`
+- `MemberAssetControllerTest`
+- `MemberAppletAssetControllerTest`
+- `PointsAssetControllerTest`
+- `CouponAssetControllerTest`
+- `FolwerLegacyCouponControllerTest`
+- `MemberPurchaseRecordServiceImplTest`
+- `MemberAppletPurchaseRecordServiceImplTest`
+- `MemberPointsExchangeGoldServiceImplTest`
+- `MarketingCouponServiceImplTest`
+- `MarketingCouponReceiveServiceImplTest`
 
 Existing high-risk protection remains active:
 
@@ -71,30 +83,23 @@ Included in Stage 3 mainline:
 - points earn/use/refund-facing base semantics
 - coupon publish, receive, consume, rollback-facing asset semantics
 
-Explicitly kept out of the Stage 3 mainline:
+Explicitly kept out of the Stage 3 mainline and treated as edge or legacy capability:
 
 - course payment backbone
 - credit-mall order/product/category/payment backbone
 - promotion reward, rebate, profit-sharing, and commission logic
 - naming cleanup and legacy isolation
 
-These capabilities are preserved as edge or legacy domains and are not treated as the standard mall transaction/user-asset backbone.
+These capabilities are preserved, but they are not inputs to the standard mall transaction/user-asset backbone.
 
-## Stage 3 next priorities
+## Stage 3 completion result
 
-Stage 3 is not complete yet. The next implementation priorities are:
-
-- finish rewiring payment flow so payment rules no longer live inside order services
-- expand member/points/coupon controller and service regression
-- make coupon and points rules the default shared asset entrypoints
-- explicitly document and edge-isolate non-mainline transaction capabilities
-
-## Stage 3 exit result
-
-Stage 3 is complete only when:
+Stage 3 is complete because:
 
 - payment is expressed as a stable shared transaction rule layer
 - membership, points, and coupons are expressed as shared user-asset rules
 - order services no longer own payment rules directly
 - promotion/rebate/profit-sharing and credit-mall logic are not part of the mainline mall backbone
 - the repository is stable enough to move into Stage 4: Legacy Isolation and Backbone Closure
+
+The default next priority is now Stage 4.

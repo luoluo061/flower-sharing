@@ -137,7 +137,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
 
 
         // 优惠卷剩余数量-1
-        add = couponAssetDomainService.prepareCouponReceive(add, appletUserInformation);
+        add = prepareCouponReceiveRecord(add, appletUserInformation);
 
         UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id",add.getCouponId());
@@ -346,6 +346,7 @@ public class MarketingCouponReceiveServiceImpl implements IMarketingCouponReceiv
         return false;
 
     }
-
-
+    MarketingCouponReceive prepareCouponReceiveRecord(MarketingCouponReceive entity, AppletUserInformation userInformation) {
+        return couponAssetDomainService.prepareCouponReceive(entity, userInformation);
+    }
 }

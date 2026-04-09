@@ -35,6 +35,8 @@ import org.dromara.flower.platform.domain.vo.AppletUserInformationVo;
 import org.dromara.flower.platform.mapper.AppletUserInformationMapper;
 import org.dromara.flower.platform.service.IAppletUserInformationService;
 import org.dromara.flower.service.IMemberPurchaseRecordService;
+import org.dromara.flower.service.domain.MemberAssetDomainService;
+import org.dromara.flower.service.domain.PaymentTransactionDomainService;
 import org.dromara.flowerapplet.domain.PayParam;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletOrderVo;
 import org.dromara.flowerapplet.service.IMemberAppletPurchaseRecordService;
@@ -62,6 +64,8 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     private final MemberLevelMapper memberLevelMapper;
     private final IAppletUserInformationService appletUserInformationService;
     private final MarketingMemberPromotionPlanMapper marketingMemberPromotionPlanMapper;
+    private final MemberAssetDomainService memberAssetDomainService;
+    private final PaymentTransactionDomainService paymentTransactionDomainService;
 
     @Resource
     private final IPayService payService;
@@ -78,7 +82,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     @Override
     public MemberPurchaseRecordVo queryById(Long id) {
         MemberPurchaseRecordVo recordVo = baseMapper.selectVoById(id);
-        recordVo.setMemberLevelVo( memberLevelMapper.selectMemberLevelId(recordVo.getMemberLevelId()));
+        memberAssetDomainService.attachMemberLevel(recordVo, memberLevelMapper.selectMemberLevelId(recordVo.getMemberLevelId()));
         return recordVo;
     }
 
@@ -186,17 +190,7 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
      * 保存前的数据校验
      */
     private void validEntityBeforeSave(MemberPurchaseRecord entity) {
-        Date date = new Date();
-        entity.setCreateTime(date);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.YEAR, 1);
-
-        // 获取增加一年后的日期
-        Date nextYearDate = calendar.getTime();
-        entity.setEndTime(nextYearDate);
-        entity.setStatus(ZERO);
-        entity.setPayStatus(ZERO);
+        memberAssetDomainService.preparePurchaseRecordForCreate(entity);
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -295,12 +289,13 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
         if (loginUser == null || !Objects.equals(loginUser.getUserId(), recordVo.getCreateBy())) {
             throw new RuntimeException("支付失败");
         }
-        WxPayRequest payJSAPIParam = new WxPayRequest();
-        payJSAPIParam.setClientIp(IpUtils.getIpAddr());
-        payJSAPIParam.setOutTradeNo(recordVo.getOrderCode());
-        payJSAPIParam.setAmount(recordVo.getPrice());
-        payJSAPIParam.setOpenId(appletUserInformationVo.getOpenid());
-        payJSAPIParam.setDescription(loginUser.getUserId() + "会员购买");
+        WxPayRequest payJSAPIParam = paymentTransactionDomainService.preparePaymentRequest(
+            IpUtils.getIpAddr(),
+            recordVo.getOrderCode(),
+            recordVo.getPrice(),
+            appletUserInformationVo.getOpenid(),
+            loginUser.getUserId() + "会员购买"
+        );
         WxJsapiResponse wxJsapiResponse = payService.JsapiOrder(payJSAPIParam);
         if (wxJsapiResponse == null) {
             R.fail("支付失败");
@@ -311,26 +306,6 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     @Override
     public R<String> refundOrder(WxRefundRequest wxRefundRequest) throws Exception {
         Refund refund = payService.refundOrder(wxRefundRequest);
-//                log.info("请求退款返回：" + refund);
-        //接收退款返回参数
-        //  Status status = refund.getStatus();
-        if (Status.SUCCESS.equals(refund.getStatus().SUCCESS)) {
-            //说明退款成功，开始接下来的业务操作
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.ok("退款成功");
-        }
-        if (Status.PROCESSING.equals(refund.getStatus().PROCESSING)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.ok("退款中");
-        }
-        if (Status.ABNORMAL.equals(refund.getStatus().ABNORMAL)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.fail("退款异常");
-        }
-        if (Status.CLOSED.equals(refund.getStatus().CLOSED)) {
-            //你的业务代码，根据请求返回状态修改对应订单状态
-            return R.fail("退款关闭");
-        }
-        return null;
+        return paymentTransactionDomainService.prepareRefundResponse(refund);
     }
 }

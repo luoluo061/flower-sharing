@@ -107,9 +107,10 @@ public class MemberPurchaseRecordServiceImpl implements IMemberPurchaseRecordSer
         return baseMapper.updateById(update) > 0;
     }
 
-    private void validEntityBeforeSave(MemberPurchaseRecord entity) {
-        // TODO 数据校验占位，Stage 3 不改现有会员购买语义
-    }
+private void validEntityBeforeSave(MemberPurchaseRecord entity) {
+    memberAssetDomainService.preparePurchaseRecordForCreate(entity);
+    // TODO 数据校验占位，Stage 3 不改现有会员购买语义
+}
 
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {

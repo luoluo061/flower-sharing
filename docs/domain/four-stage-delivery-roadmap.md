@@ -152,7 +152,7 @@ Turn payment, membership, points, and coupons into standard mall transaction-sup
 
 ### Current progress
 
-This stage is **in progress**.
+This stage is **completed**.
 
 Already completed:
 
@@ -167,20 +167,38 @@ Already completed:
   - member privilege snapshot preparation
   - coupon publish rule preparation
   - coupon receive snapshot preparation
+- second-batch rewiring:
+  - payment request and refund response shaping routed through shared transaction rules in applet membership purchase flow
+  - points exchange preparation routed through `PointsAssetDomainService`
+  - backend and applet membership purchase preparation routed through `MemberAssetDomainService`
+  - coupon state-toggle and coupon receive preparation routed through `CouponAssetDomainService`
 - Stage 3 domain-service regression:
   - `PaymentTransactionDomainServiceTest`
   - `PointsAssetDomainServiceTest`
   - `MemberAssetDomainServiceTest`
   - `CouponAssetDomainServiceTest`
+- Stage 3 controller/service regression:
+  - `MemberAssetControllerTest`
+  - `MemberAppletAssetControllerTest`
+  - `PointsAssetControllerTest`
+  - `CouponAssetControllerTest`
+  - `FolwerLegacyCouponControllerTest`
+  - `MemberPurchaseRecordServiceImplTest`
+  - `MemberAppletPurchaseRecordServiceImplTest`
+  - `MemberPointsExchangeGoldServiceImplTest`
+  - `MarketingCouponServiceImplTest`
+  - `MarketingCouponReceiveServiceImplTest`
 - current combined gate:
   - `compile`
-  - `Tests run: 170, Failures: 0, Errors: 0`
+  - `Tests run: 201, Failures: 0, Errors: 0`
+- explicit Stage 3 edge isolation:
+  - course payment backbone excluded from mainline
+  - credit-mall order/product/category/payment excluded from mainline
+  - promotion reward, rebate, profit-sharing, and commission logic excluded from mainline
 
 Still required before Stage 3 is considered complete:
 
-- payment flow must be fully expressed through shared transaction rules
-- member, points, and coupon controller/service regression must be expanded
-- non-mainline transaction capabilities must be explicitly edge-isolated from the backbone
+- none
 
 ### Exit criteria
 
@@ -240,10 +258,10 @@ These rules stay active across all 4 stages:
 
 The current repository should be treated as being in:
 
-- **Stage 3: Transaction and User-Asset Backbone**
+- **Stage 4: Legacy Isolation and Backbone Closure**
 
 Default next priority:
 
-- continue Stage 3 transaction and user-asset backbone work on top of the stabilized product and order centers
+- start Stage 4 legacy isolation and backbone closure work on top of the stabilized product, order, and transaction centers
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.

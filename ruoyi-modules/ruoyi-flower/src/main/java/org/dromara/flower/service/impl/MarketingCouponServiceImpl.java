@@ -269,7 +269,7 @@ public class MarketingCouponServiceImpl implements IMarketingCouponService {
         UpdateWrapper<MarketingCoupon> updateWrapper = new UpdateWrapper<>();
         Long state = marketingCoupon.getState();
         updateWrapper.eq("id",id);
-        state=((state == 0)?1L:0);
+        state = couponAssetDomainService.toggleCouponState(state);
         updateWrapper.set("state",state);
 
         return baseMapper.update(updateWrapper)>0;
