@@ -1023,6 +1023,8 @@ public class FolwerAppletOrderServiceImpl implements IFolwerAppletOrderService {
 
     private void applyProfitSharingIfNeeded(FolwerAppletOrderVo orderVo, Transaction transaction,
                                             FolwerAppletOrderBo orderBo, AppletUserInformationVo userVo) throws Exception {
+        // Legacy edge behavior: profit-sharing remains a compatibility path and is intentionally
+        // kept outside the standard mall backbone transaction rules.
         if (!Long.valueOf(1L).equals(orderVo.getIsProfitSharing())) {
             return;
         }

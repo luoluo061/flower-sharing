@@ -77,6 +77,8 @@ public class RedisKeyExpiredListener  implements MessageListener {
             log.info("订单ID:"+orderId);
         }
 
+        // Legacy edge behavior: credit-mall timeout handling is preserved for compatibility,
+        // but it is not part of the standard mall backbone transaction flow.
         if(expiredKey.startsWith("CreditOrder:")){
             // 一般来说，我们会这样设置过期订单的key："order:255 "
             // 处理实际业务

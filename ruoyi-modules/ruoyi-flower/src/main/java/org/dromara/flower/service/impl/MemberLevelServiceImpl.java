@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.mybatis.handler.MapResultHandler;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.flower.domain.MemberLevelPrivilege;
-import org.dromara.flower.domain.vo.CoursesTypeVo;
 import org.dromara.flower.domain.vo.MemberLevelPrivilegeVo;
 import org.dromara.flower.mapper.MemberLevelPrivilegeMapper;
 import org.dromara.system.service.ISysOssService;

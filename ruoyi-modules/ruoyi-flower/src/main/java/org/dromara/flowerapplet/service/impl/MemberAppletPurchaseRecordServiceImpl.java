@@ -243,6 +243,8 @@ public class MemberAppletPurchaseRecordServiceImpl implements IMemberAppletPurch
     }
 
     // 更新会员推广记录表信息
+    // Legacy edge behavior: promotion-plan side effects are preserved for compatibility,
+    // but they are not part of the standard mall backbone asset rules.
     private void updateMarketingMemberPromotionRecord(MemberPurchaseRecord update, LoginUser loginUser) {
         AppletUserInformationVo app = userInformationMapper.selectVoById(loginUser.getUserId());
         // 查询推广计划信息
