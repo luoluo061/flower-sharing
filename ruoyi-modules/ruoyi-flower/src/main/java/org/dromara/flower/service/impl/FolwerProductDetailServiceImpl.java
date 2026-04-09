@@ -14,6 +14,7 @@ import org.dromara.flower.domain.vo.FolwerProductDetailVo;
 import org.dromara.flower.domain.FolwerProductDetail;
 import org.dromara.flower.mapper.FolwerProductDetailMapper;
 import org.dromara.flower.service.IFolwerProductDetailService;
+import org.dromara.flower.service.domain.ProductDetailDomainService;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Collection;
 public class FolwerProductDetailServiceImpl implements IFolwerProductDetailService {
 
     private final FolwerProductDetailMapper baseMapper;
+    private final ProductDetailDomainService productDetailDomainService;
 
     /**
      * 查询商品详情
@@ -84,7 +86,7 @@ public class FolwerProductDetailServiceImpl implements IFolwerProductDetailServi
      */
     @Override
     public Boolean insertByBo(FolwerProductDetailBo bo) {
-        FolwerProductDetail add = toEntity(bo);
+        FolwerProductDetail add = productDetailDomainService.prepareDetailForCreate(toEntity(bo));
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -101,7 +103,7 @@ public class FolwerProductDetailServiceImpl implements IFolwerProductDetailServi
      */
     @Override
     public Boolean updateByBo(FolwerProductDetailBo bo) {
-        FolwerProductDetail update = toEntity(bo);
+        FolwerProductDetail update = productDetailDomainService.prepareDetailForUpdate(toEntity(bo));
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
@@ -129,6 +131,6 @@ public class FolwerProductDetailServiceImpl implements IFolwerProductDetailServi
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteByIds(ids) > 0;
+        return baseMapper.deleteByIds(productDetailDomainService.prepareDetailDelete(ids)) > 0;
     }
 }

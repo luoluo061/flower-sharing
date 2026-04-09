@@ -13,7 +13,7 @@ import org.dromara.flowerapplet.domain.bo.FolwerAppletCategoryBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletCategoryVo;
 import org.dromara.flowerapplet.mapper.FolwerAppletCategoryMapper;
 import org.dromara.flowerapplet.service.IFolwerAppletCategoryService;
-import org.dromara.flower.service.support.ProductCategoryHierarchySupport;
+import org.dromara.flower.service.domain.ProductCategoryDomainService;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +33,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     private final FolwerAppletCategoryMapper baseMapper;
 
     private final ISysOssService sysOssService;
+    private final ProductCategoryDomainService productCategoryDomainService;
     /**
      * 查询小程序端产品类目
      *
@@ -126,7 +127,7 @@ public class FolwerAppletCategoryServiceImpl implements IFolwerAppletCategorySer
     }
 
     private void populateChildrenIfNeeded(FolwerAppletCategoryVo categoryVo) {
-        ProductCategoryHierarchySupport.populateChildrenIfNeeded(
+        productCategoryDomainService.populateChildren(
             categoryVo,
             FolwerAppletCategoryVo::getParentId,
             FolwerAppletCategoryVo::getId,

@@ -1,6 +1,5 @@
 package org.dromara.flower.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,6 +13,7 @@ import org.dromara.flower.domain.bo.FolwerSkuBo;
 import org.dromara.flower.domain.vo.FolwerSkuVo;
 import org.dromara.flower.mapper.FolwerSkuMapper;
 import org.dromara.flower.service.IFolwerSkuService;
+import org.dromara.flower.service.domain.ProductSkuAggregateDomainService;
 import org.dromara.flower.service.support.ProductSkuAggregateSupport;
 import org.dromara.flowerapplet.domain.bo.FolwerAppletProductBo;
 import org.dromara.flowerapplet.domain.vo.FolwerAppletProductVo;
@@ -41,6 +41,7 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
     private final ISysOssService sysOssService;
 
     private final IFolwerAppletProductService folwerProductService;
+    private final ProductSkuAggregateDomainService productSkuAggregateDomainService;
 
     /**
      * 查询单品SKU
@@ -203,22 +204,19 @@ public class FolwerSkuServiceImpl implements IFolwerSkuService {
 
     protected void refreshProductAggregateAfterSkuInsert(Long prodId) {
         ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
-            ProductSkuAggregateSupport.buildInsertSnapshot(queryListByProdId(prodId));
+            productSkuAggregateDomainService.buildInsertSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
     protected void refreshProductAggregateAfterSkuUpdate(Long prodId) {
         ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot =
-            ProductSkuAggregateSupport.buildUpdateSnapshot(queryListByProdId(prodId));
+            productSkuAggregateDomainService.buildUpdateSnapshot(queryListByProdId(prodId));
         applyProductAggregateUpdate(prodId, snapshot);
     }
 
     private void applyProductAggregateUpdate(Long prodId, ProductSkuAggregateSupport.ProductAggregateSnapshot snapshot) {
         FolwerAppletProductVo folwerProductVo = folwerProductService.queryById(prodId);
-        FolwerAppletProductBo folwerProductBo = BeanUtil.copyProperties(folwerProductVo, FolwerAppletProductBo.class);
-        folwerProductBo.setOriPrice(snapshot.maxPrice());
-        folwerProductBo.setDerlinePrice(snapshot.minPrice());
-        folwerProductBo.setTotalStocks(snapshot.totalStocks());
+        FolwerAppletProductBo folwerProductBo = productSkuAggregateDomainService.applySnapshotToProductBo(folwerProductVo, snapshot);
         folwerProductService.updateByBo(folwerProductBo);
     }
 

@@ -17,7 +17,7 @@ import org.dromara.flower.mapper.FolwerProductMapper;
 import org.dromara.flower.service.IFolwerCategoryService;
 import org.dromara.flower.service.IFolwerProductService;
 import org.dromara.flower.service.IFolwerSkuService;
-import org.dromara.flower.service.support.ProductWriteDefaultsSupport;
+import org.dromara.flower.service.domain.ProductCoreDomainService;
 import org.dromara.system.mapper.SysOssMapper;
 import org.dromara.system.service.ISysOssService;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +39,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     @Resource
     private final SysOssMapper sysOssMapper;
     private final IFolwerSkuService folwerSkuService;
+    private final ProductCoreDomainService productCoreDomainService;
 
     @Override
     public FolwerProductVo queryById(Long id) {
@@ -166,11 +167,11 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     }
 
     protected void applyCurrentWriteDefaults(FolwerProduct product, FolwerProductBo bo) {
-        product.setDeliveryPrice(normalizeDeliveryPrice(bo.getDeliveryPrice()));
+        productCoreDomainService.prepareProductForCreate(product, bo.getDeliveryPrice());
     }
 
     protected BigDecimal normalizeDeliveryPrice(String deliveryPrice) {
-        return ProductWriteDefaultsSupport.normalizeDeliveryPrice(deliveryPrice);
+        return productCoreDomainService.prepareProductForCreate(new FolwerProduct(), deliveryPrice).getDeliveryPrice();
     }
 
     private void validEntityBeforeSave(FolwerProduct entity) {
@@ -203,7 +204,7 @@ public class FolwerProductServiceImpl implements IFolwerProductService {
     private void applyCurrentBatchStatus(Long productId) {
         FolwerProduct product = baseMapper.selectById(productId);
         // Keep the existing batch-update behavior locked until the write-path fix is designed.
-        product.setStatus(0L);
+        productCoreDomainService.prepareStatusMutation(product);
         baseMapper.updateById(product);
     }
 
