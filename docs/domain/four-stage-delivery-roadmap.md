@@ -15,7 +15,7 @@ Execution principle:
 
 Current active branch:
 
-- `feature/product-line-stabilization`
+- `feature/order-fulfillment-backbone`
 
 ## Stage 1: Product Center Stabilization
 
@@ -84,6 +84,32 @@ Turn orders, delivery, logistics, and basic after-sales into a standard mall ord
 - logistics lookup and shipment flow are decoupled from flower-specific fulfillment semantics
 - flower-only delivery logic, starting-price logic, and other special fulfillment behaviors are pushed out of the main order backbone
 - order read and write paths have stable regression coverage
+
+### Current progress
+
+This stage is **in progress**.
+
+Already completed:
+
+- shared order-domain service layer:
+  - `OrderLifecycleDomainService`
+  - `OrderDetailDomainService`
+  - `OrderFulfillmentDomainService`
+  - `OrderRefundDomainService`
+- backend order read controller regression
+- mini-program order read controller regression
+- order lifecycle/detail/fulfillment/refund domain tests
+- first-batch service rewiring:
+  - applet order detail aggregation
+  - backend order address shaping
+  - backend refund creation preparation
+
+Still required before Stage 2 is considered complete:
+
+- finish backend/apply-side order write-chain stabilization
+- make backend and applet order services adapter-facing entrypoints over shared order rules
+- isolate standard logistics/fulfillment backbone from flower-specific delivery expressions
+- complete stable order read/write regression coverage
 
 ### Exit criteria
 
@@ -173,6 +199,6 @@ The current repository should be treated as being in:
 
 Default next priority:
 
-- start Stage 2 order and fulfillment backbone work on top of the stabilized product center
+- continue Stage 2 order and fulfillment backbone work on top of the stabilized product center
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.
