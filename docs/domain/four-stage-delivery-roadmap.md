@@ -15,7 +15,7 @@ Execution principle:
 
 Current active branch:
 
-- `feature/transaction-user-asset-backbone`
+- `feature/legacy-isolation-backbone-closure`
 
 ## Stage 1: Product Center Stabilization
 
@@ -231,6 +231,35 @@ Turn the repository from a usable flower-legacy mall base into a clearly defined
   - points
   - basic coupon capability
 
+### Current progress
+
+This stage is **completed**.
+
+Already completed:
+
+- repository backbone-vs-legacy boundary is documented in:
+  - `legacy-isolation-backbone-closure.md`
+- default backbone delivery gate is documented in:
+  - `backbone-regression-gate.md`
+- repository README now describes the mall backbone first and removes historical operational secrets from the main doc
+- historical naming spread is frozen at the documentation and internal-abstraction level
+- explicit edge-isolation is now recorded for:
+  - courses
+  - community
+  - credit-mall order/product/category flows
+  - promotion reward / rebate / profit-sharing
+  - flower-only delivery configuration
+- code-side isolation cleanup and markers:
+  - removed an obvious cross-domain import bleed in `MemberLevelServiceImpl`
+  - marked credit-mall Redis expiry handling as legacy edge behavior
+  - marked profit-sharing and promotion side effects as compatibility edge behavior rather than backbone rules
+- backbone isolation is enforced by:
+  - `BackboneIsolationGuardTest`
+
+Still required before Stage 4 is considered complete:
+
+- none
+
 ### Exit criteria
 
 Stage 4 is complete only when:
@@ -258,10 +287,8 @@ These rules stay active across all 4 stages:
 
 The current repository should be treated as being in:
 
-- **Stage 4: Legacy Isolation and Backbone Closure**
-
-Default next priority:
-
-- start Stage 4 legacy isolation and backbone closure work on top of the stabilized product, order, and transaction centers
+- **Stage 4 completed**
+- the repository is now a **single-merchant standard mall backbone**
+- the 4-stage cleanup program is closed out
 
 This roadmap is intended to let the project advance through **4 large conversation checkpoints**, while implementation inside each stage can continue in multiple small batches without redefining the overall direction.

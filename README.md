@@ -1,36 +1,87 @@
 # flower-sharing
 
-美立花享加后端
+## Overview
 
-## Getting started
+This repository is now maintained as a **single-merchant standard mall backbone**.
 
+The active backbone covers:
 
+- product center
+- order and fulfillment
+- transaction
+- user assets:
+  - membership
+  - points
+  - coupons
 
-## 后台地址
+The codebase still contains several historical flower-business domains, but they are no longer part of the default mall backbone and are treated as legacy edge capabilities.
 
-- [ ] https://modao.cc/proto/EZAfyTIQsnwlkl4oFPiEYf/sharing?view_mode=read_only&screen=rbpUTimRUWhzJ6wN6TD2AP
+## Backbone Scope
 
-## UI地址
-- [ ] https://www.figma.com/design/hl4K3dC2DrkzUYszLPuXdp/%E7%BE%8E%E7%AB%8B%E8%8A%B1%E4%BA%AB%E5%AE%B6?node-id=2-2&t=m5BNQsz6PGqG9hI5-1
+Default backbone domains:
 
-## 服务器地址
-- 服务器地址 8.155.23.156
-- 账号 root 密码 mlhxj8866.
+- product:
+  - category
+  - product
+  - SKU
+  - product detail
+- order:
+  - backend order management
+  - applet order center
+  - refund preparation
+  - logistics and fulfillment view
+- transaction:
+  - submit payment
+  - query payment
+  - payment callback
+  - refund
+  - refund callback
+- user assets:
+  - member level and privileges
+  - points ledger and exchange-facing semantics
+  - coupon publish, receive, consume, rollback
 
-## 测试版服务器地址
-- 服务器地址 172.16.1.190
-- 账号 root 密码 root
+Legacy edge domains kept in the repository but excluded from the default backbone:
 
-## mysql账号密码
-- 账号 root 密码 mlhxjflower9527.
+- courses
+- community
+- credit-mall order/product/category flows
+- promotion reward / rebate / profit-sharing
+- flower-only delivery configuration
 
-## redis密码
-- mlhxjflower8866.
+See:
 
-```
-cd existing_repo
-git remote add origin http://47.113.201.18:8280/gitlab-instance-232fc672/flower-sharing.git
-git branch -M main
-git push -uf origin main
-```
+- [Stage Roadmap](docs/domain/four-stage-delivery-roadmap.md)
+- [Stage 4 Closure](docs/domain/legacy-isolation-backbone-closure.md)
+- [Backbone Regression Gate](docs/testing/backbone-regression-gate.md)
 
+## Runtime
+
+Primary application:
+
+- `ruoyi-admin`
+
+Primary runtime dependencies:
+
+- MySQL
+- Redis
+
+The default delivery story is the mall backbone only. Legacy edge domains remain available for compatibility, but they are not part of the default acceptance gate for this repository.
+
+## Delivery Rules
+
+Current delivery model:
+
+- GitHub is the active remote for backbone development
+- feature branches are used for each stage
+- every stable batch must:
+  - compile
+  - pass the active backbone regression gate
+  - be committed
+  - be pushed
+
+## Notes
+
+- Historical names such as `Folwer` and `flowerapplet` are still present for compatibility.
+- Stage 4 freezes further expansion of those historical names but does not perform a big-bang rename.
+- Operational secrets, server passwords, and old GitLab bootstrap snippets are intentionally not kept in this repository documentation anymore.
